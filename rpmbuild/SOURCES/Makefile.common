@@ -1,0 +1,52 @@
+RPMBUILD := $(shell if [ -x "/usr/bin/rpmbuild" ]; then echo rpmbuild; \
+                   else echo rpm; fi)
+REDHAT:=$(shell pwd)
+TOPDIR:=$(shell dirname $(REDHAT))
+MACH :=  $(shell uname -m)
+KVERSION:=3.10.0
+GITID:= $(shell git log --max-count=1 --pretty=format:%H)
+RPMVERSION:=3.10.0
+# marker is git tag which we base off of for exporting patches
+MARKER:=v3.10
+PREBUILD:=
+BUILD:=1062.4.1
+DIST:=.el7
+SPECFILE:=kernel.spec
+RPM:=$(REDHAT)/rpm
+SRPMS:=$(RPM)/SRPMS
+SOURCES:=$(RPM)/SOURCES
+TESTPATCH:=$(REDHAT)/linux-kernel-test.patch
+FILTERDIFF:=/usr/bin/filterdiff -x '*redhat/*' -x '*/.gitignore' -x '*/makefile' -x '*/Makefile'
+
+# RELEASED_KERNEL: swaps between the pre-release secureboot keys and
+# 		   the release one, for vmlinux signing.
+#
+#	0 : pre-release (devel) secureboot keys are used for signing
+#	1 : release (RC/GA) secureboot keys are used for signing
+#
+RELEASED_KERNEL:=1
+
+STAMP_VERSION:=$(KVERSION)
+
+LOCVERFILE:=../localversion
+# create an empty localversion file if you don't want a local buildid
+ifneq ($(wildcard $(LOCVERFILE)),)
+  BUILDID:=$(shell cat $(LOCVERFILE))
+else
+  BUILDID:=.test
+endif
+$(info BUILDID is "$(BUILDID)". Update '$(shell dirname $(REDHAT))/localversion' to change.)
+
+PKGRELEASE:=$(PREBUILD)$(BUILD)$(DIST)$(BUILDID)
+SPECRELEASE:=$(PREBUILD)$(BUILD)%{?dist}$(BUILDID)
+
+TARFILE:=linux-$(KVERSION)-$(PKGRELEASE).tar.xz
+TARBALL:=$(REDHAT)/$(TARFILE)
+DISTRO_BUILD:=$(shell echo $(BUILD) | sed -e 's|\(^[0-9]\{1,4\}\)\..*|\1|')
+KABI_TARFILE:=kernel-abi-whitelists-$(DISTRO_BUILD).tar.bz2
+KABI_TARBALL:=$(REDHAT)/rpm/SOURCES/$(KABI_TARFILE)
+KABIDW_TARFILE:=kernel-kabi-dw-$(DISTRO_BUILD).tar.bz2
+KABIDW_TARBALL:=$(REDHAT)/rpm/SOURCES/$(KABIDW_TARFILE)
+
+RHELMAJOR:=$(shell git show HEAD:Makefile | grep ^RHEL_MAJOR | sed -e s/RHEL_MAJOR\ =\ //)
+RHELMINOR:=$(shell git show HEAD:Makefile | grep ^RHEL_MINOR | sed -e s/RHEL_MINOR\ =\ //)

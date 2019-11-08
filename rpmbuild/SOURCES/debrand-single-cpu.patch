@@ -1,0 +1,12 @@
+diff -uNrp linux-3.10.0-957.27.2.el7.x86_64.orig/arch/x86/kernel/setup.c linux-3.10.0-957.27.2.el7.x86_64/arch/x86/kernel/setup.c
+--- linux-3.10.0-957.27.2.el7.x86_64.orig/arch/x86/kernel/setup.c	2019-07-09 16:13:02.000000000 +0000
++++ linux-3.10.0-957.27.2.el7.x86_64/arch/x86/kernel/setup.c	2019-07-29 17:32:40.018405430 +0000
+@@ -963,7 +963,7 @@ static void rh_check_supported(void)
+ 	if (((boot_cpu_data.x86_max_cores * smp_num_siblings) == 1) &&
+ 	    !guest && !is_kdump_kernel()) {
+ 		pr_crit("Detected single cpu native boot.\n");
+-		pr_crit("Important:  In Red Hat Enterprise Linux 7, single threaded, single CPU 64-bit physical systems are unsupported by Red Hat. Please contact your Red Hat support representative for a list of certified and supported systems.");
++		pr_crit("Important:  In CentOS Linux 7, single threaded, single CPU 64-bit physical systems are unsupported.");
+ 	}
+ 
+ 	/* The RHEL7 kernel does not support this hardware.  The kernel will
