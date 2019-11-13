@@ -1,1 +1,0 @@
-Please, see ../hd-audio/models.rst for the complete list.
