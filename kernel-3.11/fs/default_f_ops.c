@@ -1,39 +1,26 @@
 /*
- * fs/dax.c - Direct Access filesystem code
- * Copyright (c) 2013-2014 Intel Corporation
- * Author: Matthew Wilcox <matthew.r.wilcox@intel.com>
- * Author: Ross Zwisler <ross.zwisler@linux.intel.com>
+ * Copyright (c) 2016-2019 Wuklab, Purdue University. All rights reserved.
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  */
 
-#include <linux/atomic.h>
-#include <linux/blkdev.h>
-#include <linux/buffer_head.h>
-#include <linux/dax.h>
-#include <linux/fs.h>
-#include <linux/genhd.h>
-#include <linux/highmem.h>
-#include <linux/memcontrol.h>
-#include <linux/mm.h>
-#include <linux/mutex.h>
-#include <linux/pagevec.h>
-#include <linux/sched.h>
-#include <linux/uio.h>
-#include <linux/socket.h>
-#include <linux/vmstat.h>
-#include <linux/pfn_t.h>
-#include <linux/sizes.h>
-#include <linux/mmu_notifier.h>
-#include <linux/iomap.h>
-#include "internal.h"
+
+#include <lego/stat.h>
+#include <lego/slab.h>
+#include <lego/uaccess.h>
+#include <lego/files.h>
+#include <lego/syscalls.h>
+#include <lego/comp_common.h>
+#include <lego/comp_storage.h>
+#include <lego/seq_file.h>
+#include <lego/timer.h>
+#include <lego/fit_ibapi.h>
+#include <lego/kernel.h>
+#include <processor/fs.h>
+#include <processor/processor.h>
 
 #ifdef CONFIG_DEBUG_FILE
 #define file_debug(fmt, ...)	\
