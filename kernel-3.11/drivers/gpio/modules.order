@@ -1,0 +1,2 @@
+kernel/drivers/gpio/gpio-ich.ko
+kernel/drivers/gpio/gpio-viperboard.ko

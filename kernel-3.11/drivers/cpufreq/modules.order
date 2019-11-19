@@ -1,0 +1,8 @@
+kernel/drivers/cpufreq/cpufreq_stats.ko
+kernel/drivers/cpufreq/acpi-cpufreq.ko
+kernel/drivers/cpufreq/mperf.ko
+kernel/drivers/cpufreq/powernow-k8.ko
+kernel/drivers/cpufreq/pcc-cpufreq.ko
+kernel/drivers/cpufreq/speedstep-lib.ko
+kernel/drivers/cpufreq/p4-clockmod.ko
+kernel/drivers/cpufreq/amd_freq_sensitivity.ko

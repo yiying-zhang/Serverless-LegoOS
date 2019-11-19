@@ -11,6 +11,9 @@ obj-$(CONFIG_NET)		:= socket.o core/
 
 tmp-$(CONFIG_COMPAT) 		:= compat.o
 obj-$(CONFIG_NET)		+= $(tmp-y)
+# added for the legoos front end
+obj-$(CONFIG_INFINIBAND)		+= lego/
+obj-$(CONFIG_SOCKET_O_IB)       += socket/
 
 # LLC has to be linked before the files in net/802/
 obj-$(CONFIG_LLC)		+= llc/
@@ -54,6 +57,7 @@ obj-$(CONFIG_IUCV)		+= iucv/
 obj-$(CONFIG_RFKILL)		+= rfkill/
 obj-$(CONFIG_NET_9P)		+= 9p/
 obj-$(CONFIG_CAIF)		+= caif/
+
 ifneq ($(CONFIG_DCB),)
 obj-y				+= dcb/
 endif

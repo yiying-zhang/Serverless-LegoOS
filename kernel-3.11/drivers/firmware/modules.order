@@ -1,0 +1,4 @@
+kernel/drivers/firmware/edd.ko
+kernel/drivers/firmware/dell_rbu.ko
+kernel/drivers/firmware/dcdbas.ko
+kernel/drivers/firmware/iscsi_ibft.ko

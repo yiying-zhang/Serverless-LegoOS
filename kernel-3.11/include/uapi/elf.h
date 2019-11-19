@@ -10,7 +10,7 @@
 #ifndef _LEGO_UAPI_ELF_H_
 #define _LEGO_UAPI_ELF_H_
 
-#include <lego/types.h>
+#include <linux/types.h>
 
 /* These constants define the various ELF target machines */
 #define EM_NONE		0

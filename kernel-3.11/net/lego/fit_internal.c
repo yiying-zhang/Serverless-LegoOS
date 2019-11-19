@@ -7,24 +7,24 @@
  * (at your option) any later version.
  */
 
-#include <lego/sched.h>
-#include <lego/init.h>
-#include <lego/mm.h>
-#include <lego/net.h>
-#include <lego/kthread.h>
-#include <lego/workqueue.h>
-#include <lego/list.h>
-#include <lego/string.h>
-#include <lego/jiffies.h>
-#include <lego/pci.h>
-#include <lego/delay.h>
-#include <lego/slab.h>
-#include <lego/time.h>
-#include <lego/timer.h>
-#include <lego/kernel.h>
-#include <lego/fit_ibapi.h>
-#include <lego/comp_common.h>
-#include <lego/profile.h>
+#include <linux/sched.h>
+#include <linux/init.h>
+#include <linux/mm.h>
+#include <linux/net.h>
+#include <linux/kthread.h>
+#include <linux/workqueue.h>
+#include <linux/list.h>
+#include <linux/string.h>
+#include <linux/jiffies.h>
+#include <linux/pci.h>
+#include <linux/delay.h>
+#include <linux/slab.h>
+#include <linux/time.h>
+#include <linux/timer.h>
+#include <linux/kernel.h>
+#include <linux/fit_ibapi.h>
+#include <linux/comp_common.h>
+#include <linux/profile.h>
 #include <rdma/ib_verbs.h>
 
 #include <processor/pcache.h>

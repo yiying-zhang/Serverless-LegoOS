@@ -10,7 +10,7 @@
 #ifndef _LEGO_UAPI_SYSINFO_H_
 #define _LEGO_UAPI_SYSINFO_H_
 
-#include <lego/types.h>
+#include <linux/types.h>
 
 struct sysinfo {
 	long uptime;			/* Seconds since boot */

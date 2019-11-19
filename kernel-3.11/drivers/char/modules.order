@@ -1,0 +1,16 @@
+kernel/drivers/char/hw_random/timeriomem-rng.ko
+kernel/drivers/char/hw_random/intel-rng.ko
+kernel/drivers/char/hw_random/amd-rng.ko
+kernel/drivers/char/hw_random/via-rng.ko
+kernel/drivers/char/hw_random/virtio-rng.ko
+kernel/drivers/char/tpm/tpm_i2c_infineon.ko
+kernel/drivers/char/tpm/tpm_nsc.ko
+kernel/drivers/char/tpm/tpm_atmel.ko
+kernel/drivers/char/tpm/tpm_infineon.ko
+kernel/drivers/char/virtio_console.ko
+kernel/drivers/char/uv_mmtimer.ko
+kernel/drivers/char/lp.ko
+kernel/drivers/char/i8k.ko
+kernel/drivers/char/ppdev.ko
+kernel/drivers/char/tlclk.ko
+kernel/drivers/char/hangcheck-timer.ko

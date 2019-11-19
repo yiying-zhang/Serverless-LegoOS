@@ -1,0 +1,2 @@
+kernel/drivers/gpu/drm/i2c/ch7006.ko
+kernel/drivers/gpu/drm/i2c/sil164.ko

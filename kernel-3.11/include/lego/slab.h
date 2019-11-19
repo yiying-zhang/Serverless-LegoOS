@@ -10,7 +10,7 @@
 #ifndef _LEGO_SLAB_H_
 #define _LEGO_SLAB_H_
 
-#include <lego/mm.h>
+#include <linux/mm.h>
 
 /*
  * Some archs want to perform DMA into kmalloc caches and need a guaranteed

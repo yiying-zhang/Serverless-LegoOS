@@ -1,13 +1,7 @@
-############################################################
-# Dockerfile to build sandbox for executing user code
-# Based on Ubuntu
-############################################################
-
 #FROM chug/ubuntu14.04x64
 #MAINTAINER ASAD MEMON, OSMAN ALI
 
 FROM ubuntu:18.04
-
 
 # Update the repository sources list
 #RUN echo "deb http://us.archive.ubuntu.com/ubuntu/ bionic main restricted" > /etc/apt/sources.list

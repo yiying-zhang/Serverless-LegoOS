@@ -1,0 +1,1 @@
+obj-y := rpc_ops.o

@@ -1,0 +1,11 @@
+kernel/drivers/hwmon/pmbus/pmbus_core.ko
+kernel/drivers/hwmon/pmbus/pmbus.ko
+kernel/drivers/hwmon/pmbus/adm1275.ko
+kernel/drivers/hwmon/pmbus/lm25066.ko
+kernel/drivers/hwmon/pmbus/ltc2978.ko
+kernel/drivers/hwmon/pmbus/max16064.ko
+kernel/drivers/hwmon/pmbus/max34440.ko
+kernel/drivers/hwmon/pmbus/max8688.ko
+kernel/drivers/hwmon/pmbus/ucd9000.ko
+kernel/drivers/hwmon/pmbus/ucd9200.ko
+kernel/drivers/hwmon/pmbus/zl6100.ko

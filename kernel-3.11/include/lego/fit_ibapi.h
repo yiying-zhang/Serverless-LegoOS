@@ -10,9 +10,9 @@
 #ifndef _INCLUDE_FIT_API_H
 #define _INCLUDE_FIT_API_H
 
-#include <lego/types.h>
-#include <lego/errno.h>
-#include <lego/atomic.h>
+#include <linux/types.h>
+#include <linux/errno.h>
+#include <linux/atomic.h>
 #include <net/arch/cc.h>
 
 #include <uapi/fit.h>
@@ -154,7 +154,7 @@ static inline int ibapi_send_reply_timeout(int target_node, void *addr, int size
 
 int ibapi_send_reply_timeout_w_private_bits(int target_node, void *addr, int size, void *ret_addr,
 			     int max_ret_size, int *private_bits, int if_use_ret_phys_addr,
-			     unsigned long timeout_sec);
+			     unsigned long timeout_sec)
 { return -EIO; }
 
 int ibapi_multicast_send_reply_timeout(int num_nodes, int *target_node, 

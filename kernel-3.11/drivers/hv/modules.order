@@ -1,0 +1,3 @@
+kernel/drivers/hv/hv_vmbus.ko
+kernel/drivers/hv/hv_utils.ko
+kernel/drivers/hv/hv_balloon.ko

@@ -7,13 +7,13 @@
  * (at your option) any later version.
  */
 
-#include <lego/net.h>
-#include <lego/slab.h>
-#include <lego/sched.h>
+#include <linux/net.h>
+#include <linux/slab.h>
+#include <linux/sched.h>
 #include <rdma/ib_verbs.h>
-#include <lego/fit_ibapi.h>
-#include <lego/completion.h>
-#include <lego/profile.h>
+#include <linux/fit_ibapi.h>
+#include <linux/completion.h>
+#include <linux/profile.h>
 #include "fit.h"
 #include "fit_internal.h"
 

@@ -15,20 +15,19 @@
  * and all socket file ops
  */
 
-#include <lego/syscalls.h>
-#include <lego/socket.h>
-#include <lego/atomic.h>
-#include <processor/processor.h>
+#include <linux/syscalls.h>
+#include <linux/socket.h>
+#include <linux/atomic.h>
 #include <lego/net.h>
 #include <lego/fit_ibapi.h>
-#include <lego/files.h>
-#include <processor/fs.h>
-#include <lego/spinlock.h>
-#include <lego/hashtable.h>
-#include <lego/comp_storage.h>
-#include <lego/delay.h>
-#include <lego/time.h>
-#include <lego/timer.h>
+#include <linux/files.h>
+#include <linux/fs.h>
+#include <linux/spinlock.h>
+#include <linux/hashtable.h>
+#include <linux/comp_storage.h>
+#include <linux/delay.h>
+#include <linux/time.h>
+#include <linux/timer.h>
 #include <processor/vnode.h>
 
 #ifdef CONFIG_DEBUG_SOCKET

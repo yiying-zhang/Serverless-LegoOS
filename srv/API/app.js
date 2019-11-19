@@ -4,8 +4,6 @@ var arr = require('./compilers');
 var sandBox = require('./DockerSandboxCompile');
 var bodyParser = require('body-parser');
 const formidable = require('formidable');
-/* self imported functions */
-var messages = require('./Messages.js');
 
 var app = express();
 
@@ -75,9 +73,6 @@ async function cb (req, res) {
 
         console.log("this scope check: ", sandboxType.timeout_value); // 20
         console.log("this scope check: ", this.timeout_value); // undefined
-        // sandboxType.run.bind(sandboxType)((data, exec_time, err) => {
-        //     res.send({output:data, langid: 0, errors:err, time:exec_time});
-        // });
 
         sandboxType.run((data, exec_time, err) => {
             res.json({output:data, langid: 0, errors:err, time:exec_time});
@@ -96,7 +91,7 @@ async function cb (req, res) {
 app.put('/compile', cb);
 
 app.get('/', (req, res)=> {
-    res.status(404).json({ok: false, message: messages.NOT_IMPLEMENT, client: req.connection.remoteAddress});
+    res.status(404).json({ok: false, message: "not implemented", client: req.connection.remoteAddress});
 });
 
 app.get('/index.html', (req, res)=> {

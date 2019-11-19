@@ -356,3 +356,6 @@
 540	x32	process_vm_writev	compat_sys_process_vm_writev
 541	x32	setsockopt		compat_sys_setsockopt
 542	x32	getsockopt		compat_sys_getsockopt
+
+# this is for the front end of lego
+600	common	f2s_send	sys_f2s_send

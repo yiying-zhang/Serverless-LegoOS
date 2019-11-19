@@ -1,0 +1,2 @@
+kernel/drivers/iio/common/hid-sensors/hid-sensor-iio-common.ko
+kernel/drivers/iio/common/hid-sensors/hid-sensor-trigger.ko

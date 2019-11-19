@@ -55,16 +55,6 @@ DockerSandboxCompile.prototype.prepare = function (success) {
         exec("chmod 777 \'"+sandbox.path+sandbox.folder+"/"+sandbox.file_name+"\'");
         success(); // callback, end of preparations, the success should be the execute function
 
-        // fs.writeFile(sandbox.path + sandbox.folder+"/" + sandbox.file_name, sandbox.code, (err) => {
-        //         if (err) {
-        //             console.log(err);
-        //         } else {
-        //             console.log("execev command: " + ("chmod 777 \'"+sandbox.path+sandbox.folder+"/"+sandbox.file_name+"\'"));
-        //
-        //             exec("chmod 777 \'"+sandbox.path+sandbox.folder+"/"+sandbox.file_name+"\'");
-        //             success(); // callback, end of preparations, the success should be the execute function
-        //         }
-        //     });
      });
 
 }

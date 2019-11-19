@@ -10,11 +10,11 @@
 #ifndef HAVE_CLIENT_H
 #define HAVE_CLIENT_H
 
-#include <lego/spinlock.h>
-#include <lego/atomic.h>
+#include <linux/spinlock.h>
+#include <linux/atomic.h>
 //#include <lego/wait.h>
 #include <net/arch/cc.h>
-#include <lego/socket.h>
+#include <linux/socket.h>
 
 #define DEBUG_SHINYEH
 

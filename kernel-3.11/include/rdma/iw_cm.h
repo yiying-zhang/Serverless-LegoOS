@@ -33,7 +33,7 @@
 #ifndef IW_CM_H
 #define IW_CM_H
 
-#include <linux/in.h>
+#include <lego/in.h>
 #include <rdma/ib_cm.h>
 
 struct iw_cm_id;

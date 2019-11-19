@@ -1,0 +1,3 @@
+kernel/drivers/auxdisplay/ks0108.ko
+kernel/drivers/auxdisplay/cfag12864b.ko
+kernel/drivers/auxdisplay/cfag12864bfb.ko

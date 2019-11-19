@@ -1,0 +1,5 @@
+kernel/drivers/char/ipmi/ipmi_msghandler.ko
+kernel/drivers/char/ipmi/ipmi_devintf.ko
+kernel/drivers/char/ipmi/ipmi_si.ko
+kernel/drivers/char/ipmi/ipmi_watchdog.ko
+kernel/drivers/char/ipmi/ipmi_poweroff.ko
