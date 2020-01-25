@@ -17,8 +17,7 @@
 
 #include "processor.h"
 #include <lego/fit_ibapi.h>
-
-#define MSG_RET_SUCCESS 0
+#include <lego/msg_q.h>
 
 SYSCALL_DEFINE4(mq_send, char*, name, unsigned long, name_size, unsigned long, msg_size, const char*, msg_data)
 {

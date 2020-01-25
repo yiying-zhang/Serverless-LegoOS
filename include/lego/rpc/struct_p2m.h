@@ -205,19 +205,19 @@ struct p2m_mqopen_payload{
 	char mq_name[MAX_FILENAME_LENGTH];
 };
 
-/*
+
 void handle_mq_open_request(struct p2m_mqopen_payload* payload, 
 	struct thpool_buffer*tb);
-*/
+
 
 struct p2m_mqclose_payload{
 	char mq_name[MAX_FILENAME_LENGTH];
 };
 
-/*
+
 void handle_mq_close_request(struct p2m_mqclose_payload* payload, 
 	struct thpool_buffer*tb);
-*/
+
 
 
 /* for now we use fixed payload here
@@ -230,10 +230,10 @@ struct p2m_mqsend_payload{
 	char mq_name[MAX_FILENAME_LENGTH];
 };
 
-/*
+
 void handle_mq_send_request(struct p2m_mqsend_payload* payload, 
 	struct thpool_buffer*tb);
-*/
+
 
 
 struct p2m_mqrecv_payload{
@@ -245,10 +245,10 @@ struct p2m_mqrecv_reply_struct {
         char 	mq_data[CONFIG_MAX_MSG_LENGTH];
 };
 
-/*
+
 void handle_mq_receive_request(struct p2m_mqrecv_payload* payload, 
 	struct thpool_buffer*tb);
-*/
+
 
 /*
  * P2M_MMAP
