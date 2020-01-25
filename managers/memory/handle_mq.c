@@ -36,7 +36,7 @@ unsigned int append(char* msg_data, unsigned int msg_size, struct list_head* nam
 
 
 /* the msg data passed in should copy a new memory here, msg_data should point to a continous memory
- *  * */
+ */
 unsigned int pop(char* msg_data, int* msg_size, struct list_head* name_nid_dict){
 	struct list_head* next = name_nid_dict->next;
 
@@ -89,7 +89,7 @@ unsigned int mc_mq_open(char* mq_name, unsigned int max_size)
 {
 
 /*
- *what if we already got a message queue with that name in the name map?	
+ * what if we already got a message queue with that name in the name map?	
  */
 	unsigned long flags;
 	spin_lock_irqsave(&map_lock, flags);

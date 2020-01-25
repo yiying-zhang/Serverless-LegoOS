@@ -37,12 +37,13 @@ struct name_mq_map{
 
 unsigned int append(char* msg_data, unsigned int msg_size, struct list_head* name_nid_dict);
 
-/* the msg data passed in should copy a new memory here, msg_data should point to a continous memory
- *  * */
+/* 
+ * the msg data passed in should copy a new memory here, msg_data should point to a continous memory
+ */
 unsigned int pop(char* msg_data, int* msg_size, struct list_head* name_nid_dict);
 /*
- *  *  * print name_nid_dict
- *   *   */
+ * print name_nid_dict
+ */
 
 
 void print(struct list_head* name_nid_dict);
