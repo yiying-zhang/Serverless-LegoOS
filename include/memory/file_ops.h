@@ -15,6 +15,8 @@
 
 extern struct lego_file_operations ramfs_file_ops;
 extern struct lego_file_operations storage_file_ops;
+/* hard code different ramfs operation for different pComponent to support 2p1m*/
+extern struct lego_file_operations ramfs_file_ops2;
 
 /* Storage APIs */
 ssize_t file_read(struct lego_task_struct *tsk, struct lego_file *file,

@@ -49,7 +49,15 @@ struct lego_file *file_open(struct lego_task_struct *tsk, const char *filename)
 	strncpy(file->filename, filename, MAX_FILENAME_LEN);
 
 #ifdef CONFIG_USE_RAMFS
-	file->f_op = &ramfs_file_ops;
+	unsigned int node0 = 0;
+	/* 
+ 	 * if the request comes from node0, then give the ops to him
+ 	 * in this way we can achieve different code in 2p
+	 */
+	if(tsk->node==node0)
+		file->f_op = &ramfs_file_ops;
+	else
+		file->f_op = &ramfs_file_ops2;
 #else
 	file->f_op = &storage_file_ops;
 #endif
