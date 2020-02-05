@@ -10,25 +10,25 @@
 #include <memory/thread_pool.h>
 
 unsigned int append(char* msg_data, unsigned int msg_size, struct list_head* name_nid_dict){
-	struct mc_msg_queue* tmp;
+	struct mc_msg_queue* msg;
 
-	tmp = kmalloc(sizeof(struct mc_msg_queue), GFP_KERNEL);
-	if(!tmp){
-		printk("allocated wrong\n");
+	msg = kmalloc(sizeof(struct mc_msg_queue), GFP_KERNEL);
+	if(!msg){
+		printk("handle_mq append cannot allocate memory\n");
 		return MSG_RET_FAIL;
 	}
 
-	tmp->msg_data = kmalloc(sizeof(char)*(msg_size+1), GFP_KERNEL);
-	if(!tmp->msg_data){
-		kfree(tmp);
-		printk("allocated wrong\n");
+	msg->msg_data = kmalloc(sizeof(char)*(msg_size+1), GFP_KERNEL);
+	if(!msg->msg_data){
+		kfree(msg);
+		printk("handle_mq append cannot allocate memory for message\n");
 		return MSG_RET_FAIL;
 	}
 
-	strcpy(tmp->msg_data, msg_data);
-	tmp->msg_size = msg_size;
+	strcpy(msg->msg_data, msg_data);
+	msg->msg_size = msg_size;
 
-	list_add_tail(&tmp->list, name_nid_dict);	
+	list_add_tail(&msg->list, name_nid_dict);	
 
 	return MSG_RET_SUCCESS;
 }
@@ -39,8 +39,18 @@ unsigned int append(char* msg_data, unsigned int msg_size, struct list_head* nam
  */
 unsigned int pop(char* msg_data, int* msg_size, struct list_head* name_nid_dict){
 	struct list_head* next = name_nid_dict->next;
-
+	
+	if(!next){
+		printk("should not receive from an empty message queue\n");
+		return MSG_RET_FAIL;
+	}
+	
 	struct mc_msg_queue* item = list_entry(next, struct mc_msg_queue, list);
+
+	if(!item->msg_data || !msg_data){
+		printk("message entry is null\n");
+		return MSG_RET_FAIL;
+	}
 
 	strcpy(msg_data, item->msg_data);
 	*msg_size = item->msg_size;
@@ -54,19 +64,6 @@ unsigned int pop(char* msg_data, int* msg_size, struct list_head* name_nid_dict)
 	return MSG_RET_SUCCESS;
 }
 
-
-/*
- * print api, for debug
- */ 
-void print(struct list_head* name_nid_dict){
-	struct mc_msg_queue *pos = NULL;
-	list_for_each_entry(pos, name_nid_dict, list){
-		printk(pos->msg_data);
-		printk(" ");
-		printk("message data: %d\n", pos->msg_size);
-	}
-}
-
 void free_all(struct list_head* name_nid_dict){
 
 	struct list_head* cur=name_nid_dict->next;
@@ -77,6 +74,12 @@ void free_all(struct list_head* name_nid_dict){
 		list_del(cur);
 
 		cur = tmp;
+		
+		if(!item || !item->msg_data){
+			printk("null message during freed!\n");
+			continue;
+		}		
+
 		kfree(item->msg_data);
 		kfree(item);
 	}
@@ -104,7 +107,7 @@ unsigned int mc_mq_open(char* mq_name, unsigned int max_size)
 
 	if(target != NULL){
 		spin_unlock_irqrestore(&map_lock, flags);
-		return MSG_RET_FAIL;
+		return MSG_MQ_OPEN_ERROR_ALREADY_EXIST;
 	}
 	
 	spin_unlock_irqrestore(&map_lock, flags);
@@ -120,6 +123,11 @@ unsigned int mc_mq_open(char* mq_name, unsigned int max_size)
 	strcpy(tmp->mq_name, mq_name);
 	tmp->max_size = max_size;
 	tmp->mq = kmalloc(sizeof(struct list_head), GFP_KERNEL);
+
+	if(!tmp->mq){
+		printk("message queue kmalloc failed in mc_mq_open\n");
+		return MSG_RET_FAIL;
+	}
 
 	INIT_LIST_HEAD(tmp->mq);	
 
@@ -155,14 +163,14 @@ unsigned int mc_mq_close(char* mq_name){
 
 	list_del(&target->list);
 
-	spin_unlock_irqrestore(&map_lock, flags);
-
 	/* possible leak
          * what if message queue still gots some thing, then we free then
          */
 	free_all(target->mq);
 	kfree(target->mq);
 	kfree(target);
+
+	spin_unlock_irqrestore(&map_lock, flags);
 
 	return MSG_RET_SUCCESS;
 }
@@ -171,6 +179,7 @@ unsigned int mc_mq_close(char* mq_name){
 unsigned int mc_mq_send(char *mq_name, char* msg_data, unsigned int msg_size){
 
 	/* find out where is our mq head pointer */
+
 	struct name_mq_map *pos, *target = NULL;
 	list_for_each_entry(pos, &addr_map, list){
 		if(strcmp(mq_name, pos->mq_name)==0){
@@ -195,7 +204,8 @@ unsigned int mc_mq_send(char *mq_name, char* msg_data, unsigned int msg_size){
 
 unsigned int mc_mq_receive(char *mq_name, char* msg_data, unsigned int* msg_size){
 
-
+	spin_lock_irqsave(&target->mq_lock,flags);
+	
 	/* find out where is our mq head pointer */
 	struct name_mq_map *pos, *target = NULL;
 	list_for_each_entry(pos, &addr_map, list){
@@ -204,13 +214,13 @@ unsigned int mc_mq_receive(char *mq_name, char* msg_data, unsigned int* msg_size
 		}
 	}
 	if(target ==NULL){
+		spin_unlock_irqrestore(&target->mq_lock,flags);
 		return MSG_RET_FAIL;
 	}
 
 	/* spin lock acquire here */
 	unsigned long flags;
 
-	spin_lock_irqsave(&target->mq_lock,flags);
 	int res = pop(msg_data, msg_size, target->mq);
 	spin_unlock_irqrestore(&target->mq_lock,flags);
 

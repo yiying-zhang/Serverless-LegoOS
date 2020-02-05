@@ -13,6 +13,8 @@
  */ 
 #define MSG_RET_SUCCESS 0
 #define MSG_RET_FAIL 1
+#define MSG_MQ_OPEN_ERROR_ALREADY_EXIST 2
+
 /* 
  * message queue data structure
  */
@@ -21,8 +23,6 @@ struct mc_msg_queue{
 	char* msg_data;
 	unsigned int msg_size;
 	struct list_head list;
-	/* this array is the pid table 
- 	struct list_head pid_list; */
 };
 
 static DEFINE_SPINLOCK(map_lock);
@@ -41,10 +41,6 @@ unsigned int append(char* msg_data, unsigned int msg_size, struct list_head* nam
  * the msg data passed in should copy a new memory here, msg_data should point to a continous memory
  */
 unsigned int pop(char* msg_data, int* msg_size, struct list_head* name_nid_dict);
-/*
- * print name_nid_dict
- */
-
 
 void print(struct list_head* name_nid_dict);
 void free_all(struct list_head* name_nid_dict);
