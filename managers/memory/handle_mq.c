@@ -204,8 +204,7 @@ unsigned int mc_mq_send(char *mq_name, char* msg_data, unsigned int msg_size){
 
 unsigned int mc_mq_receive(char *mq_name, char* msg_data, unsigned int* msg_size){
 
-	spin_lock_irqsave(&target->mq_lock,flags);
-	
+
 	/* find out where is our mq head pointer */
 	struct name_mq_map *pos, *target = NULL;
 	list_for_each_entry(pos, &addr_map, list){
@@ -213,14 +212,14 @@ unsigned int mc_mq_receive(char *mq_name, char* msg_data, unsigned int* msg_size
 			target = pos;		
 		}
 	}
-	if(target ==NULL){
-		spin_unlock_irqrestore(&target->mq_lock,flags);
+	if(target ==NULL){	
 		return MSG_RET_FAIL;
 	}
 
 	/* spin lock acquire here */
 	unsigned long flags;
 
+	spin_lock_irqsave(&target->mq_lock,flags);	
 	int res = pop(msg_data, msg_size, target->mq);
 	spin_unlock_irqrestore(&target->mq_lock,flags);
 
