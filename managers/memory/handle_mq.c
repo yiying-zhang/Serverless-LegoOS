@@ -179,6 +179,10 @@ unsigned int mc_mq_close(char* mq_name){
 unsigned int mc_mq_send(char *mq_name, char* msg_data, unsigned int msg_size){
 
 	/* find out where is our mq head pointer */
+	
+	/* before that, lock map_lock to avoid mq_close to modify the entry 
+ 	 * before we get the target
+	 */
 	unsigned long map_flags;
 	spin_lock_irqsave(&map_lock, map_flags);
 
@@ -209,6 +213,7 @@ unsigned int mc_mq_send(char *mq_name, char* msg_data, unsigned int msg_size){
 
 unsigned int mc_mq_receive(char *mq_name, char* msg_data, unsigned int* msg_size){
 
+	/* same problem with mc_mq_send, close function may cause trouble*/
 	unsigned long map_flags;
 	spin_lock_irqsave(&map_lock, map_flags);
 
