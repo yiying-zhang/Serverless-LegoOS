@@ -179,6 +179,9 @@ unsigned int mc_mq_close(char* mq_name){
 unsigned int mc_mq_send(char *mq_name, char* msg_data, unsigned int msg_size){
 
 	/* find out where is our mq head pointer */
+	unsigned long map_flags;
+	spin_lock_irqsave(&map_lock, map_flags);
+
 
 	struct name_mq_map *pos, *target = NULL;
 	list_for_each_entry(pos, &addr_map, list){
@@ -191,11 +194,13 @@ unsigned int mc_mq_send(char *mq_name, char* msg_data, unsigned int msg_size){
 		unsigned long flags;
 
 		spin_lock_irqsave(&target->mq_lock,flags);
+		spin_unlock_irqrestore(&map_lock, map_flags);
 		int res = append(msg_data, msg_size, target->mq);
 		spin_unlock_irqrestore(&target->mq_lock,flags);
 		return res;	
 	}
 	
+	spin_unlock_irqrestore(&map_lock, map_flags);
 	/* 
  	 * message queue not found, return failed macro
 	 */
@@ -204,6 +209,8 @@ unsigned int mc_mq_send(char *mq_name, char* msg_data, unsigned int msg_size){
 
 unsigned int mc_mq_receive(char *mq_name, char* msg_data, unsigned int* msg_size){
 
+	unsigned long map_flags;
+	spin_lock_irqsave(&map_lock, map_flags);
 
 	/* find out where is our mq head pointer */
 	struct name_mq_map *pos, *target = NULL;
@@ -212,7 +219,8 @@ unsigned int mc_mq_receive(char *mq_name, char* msg_data, unsigned int* msg_size
 			target = pos;		
 		}
 	}
-	if(target ==NULL){	
+	if(target ==NULL){
+		spin_unlock_irqrestore(&map_lock, map_flags);	
 		return MSG_RET_FAIL;
 	}
 
@@ -220,6 +228,7 @@ unsigned int mc_mq_receive(char *mq_name, char* msg_data, unsigned int* msg_size
 	unsigned long flags;
 
 	spin_lock_irqsave(&target->mq_lock,flags);	
+	spin_unlock_irqrestore(&map_lock,map_flags);
 	int res = pop(msg_data, msg_size, target->mq);
 	spin_unlock_irqrestore(&target->mq_lock,flags);
 
