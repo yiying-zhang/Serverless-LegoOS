@@ -20,6 +20,7 @@
 #include <lego/fit_ibapi.h>
 #include <lego/completion.h>
 #include <lego/comp_storage.h>
+#include <lego/msg_q.h>
 
 #include <memory/vm.h>
 #include <memory/pid.h>
@@ -32,6 +33,7 @@
 #include <memory/pgcache.h>
 
 #include <monitor/gmm_handler.h>
+
 
 void handle_bad_request(struct common_header *hdr, u64 desc)
 {
@@ -170,6 +172,23 @@ static void thpool_worker_handler(struct thpool_worker *worker,
 	case P2M_TEST_NOREPLY:
 		__SetThpoolBufferNoreply(buffer);
 		handle_p2m_test_noreply(msg, buffer);
+		break;
+
+/* message queue opcode */
+	case P2M_MQOPEN:
+		handle_mq_open_request(payload,buffer);
+		break;
+
+	case P2M_MQSEND:
+		handle_mq_send_request(payload,buffer);
+		break;
+
+	case P2M_MQRECV:
+		handle_mq_receive_request(payload,buffer);
+		break;
+
+	case P2M_MQCLOSE:
+		handle_mq_close_request(payload,buffer);
 		break;
 
 /* PCACHE */
