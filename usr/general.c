@@ -4,6 +4,7 @@
 #include <sys/resource.h>
 #include <stdio.h>
 #include <linux/unistd.h>
+#include <string.h>
 
 static void lego_uname(void)
 {
@@ -50,11 +51,23 @@ static void lego_set_tid_address(void)
 	printf("set_tid_address(): return tgid: %u\n", tgid);
 }
 
-static void lego_test_dummy_get(void)
+static void lego_test_state_save(void)
 {
-    printf("Testing syscall dummy_get\n");
-    long retval = syscall(666, 2333);
-    printf("dummy_get returns: %ld\n", retval);
+    printf("Testing syscall state_save\n");
+    char * name = "Bob's function233";
+    char * state = "Bob went to 0xFB1DBA5 and ordered a cup of d2330241.";
+    long retval = syscall(667, name, strlen(name), strlen(state), state);
+    printf ("state_save returns: %ld\n", retval);
+}
+
+#define BUFFER_SIZE 1024
+static void lego_test_state_load(void)
+{
+    printf("Testing syscall state_load\n");
+    char * name = "Bob's function233";
+    char buf[BUFFER_SIZE] = {0,};
+    long retval = syscall(668, name, strlen(name), BUFFER_SIZE, buf);
+    printf ("state_load returns: %ld, retrieved state is: %s\n", retval, buf);
 }
 
 int main(void)
@@ -68,6 +81,8 @@ int main(void)
 
 	lego_time();
 
-    lego_test_dummy_get();
+	// Testing state management
+    lego_test_state_save();
+    lego_test_state_load();
 }
 
