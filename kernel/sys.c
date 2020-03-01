@@ -830,12 +830,12 @@ SYSCALL_DEFINE1(recho, unsigned int, dest_nid) {
 	hdr->opcode = __NR_recho;
 	hdr->src_nid = LEGO_LOCAL_NID;
 
-	printk("About to make RPC call\n");
+	printk("About to make recho call\n");
 	/* Synchronously send it out */
 	ret = ibapi_send_reply_imm(dest_nid, msg, len_msg, retbuf,
 				   RETBUF_LEN, false);
 	
-	printk("Returned from RPC call\n");
+	printk("Returned from recho call\n");
 
 	if (ret == -ETIMEDOUT)
 		pr_info("  %s() CPU:%d PID:%d caller: %pS\n",

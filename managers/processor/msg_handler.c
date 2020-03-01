@@ -22,8 +22,8 @@
 
 #define MAX_RXBUF_SIZE	(20 * PAGE_SIZE)
 
-const int ECHO_LEN = 5;
-const char* ECHO = "Echo\n";
+const int ECHO_LEN = 23;
+const char* ECHO = "Echo MSG from Receiver\n";
 
 struct info_struct {
 	uintptr_t desc;
@@ -58,7 +58,7 @@ static int msg_dispatcher(struct info_struct *info)
 	 */
 	switch (hdr->opcode) {
 		case P2P_RECHO:
-			pr_info("Extracted P2P_RECHO opcode. following through to handler\n");
+			pr_info("~~~~Extracted P2P_RECHO opcode. following through to handler~~~~\n");
 		default:
 			pr_info("~~~~~~~~~~About to handle echo~~~~~~~~~~~~~\n");
 			handle_echo(hdr, desc);
@@ -103,7 +103,7 @@ static int msg_handler(void *unused)
 
 
 		if (hdr->src_nid == 0 || hdr->src_nid == 1) {
-			pr_info("Reading source nid from header\n", hdr->src_nid);
+			pr_info("~~~~Reading source nid from header~~~~\n", hdr->src_nid);
 		}
 
 		msg_dispatcher(info);
