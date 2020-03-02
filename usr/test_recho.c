@@ -9,13 +9,13 @@
 int main(void)
 {
 	printf("nid: %d\n", get_local_nid());
+	recv();
 
 	int my_nid = get_local_nid();
 
 	//SENDER
 	if (my_nid == 0) {
 		printf("HI I'm Sender %d", my_nid);
-		recv();
 	}
 
 	// RECEIVER
