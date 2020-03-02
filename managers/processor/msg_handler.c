@@ -104,7 +104,6 @@ static int msg_handler(void *unused)
 		pr_info("~~~~MSG handler GOT A NEW MSG!~~~~~~~\n");
 		pr_info("~~~~OPCODE %d, Source nid:%d~~~~\n", hdr->opcode ,hdr->src_nid);
 
-
 		if (hdr->src_nid == 0 || hdr->src_nid == 1) {
 			pr_info("~~~~Reading source nid:%d from header~~~~\n", hdr->src_nid);
 		}

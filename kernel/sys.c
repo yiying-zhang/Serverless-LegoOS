@@ -812,6 +812,7 @@ SYSCALL_DEFINE1(recho, unsigned int, dest_nid) {
 	int ret = 0;
 
 	struct common_header *hdr;
+	void *payload;
 
 	char retbuf[100];
 	int RETBUF_LEN = sizeof(retbuf);
@@ -827,15 +828,19 @@ SYSCALL_DEFINE1(recho, unsigned int, dest_nid) {
 	}
 
 	hdr = to_common_header(msg);
+	payload = to_payload(msg);
+
 	hdr->opcode = __NR_recho;
 	hdr->src_nid = LEGO_LOCAL_NID;
+	
 
-	printk("About to make recho call\n");
+	pr_info("~~~~~~~~About to make recho call~~~~~~~~\n");
 	/* Synchronously send it out */
 	ret = ibapi_send_reply_imm(dest_nid, msg, len_msg, retbuf,
 				   RETBUF_LEN, false);
 	
-	printk("Returned from recho call\n");
+	pr_info("~~~~~~~~Returned from recho call~~~~~~~~\n");
+	pr_info((char *)payload);
 
 	if (ret == -ETIMEDOUT)
 		pr_info("  %s() CPU:%d PID:%d caller: %pS\n",
