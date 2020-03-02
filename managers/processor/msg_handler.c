@@ -101,9 +101,12 @@ static int msg_handler(void *unused)
 		hdr = to_common_header(info->msg);
 		payload = to_payload(info->msg);
 
+		pr_info("~~~~MSG handler GOT A NEW MSG!~~~~~~~\n");
+		pr_info(payload);
+
 
 		if (hdr->src_nid == 0 || hdr->src_nid == 1) {
-			pr_info("~~~~Reading source nid from header~~~~\n", hdr->src_nid);
+			pr_info("~~~~Reading source nid:%d from header~~~~\n", hdr->src_nid);
 		}
 
 		msg_dispatcher(info);
