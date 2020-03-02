@@ -846,4 +846,8 @@ SYSCALL_DEFINE1(recho, unsigned int, dest_nid) {
 	return ret;
 }
 
+SYSCALL_DEFINE1(recv) {
+	printk("Shreeman was here");
+}
+
 #endif /* CONFIG_EPOLL */

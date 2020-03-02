@@ -15,7 +15,7 @@ int main(void)
 	//SENDER
 	if (my_nid == 0) {
 		printf("HI I'm Sender %d", my_nid);
-		recho(1);
+		recv();
 	}
 
 	// RECEIVER

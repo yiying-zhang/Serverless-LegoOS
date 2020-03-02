@@ -267,3 +267,8 @@ static inline void recho(unsigned int src_id)
 {
 	return syscall(__NR_recho, src_id);
 }
+
+static inline void recv(void)
+{
+	return syscall(__NR_recv);
+}

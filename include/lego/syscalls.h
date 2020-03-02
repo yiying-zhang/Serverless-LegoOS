@@ -259,4 +259,8 @@ asmlinkage long sys_get_local_nid(void);
 
 /* to send an rpc echo to pComponent */
 asmlinkage long sys_recho(unsigned int dest_nid);
+
+/* to receive a message from a pComponent */
+asmlinkage long sys_recv(void);
+
 #endif /* _LEGO_SYSCALLS_H_ */
