@@ -22,7 +22,7 @@
 
 #define MAX_RXBUF_SIZE	(20 * PAGE_SIZE)
 
-const int ECHO_LEN = 23;
+const int ECHO_LEN = 25;
 const char* ECHO = "Echo MSG from Receiver\n";
 
 struct info_struct {
