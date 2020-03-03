@@ -809,6 +809,8 @@ SYSCALL_DEFINE4(epoll_wait, int, epfd, struct epoll_event __user *, events,
 }
 
 SYSCALL_DEFINE1(recho, unsigned int, dest_nid) {
+
+	/*
 	int ret = 0;
 
 	struct common_header *hdr;
@@ -816,9 +818,10 @@ SYSCALL_DEFINE1(recho, unsigned int, dest_nid) {
 	char retbuf[100];
 	int RETBUF_LEN = sizeof(retbuf);
 
-	memset(retbuf, 0, sizeof(retbuf));
+	memset(retbuf, 0, sizeof(retbuf)); */
 
 	/* compose message */
+	/*
 	int len_msg = sizeof(*hdr);
 	void* msg = kmalloc(len_msg, GFP_KERNEL);
 	if (unlikely(!msg)) {
@@ -830,8 +833,9 @@ SYSCALL_DEFINE1(recho, unsigned int, dest_nid) {
 	hdr->opcode = __NR_recho;
 	hdr->src_nid = LEGO_LOCAL_NID;
 
-	printk("About to make RPC call\n");
+	printk("About to make RPC call\n");*/
 	/* Synchronously send it out */
+	/*
 	ret = ibapi_send_reply_imm(dest_nid, msg, len_msg, retbuf,
 				   RETBUF_LEN, false);
 	
@@ -844,6 +848,8 @@ SYSCALL_DEFINE1(recho, unsigned int, dest_nid) {
 
 	kfree(msg);
 	return ret;
+	*/
+	printk("Shreeman was here");
 }
 
 SYSCALL_DEFINE0(recv) {

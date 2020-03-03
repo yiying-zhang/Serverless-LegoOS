@@ -9,7 +9,7 @@
 int main(void)
 {
 	printf("nid: %d\n", get_local_nid());
-	recv();
+	recho(1);
 
 	int my_nid = get_local_nid();
 
