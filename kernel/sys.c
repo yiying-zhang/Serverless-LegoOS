@@ -828,7 +828,6 @@ SYSCALL_DEFINE1(recho, unsigned int, dest_nid) {
 	}
 
 	hdr = to_common_header(msg);
-	payload = to_payload(msg);
 
 	hdr->opcode = __NR_recho;
 	hdr->src_nid = LEGO_LOCAL_NID;
@@ -840,7 +839,7 @@ SYSCALL_DEFINE1(recho, unsigned int, dest_nid) {
 				   RETBUF_LEN, false);
 	
 	pr_info("~~~~~~~~Returned from recho call~~~~~~~~\n");
-	pr_info((char *)payload);
+	pr_info(retbuf);
 
 	if (ret == -ETIMEDOUT)
 		pr_info("  %s() CPU:%d PID:%d caller: %pS\n",
