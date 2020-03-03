@@ -17,6 +17,7 @@
  *
  * 1) Prefix:
  *	P2M:	processor <--> memory
+  *	P2P:	processor <--> processor
  *	P2S:	processor <--> storage
  *	M2S:	memory    <--> storage
  *	P2GSM:	processor <--> global storage monitor
@@ -39,6 +40,10 @@
  * add our own opcode
  */
 #define P2P_RECHO		((__u32)__NR_recho)
+
+/* New p2p syscalls */
+#define P2P_RSEND_REPLY	((__u32)__NR_remote_send_reply)
+#define P2P_RRECV		((__u32)__NR_remote_recv)
 
 #define P2M_MQOPEN		((__u32)__NR_mq_open)		
 #define P2M_MQCLOSE		((__u32)__NR_mq_close)		

@@ -22,8 +22,8 @@
 
 #define MAX_RXBUF_SIZE	(20 * PAGE_SIZE)
 
-const int ECHO_LEN = 25;
-const char* ECHO = "Echo MSG from Receiver\n";
+const int ECHO_LEN = 50;
+const char* ECHO = "~~~WASSUP THIS IS UNA Echo MSG from Receiver~~~\n";
 
 struct info_struct {
 	uintptr_t desc;

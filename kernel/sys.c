@@ -839,7 +839,7 @@ SYSCALL_DEFINE1(recho, unsigned int, dest_nid) {
 				   RETBUF_LEN, false);
 	
 	pr_info("~~~~~~~~Returned from recho call~~~~~~~~\n");
-	pr_info(retbuf);
+	printk(retbuf);
 
 	if (ret == -ETIMEDOUT)
 		pr_info("  %s() CPU:%d PID:%d caller: %pS\n",

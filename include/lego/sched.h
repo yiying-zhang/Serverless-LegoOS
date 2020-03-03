@@ -494,6 +494,12 @@ struct task_struct {
 #ifdef CONFIG_COMP_PROCESSOR
 /* Processor Manager Specific Data */
 	struct processor_manager pm_data;
+
+	/*
+	 * Handling and buffering temporary ibapi message
+	 * and deliver to process when ibapi_receive get called.
+	 */
+	struct list_head incoming_ibapi_message_list;
 #endif
 
 	void *private_strace;

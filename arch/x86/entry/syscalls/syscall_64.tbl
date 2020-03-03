@@ -127,9 +127,19 @@
 611	common	drop_page_cache		sys_drop_page_cache
 
 612	common  mq_send			sys_mq_send
-613 	common  mq_open			sys_mq_open
+613	common  mq_open			sys_mq_open
 614	common  mq_receive		sys_mq_receive
 615	common  mq_close		sys_mq_close
 
-616 	common  get_local_nid		sys_get_local_nid
-617	common	recho		sys_recho	
+616	common	get_local_nid	sys_get_local_nid
+
+617	common	recho			sys_recho
+
+# P2P message passing, synced, for process on remote pComp
+618	common	remote_send_reply	sys_remote_send_reply
+619	common	remote_recv			sys_remote_recv
+
+# (TODO) Future tasks about p2p communciation
+# 620 common	remote_recv_reply		sys_remote_recv_reply
+# 621 common	remote_send_async	sys_remote_send_async
+# 622 common	remote_recv_async	sys_remote_recv_async
