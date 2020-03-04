@@ -496,10 +496,14 @@ struct task_struct {
 	struct processor_manager pm_data;
 
 	/*
+	 * GIAO GIAO
+	 *
 	 * Handling and buffering temporary ibapi message
 	 * and deliver to process when ibapi_receive get called.
 	 */
-	struct list_head incoming_ibapi_message_list;
+	spinlock_t			msg_list_lock;
+	unsigned int 		nr_msg_available;
+	struct list_head	incoming_ibapi_message_list;
 #endif
 
 	void *private_strace;

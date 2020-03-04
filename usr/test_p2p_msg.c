@@ -13,26 +13,48 @@
 #define TEST_DST_NID 1
 #define TEST_DST_PID 3
 
+#define SUCCESS_MSG_TRY	5
+
 int main(void)
 {
 	int my_nid = get_local_nid();
 	int my_pid = getpid();
 
-	printf("[LOCAL NID]: %d, [LOCAL PID]: %d\n", my_nid, my_pid);
+	printf("[SENDER]: [LOCAL NID]: %d, [LOCAL PID]: %d\n", my_nid, my_pid);
+
+	// Take a short nap in case the receiver has yet up? Or rely on the failing mechanism?
 
 	//SENDER
 	if (my_nid == TEST_SRC_NID) {
-		printf("HI I'm Sender NID: %d, PID: %d\n", my_nid, my_pid);
+		printf("[SENDER]: HI I'm Sender NID: %d, PID: %d\n", my_nid, my_pid);
 
-		char* msg = ">>>>>Aloha from sender nid: %d, pid: %d, you hear me?\n";
+		char* msg = ">>>>>Aloha from sender, you hear me?\n";
 
-		// remote_send_reply();
+		int success_deliver_count = 0;
+
+		while (success_deliver_count < SUCCESS_MSG_TRY) {
+			//remote_send
+			// success += 1
+		}
+
+
+		printf("[SENDER]: Finish sending! 886\n");
 	}
 
 	// RECEIVER
 	else {
-		printf("HI I'm Receiver NID: %d, PID: %d\n", my_nid, my_pid);
-		// remote_recv();
+		printf("[RECEIVER]: HI I'm Receiver NID: %d, PID: %d\n", my_nid, my_pid);
+
+		int success_receive_count = 0;
+
+		while (success_receive_count < SUCCESS_MSG_TRY) {
+			// remote_recv();
+			// print out the received msg
+			// success += 1
+		}
+
+		printf("[RECEIVER]: Finish receiving! 886\n");
+
 	}
 	
 }
