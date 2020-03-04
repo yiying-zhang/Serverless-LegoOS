@@ -29,7 +29,7 @@ int main(void)
 		printf("[SENDER]: HI I'm Sender NID: %d, PID: %d\n", my_nid, my_pid);
 
 		char* msg = ">>>>>Aloha from sender, you hear me?\n";
-		msg_len = sizeof(msg)+1;
+		int msg_len = sizeof(msg)+1;
 
 		int success_deliver_count = 0;
 
