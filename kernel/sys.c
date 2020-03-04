@@ -693,6 +693,8 @@ SYSCALL_DEFINE3(connect, int, fd, struct sockaddr __user *, uservaddr,
 {
 	BUG();
 }
+
+
 #endif	/* CONFIG_COMP_PROCESSOR */
 
 SYSCALL_DEFINE5(setsockopt, int, fd, int, level, int, optname,
@@ -850,4 +852,15 @@ SYSCALL_DEFINE1(recho, unsigned int, dest_nid) {
 	return ret;
 }
 
+SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dest_nid, const pid_t, dest_pid,
+	const void *, msg, unsigned long, msg_size
+	void *, retbuf, unsigned long, ret_size)
+{
+	BUG();
+}
+
+SYSCALL_DEFINE2(remote_recv, void *, recv_msg, unsigned long recv_size)
+{
+	BUG();
+}
 #endif /* CONFIG_EPOLL */

@@ -7,6 +7,7 @@
 #include "includeme.h"
 
 #define P2P_MSG_BUFFER_SIZE 100
+
 #define TEST_SRC_NID 0
 #define TEST_SRC_PID 3
 #define TEST_DST_NID 1
@@ -22,13 +23,16 @@ int main(void)
 	//SENDER
 	if (my_nid == TEST_SRC_NID) {
 		printf("HI I'm Sender NID: %d, PID: %d\n", my_nid, my_pid);
-		remote_send_reply();
+
+		char* msg = ">>>>>Aloha from sender nid: %d, pid: %d, you hear me?\n";
+
+		// remote_send_reply();
 	}
 
 	// RECEIVER
 	else {
 		printf("HI I'm Receiver NID: %d, PID: %d\n", my_nid, my_pid);
-		remote_recv();
+		// remote_recv();
 	}
 	
 }
