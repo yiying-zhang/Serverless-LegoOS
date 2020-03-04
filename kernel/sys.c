@@ -863,7 +863,7 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 
 	// Return setup
 	int ret = 0;
-	memset(retbuf, 0, ret_size);
+	// memset(retbuf, 0, ret_size);
 
 	/* compose message */
 	int len_msg = sizeof(struct p2p_msg_struct);

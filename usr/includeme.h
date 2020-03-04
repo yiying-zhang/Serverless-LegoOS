@@ -272,10 +272,10 @@ static inline long remote_send_reply(const unsigned int dst_nid, const pid_t dst
 	const void * msg, unsigned long msg_size,
 	void * retbuf, unsigned long ret_size)
 {
-	return syscall(__NR_remote_send_reply);
+	return syscall(__NR_remote_send_reply, dst_nid, dst_pid, msg, msg_size, retbuf, ret_size);
 }
 
 static inline long remote_recv(void * recv_msg, unsigned long recv_size)
 {
-	return syscall(__NR_remote_recv);
+	return syscall(__NR_remote_recv, recv_msg, recv_size);
 }
