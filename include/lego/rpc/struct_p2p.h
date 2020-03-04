@@ -15,11 +15,6 @@
 
 #define MAX_P2P_MSG_LEN 100
 
-struct p2p_msg_struct {
-	struct p2p_msg_hdr hdr;
-	char msg_content[MAX_P2P_MSG_LEN];
-};
-
 struct p2p_msg_hdr {
 	unsigned int opcode;		/* OPCODE should be useless in our case */
 	unsigned int src_nid;
@@ -28,6 +23,12 @@ struct p2p_msg_hdr {
 	pid_t dst_pid;
 	unsigned int msg_len;
 };
+
+struct p2p_msg_struct {
+	struct p2p_msg_hdr hdr;
+	char msg_content[MAX_P2P_MSG_LEN];
+};
+
 
 static inline struct p2p_msg_hdr *to_p2p_msg_header(void *msg)
 {
