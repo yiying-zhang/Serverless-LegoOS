@@ -495,6 +495,8 @@ struct task_struct {
 /* Processor Manager Specific Data */
 	struct processor_manager pm_data;
 
+#endif
+
 	/*
 	 * GIAO GIAO
 	 *
@@ -504,7 +506,6 @@ struct task_struct {
 	spinlock_t	msg_list_lock;
 	atomic_t	nr_msg_available;
 	struct list_head	remote_msg_list;
-#endif
 
 	void *private_strace;
 
