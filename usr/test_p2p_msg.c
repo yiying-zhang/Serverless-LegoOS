@@ -9,9 +9,9 @@
 #define P2P_MSG_BUFFER_SIZE 100
 
 #define TEST_SRC_NID 0
-#define TEST_SRC_PID 3
+#define TEST_SRC_PID 14
 #define TEST_DST_NID 1
-#define TEST_DST_PID 3
+#define TEST_DST_PID 14
 
 #define SUCCESS_MSG_TRY	5
 
@@ -29,7 +29,7 @@ int main(void)
 		printf("[SENDER]: HI I'm Sender NID: %d, PID: %d\n", my_nid, my_pid);
 
 		char* msg = ">>>>>Aloha from sender, you hear me?\n";
-		int msg_len = sizeof(msg)+1;
+		int msg_len = 39;
 
 		int success_deliver_count = 0;
 

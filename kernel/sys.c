@@ -862,7 +862,7 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 
 	// Return setup
 	int ret = 0;
-	memset(retbuf, 0, sizeof(retbuf));
+	memset(retbuf, 0, ret_size);
 
 	/* compose message */
 	int len_msg = sizeof(struct p2p_msg_struct);
@@ -872,11 +872,19 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 		return -ENOMEM;
 	}
 
+	pr_info("~~~~~~~~Allocate outgoing buffer~~~~~~~~\n");
 	memset(out_msg, 0, sizeof(struct p2p_msg_struct));
+	pr_info("~~~~~~~~Done allocate outgoing buffer~~~~~~~~\n");
 
+
+	pr_info("~~~~~~~~Turn hdr~~~~~~~~\n");
 	struct p2p_msg_hdr * hdr = to_p2p_msg_header(out_msg);
+	pr_info("~~~~~~~~Turn body~~~~~~~~\n");
 	void * msg_body = to_p2p_msg_body(out_msg);
+	pr_info("~~~~~~~~Done Turn~~~~~~~~\n");
 
+
+	pr_info("~~~~~~~~Assigning hdr~~~~~~~~\n");
 	hdr->opcode = __NR_remote_send_reply;
 	hdr->src_nid = LEGO_LOCAL_NID;
 	hdr->src_pid = current->pid;
@@ -884,6 +892,7 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 	hdr->dst_pid = dst_pid;
 	hdr->msg_len = msg_size;
 
+	pr_info("~~~~~~~~Copying msg body~~~~~~~~\n");
 	memcpy(msg_body, msg, msg_size);
 
 	pr_info("~~~~~~~~About to make remote send call~~~~~~~~\n");
