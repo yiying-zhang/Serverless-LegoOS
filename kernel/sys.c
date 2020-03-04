@@ -892,10 +892,11 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 	hdr->dst_pid = dst_pid;
 	hdr->msg_len = msg_size;
 
+	pr_info("~~~~~~~~CHECK CHECK ptrs~~~~~~~~\n");
+	pr_info("~~~%s\n",msg);
+	pr_info("~~~%p\n",msg);
+	pr_info("~~~%p\n",msg_body);
 	pr_info("~~~~~~~~Copying msg body~~~~~~~~\n");
-	pr_info("%s\n",msg);
-	pr_info("%x\n",msg);
-	pr_info("%x\n",msg_body);
 	memcpy(msg_body, msg, msg_size);
 
 	pr_info("~~~~~~~~About to make remote send call~~~~~~~~\n");
