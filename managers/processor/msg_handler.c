@@ -41,9 +41,9 @@ static void handle_echo(struct common_header *hdr, u64 desc)
 
 static void handle_remote_send(struct info_struct *info)
 {
-	struct p2p_msg_struct * info 
+	struct p2p_msg_struct * msg = info->msg;
 	struct p2p_msg_hdr * hdr = to_p2p_msg_header(msg);
-	void * msg_body = to_p2p_msg_body(out_msg);
+	void * msg_body = to_p2p_msg_body(msg);
 
 	pr_info("~Receiving remote send: %u, from node: %u, pid: %d\n",
 		hdr->opcode, hdr->src_nid, hdr->src_pid);
@@ -53,7 +53,7 @@ static void handle_remote_send(struct info_struct *info)
 	pr_info("%s", msg_body);
 	pr_info("\n---MSG END---\n");
 
-	ibapi_reply_message(ECHO, ECHO_LEN, desc);
+	ibapi_reply_message(ECHO, ECHO_LEN, info->desc);
 }
 
 
