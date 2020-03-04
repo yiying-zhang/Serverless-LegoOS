@@ -40,6 +40,9 @@ int main(void)
 		while (success_deliver_count < SUCCESS_MSG_TRY) {
 			remote_send_reply(TEST_DST_NID, TEST_DST_PID, 
 				msg, msg_len, retbuf, retlen);
+
+			printf("[SENDER]: %s\n", retbuf);
+
 			success_deliver_count += 1;
 		}
 
