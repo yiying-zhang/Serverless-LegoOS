@@ -13,7 +13,7 @@
 #define TEST_DST_NID 1
 #define TEST_DST_PID 14
 
-#define SUCCESS_MSG_TRY	5
+#define SUCCESS_MSG_TRY	1
 
 int main(void)
 {
