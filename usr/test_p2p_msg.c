@@ -29,12 +29,17 @@ int main(void)
 		printf("[SENDER]: HI I'm Sender NID: %d, PID: %d\n", my_nid, my_pid);
 
 		char* msg = ">>>>>Aloha from sender, you hear me?\n";
+		msg_len = sizeof(msg)+1;
 
 		int success_deliver_count = 0;
 
+		int retlen = P2P_MSG_BUFFER_SIZE;
+		void * retbuf = malloc(P2P_MSG_BUFFER_SIZE, sizeof(char));
+
 		while (success_deliver_count < SUCCESS_MSG_TRY) {
-			//remote_send
-			// success += 1
+			remote_send_reply(TEST_DST_NID, TEST_DST_PID, 
+				msg, msg_len, retbuf, retlen);
+			success_deliver_count += 1;
 		}
 
 
@@ -47,11 +52,11 @@ int main(void)
 
 		int success_receive_count = 0;
 
-		while (success_receive_count < SUCCESS_MSG_TRY) {
-			// remote_recv();
-			// print out the received msg
-			// success += 1
-		}
+		// while (success_receive_count < SUCCESS_MSG_TRY) {
+		// 	// remote_recv();
+		// 	// print out the received msg
+		// 	// success += 1
+		// }
 
 		printf("[RECEIVER]: Finish receiving! 886\n");
 
