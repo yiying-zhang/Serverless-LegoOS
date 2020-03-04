@@ -22,7 +22,7 @@ struct p2p_msg_hdr {
 	pid_t src_pid;
 	unsigned int dst_nid;
 	pid_t dst_pid;
-	unsigned int msg_len;
+	unsigned int msg_size;
 };
 
 struct p2p_msg_struct {
@@ -41,6 +41,18 @@ static inline void *to_p2p_msg_body(void *msg)
 	return (void *)(msg + sizeof(struct p2p_msg_hdr));
 }
 
+static inline void fill_p2p_msg_hdr(struct p2p_msg_hdr * hdr, 
+	unsigned int opcode, unsigned int src_nid, pid_t src_pid,
+	unsigned int dst_nid, pid_t dst_pid, unsigned int msg_size)
+{
+	hdr->opcode = opcode;
+	hdr->src_nid = src_nid;
+	hdr->src_pid = src_pid;
+	hdr->dst_nid = dst_nid;
+	hdr->dst_pid = dst_pid;
+	hdr->msg_size = msg_size;
+}
+
 static inline void print_p2p_msg_header(struct p2p_msg_hdr * hdr)
 {
 	pr_info(">>>p2p_msg_hdr:\n");
@@ -49,7 +61,7 @@ static inline void print_p2p_msg_header(struct p2p_msg_hdr * hdr)
 	pr_info("\tsrc_pid:%d\n", hdr->src_pid);
 	pr_info("\tdst_nid:%d\n", hdr->dst_nid);
 	pr_info("\tdst_pid:%d\n", hdr->dst_pid);
-	pr_info("\tmsg_len:%u\n", hdr->msg_len);
+	pr_info("\tmsg_size:%u\n", hdr->msg_size);
 }
 
 #endif

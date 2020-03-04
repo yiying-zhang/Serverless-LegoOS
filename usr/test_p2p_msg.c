@@ -7,7 +7,7 @@
 #include "includeme.h"
 
 #define P2P_MSG_BUFFER_SIZE 100
-#define SUCCESS_MSG_TRY	1
+#define SUCCESS_MSG_TRY	5
 
 int main(void)
 {
@@ -27,10 +27,13 @@ int main(void)
 	if (my_nid == TEST_SRC_NID) {
 		printf("[SENDER]: HI I'm Sender NID: %d, PID: %d\n", my_nid, my_pid);
 
-		char* msg = ">>>>>Aloha from sender, you hear me?\n";
-		int msg_len = 39;
+		char* base_str = ">>>>>Aloha from sender, you hear me? Iteration: ";
+		
+		int msg_len = P2P_MSG_BUFFER_SIZE;
+		char msg[P2P_MSG_BUFFER_SIZE];
+		memset(msg, 0, P2P_MSG_BUFFER_SIZE);
 
-		printf("msg addr is %p\n", (void *)msg);
+		strcat(msg, base_str);
 
 		int success_deliver_count = 0;
 
@@ -38,6 +41,11 @@ int main(void)
 		void * retbuf = malloc(P2P_MSG_BUFFER_SIZE * sizeof(char));
 
 		while (success_deliver_count < SUCCESS_MSG_TRY) {
+
+			char digit[3] = "0\n";
+			digit[0] = (char)(success_deliver_count + '0');
+			strcat(msg, digit);
+
 			remote_send_reply(TEST_DST_NID, TEST_DST_PID, 
 				msg, msg_len, retbuf, retlen);
 

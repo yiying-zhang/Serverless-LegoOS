@@ -871,8 +871,8 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 		return -ENOMEM;
 	}
 
-	int len_msg = sizeof(struct p2p_msg_struct);
-	void* out_msg = kmalloc(len_msg, GFP_KERNEL);
+	int out_len = sizeof(struct p2p_msg_struct);
+	void* out_msg = kmalloc(out_len, GFP_KERNEL);
 	if (unlikely(!out_msg)) {
 		WARN(1, "OOM");
 		return -ENOMEM;
@@ -882,34 +882,23 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 	memset(in_msg, 0, sizeof(struct p2p_msg_struct));
 	pr_info("~~~~~~~~Done allocate outgoing buffer~~~~~~~~\n");
 
-
 	pr_info("~~~~~~~~Turn hdr~~~~~~~~\n");
 	struct p2p_msg_hdr * hdr = to_p2p_msg_header(out_msg);
 	pr_info("~~~~~~~~Turn body~~~~~~~~\n");
 	void * msg_body = to_p2p_msg_body(out_msg);
 	pr_info("~~~~~~~~Done Turn~~~~~~~~\n");
 
-
 	pr_info("~~~~~~~~Assigning hdr~~~~~~~~\n");
-	hdr->opcode = __NR_remote_send_reply;
-	hdr->src_nid = LEGO_LOCAL_NID;
-	hdr->src_pid = current->pid;
-	hdr->dst_nid = dst_nid;
-	hdr->dst_pid = dst_pid;
-	hdr->msg_len = msg_size;
+	fill_p2p_msg_hdr(hdr, __NR_remote_send_reply, LEGO_LOCAL_NID, current->pid, dst_nid, dst_pid, msg_size)
+	// DEBUG use only
+	print_p2p_msg_header(hdr);
 
-	pr_info("~~~~~~~~CHECK CHECK ptrs~~~~~~~~\n");
-	pr_info("~~~%s\n",msg);
-	pr_info("~~~%p\n",msg);
-	pr_info("~~~%p\n",msg_body);
 	pr_info("~~~~~~~~Copying msg body~~~~~~~~\n");
 	copy_from_user(msg_body, msg, msg_size);
 
-	print_p2p_msg_header(hdr);
-
-	pr_info("~~~~~~~~About to make remote send call, target node:%d~~~~~~~~\n", dst_nid);
+	pr_info("~~~~~~~~About to make remote send call~~~~~~~~\n");
 	/* Synchronously send it out */
-	ret = ibapi_send_reply_imm(dst_nid, out_msg, len_msg, in_msg, ret_size, false);
+	ret = ibapi_send_reply_imm(dst_nid, out_msg, out_len, in_msg, ret_size, false);
 	pr_info("~~~~~~~~Returned from remote send call~~~~~~~~\n");
 
 	if (ret == -ETIMEDOUT) {
@@ -918,7 +907,11 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 			__builtin_return_address(0));
 	}
 
+	// Copy the return buffer back to user's ret buf
 	copy_to_user(retbuf, in_msg, ret_size);
+
+	kfree(out_msg);
+	kfree(in_msg);
 }
 
 SYSCALL_DEFINE2(remote_recv, void __user *, recv_msg, unsigned long, recv_size)
