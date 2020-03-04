@@ -41,7 +41,7 @@ static void handle_echo(struct common_header *hdr, u64 desc)
 
 static void handle_remote_send(struct info_struct *info)
 {
-	struct p2p_msg_struct * msg = info->msg;
+	struct p2p_msg_struct * msg = (struct p2p_msg_struct *)(info->msg);
 	struct p2p_msg_hdr * hdr = to_p2p_msg_header(msg);
 	void * msg_body = to_p2p_msg_body(msg);
 
