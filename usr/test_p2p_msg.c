@@ -7,16 +7,15 @@
 #include "includeme.h"
 
 #define P2P_MSG_BUFFER_SIZE 100
-
-#define TEST_SRC_NID 0
-#define TEST_SRC_PID 14
-#define TEST_DST_NID 1
-#define TEST_DST_PID 14
-
 #define SUCCESS_MSG_TRY	1
 
 int main(void)
 {
+	const int TEST_SRC_NID = 0
+	const int TEST_SRC_PID = 14
+	const int TEST_DST_NID = 1
+	const int TEST_DST_PID = 14
+	
 	int my_nid = get_local_nid();
 	int my_pid = getpid();
 
@@ -39,7 +38,7 @@ int main(void)
 		void * retbuf = malloc(P2P_MSG_BUFFER_SIZE * sizeof(char));
 
 		while (success_deliver_count < SUCCESS_MSG_TRY) {
-			remote_send_reply(TEST_DST_NID, TEST_DST_PID, 
+			remote_send_reply(1, 14, 
 				msg, msg_len, retbuf, retlen);
 			success_deliver_count += 1;
 		}
