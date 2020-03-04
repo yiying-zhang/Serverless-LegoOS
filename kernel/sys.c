@@ -859,7 +859,7 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 {
 
 	// TODO: Sanity Checking
-	pr_info("~~~~~~~dst_nid: %d, dst_pid: %d~~~~\n", dest_nid, dst_pid);
+	pr_info("~~~~~~~dst_nid: %d, dst_pid: %d~~~~\n", dst_nid, dst_pid);
 
 	// Return setup
 	int ret = 0;
