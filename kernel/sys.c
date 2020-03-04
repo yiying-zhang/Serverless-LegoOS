@@ -859,7 +859,7 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dest_nid, const pid_t, de
 	BUG();
 }
 
-SYSCALL_DEFINE2(remote_recv, void *, recv_msg, unsigned long recv_size)
+SYSCALL_DEFINE2(remote_recv, void *, recv_msg, unsigned long, recv_size)
 {
 	BUG();
 }
