@@ -894,6 +894,8 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 
 	pr_info("~~~~~~~~Copying msg body~~~~~~~~\n");
 	pr_info("%s\n",msg);
+	pr_info("%x\n",msg);
+	pr_info("%x\n",msg_body);
 	memcpy(msg_body, msg, msg_size);
 
 	pr_info("~~~~~~~~About to make remote send call~~~~~~~~\n");
