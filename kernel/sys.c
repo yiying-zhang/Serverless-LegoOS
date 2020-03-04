@@ -872,23 +872,23 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 		return -ENOMEM;
 	}
 
-	memset(out_msg, 0 sizeof(struct p2p_msg_struct));
+	memset(out_msg, 0, sizeof(struct p2p_msg_struct));
 
 	struct p2p_msg_hdr * hdr = to_p2p_msg_header(out_msg);
 	void * msg_body = to_p2p_msg_body(out_msg);
 
-	p2p_msg_hdr->opcode = __NR_remote_send_reply;
-	p2p_msg_hdr->src_nid = LEGO_LOCAL_NID;
-	p2p_msg_hdr->src_pid = current->pid;
-	p2p_msg_hdr->dst_nid = dst_nid;
-	p2p_msg_hdr->dst_pid = dst_pid;
-	p2p_msg_hdr->msg_len = msg_size;
+	hdr->opcode = __NR_remote_send_reply;
+	hdr->src_nid = LEGO_LOCAL_NID;
+	hdr->src_pid = current->pid;
+	hdr->dst_nid = dst_nid;
+	hdr->dst_pid = dst_pid;
+	hdr->msg_len = msg_size;
 
 	memcpy(msg_body, msg, msg_size);
 
 	pr_info("~~~~~~~~About to make remote send call~~~~~~~~\n");
 	/* Synchronously send it out */
-	ret = ibapi_send_reply_imm(dest_nid, out_msg, len_msg, retbuf,
+	ret = ibapi_send_reply_imm(dst_nid, out_msg, len_msg, retbuf,
 				   ret_size, false);
 	pr_info("~~~~~~~~Returned from remote send call~~~~~~~~\n");
 
