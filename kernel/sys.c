@@ -889,7 +889,7 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 	pr_info("~~~~~~~~Done Turn~~~~~~~~\n");
 
 	pr_info("~~~~~~~~Assigning hdr~~~~~~~~\n");
-	fill_p2p_msg_hdr(hdr, __NR_remote_send_reply, LEGO_LOCAL_NID, current->pid, dst_nid, dst_pid, msg_size)
+	fill_p2p_msg_hdr(hdr, __NR_remote_send_reply, LEGO_LOCAL_NID, current->pid, dst_nid, dst_pid, msg_size);
 	// DEBUG use only
 	print_p2p_msg_header(hdr);
 
