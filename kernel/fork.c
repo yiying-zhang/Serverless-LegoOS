@@ -882,7 +882,7 @@ struct task_struct *copy_process(unsigned long clone_flags,
 
 	/* GIAO, we gonna setup our incoming msg list stuff here */
 	spin_lock_init(&(p->msg_list_lock));
-	p->nr_msg_available = 0;
+	atomic_set(&(p->nr_msg_available), 0);
 	INIT_LIST_HEAD(&(p->remote_msg_list));
 
 
