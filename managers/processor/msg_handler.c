@@ -81,10 +81,12 @@ static int msg_dispatcher(struct info_struct *info)
 			handle_echo(hdr, desc);
 			break;
 		case P2P_RSEND_REPLY:
-			pr_info("~~~~Extracted P2P_RSEND_REPLY opcode. following through to handler~~~~\n")
+			pr_info("~~~~Extracted P2P_RSEND_REPLY opcode. following through to handler~~~~\n");
 			handle_remote_send(info);
-		default:
-			pr_info("~~~~~~~~~~msg dispacher done~~~~~~~~~~~~~\n");
+			break;
+		// default:
+		
+		pr_info("~~~~~~~~~~msg dispacher done~~~~~~~~~~~~~\n");
 	}
 
 	return 0;
