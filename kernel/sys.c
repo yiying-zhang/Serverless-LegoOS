@@ -893,6 +893,7 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 	hdr->msg_len = msg_size;
 
 	pr_info("~~~~~~~~Copying msg body~~~~~~~~\n");
+	pr_info("%s\n",msg);
 	memcpy(msg_body, msg, msg_size);
 
 	pr_info("~~~~~~~~About to make remote send call~~~~~~~~\n");
