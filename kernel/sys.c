@@ -852,9 +852,9 @@ SYSCALL_DEFINE1(recho, unsigned int, dest_nid) {
 	return ret;
 }
 
-SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dest_nid, const pid_t, dest_pid,
-	const void __user *, msg, unsigned long, msg_size
-	void __user *, retbuf, unsigned long, ret_size)
+SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dest_nid, const pid_t, dest_pid, 
+	const void  *, msg, unsigned long, msg_size,
+	void *, retbuf, unsigned long, ret_size)
 {
 	BUG();
 }
