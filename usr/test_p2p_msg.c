@@ -34,7 +34,7 @@ int main(void)
 		int success_deliver_count = 0;
 
 		int retlen = P2P_MSG_BUFFER_SIZE;
-		void * retbuf = malloc(P2P_MSG_BUFFER_SIZE, sizeof(char));
+		void * retbuf = malloc(P2P_MSG_BUFFER_SIZE * sizeof(char));
 
 		while (success_deliver_count < SUCCESS_MSG_TRY) {
 			remote_send_reply(TEST_DST_NID, TEST_DST_PID, 
