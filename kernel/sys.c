@@ -853,13 +853,13 @@ SYSCALL_DEFINE1(recho, unsigned int, dest_nid) {
 }
 
 SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dest_nid, const pid_t, dest_pid,
-	const void *, msg, unsigned long, msg_size
-	void *, retbuf, unsigned long, ret_size)
+	const void __user *, msg, unsigned long, msg_size
+	void __user *, retbuf, unsigned long, ret_size)
 {
 	BUG();
 }
 
-SYSCALL_DEFINE2(remote_recv, void *, recv_msg, unsigned long, recv_size)
+SYSCALL_DEFINE2(remote_recv, void __user *, recv_msg, unsigned long, recv_size)
 {
 	BUG();
 }
