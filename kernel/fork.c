@@ -880,6 +880,12 @@ struct task_struct *copy_process(unsigned long clone_flags,
 	spin_unlock(&current->sighand->siglock);
 	spin_unlock_irqrestore(&tasklist_lock, flags);
 
+	/* GIAO, we gonna setup our incoming msg list stuff here */
+	spin_lock_init(&(p->msg_list_lock));
+	p->nr_msg_available = ATOMIC_INIT(0);
+	INIT_LIST_HEAD(&(p->remote_msg_list));
+
+
 	/*
 	 * Okay, this new thread has been setup fully.
 	 * Now we callback to strace.

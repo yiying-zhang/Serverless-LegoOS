@@ -50,6 +50,7 @@ int net_send_reply_timeout(u32 node, u32 opcode,
 #include <lego/rpc/opcode.h>
 #include <lego/rpc/struct_common.h>
 #include <lego/rpc/struct_p2m.h>
+#include <lego/rpc/struct_p2p.h>
 #include <lego/rpc/struct_p2s.h>
 #include <lego/rpc/struct_m2m.h>
 #include <lego/rpc/struct_m2s.h>

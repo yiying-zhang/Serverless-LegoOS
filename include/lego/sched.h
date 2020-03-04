@@ -501,9 +501,9 @@ struct task_struct {
 	 * Handling and buffering temporary ibapi message
 	 * and deliver to process when ibapi_receive get called.
 	 */
-	spinlock_t			msg_list_lock;
-	unsigned int 		nr_msg_available;
-	struct list_head	incoming_ibapi_message_list;
+	spinlock_t	msg_list_lock;
+	atomic_t	nr_msg_available;
+	struct list_head	remote_msg_list;
 #endif
 
 	void *private_strace;

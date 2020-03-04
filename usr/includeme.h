@@ -268,7 +268,7 @@ static inline void recho(unsigned int src_id)
 	return syscall(__NR_recho, src_id);
 }
 
-static inline long remote_send_reply(const unsigned int dest_nid, const pid_t dest_pid,
+static inline long remote_send_reply(const unsigned int dst_nid, const pid_t dst_pid,
 	const void * msg, unsigned long msg_size,
 	void * retbuf, unsigned long ret_size)
 {

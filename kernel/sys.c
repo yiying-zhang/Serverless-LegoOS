@@ -843,24 +843,67 @@ SYSCALL_DEFINE1(recho, unsigned int, dest_nid) {
 	pr_info("~~~~~~~~Returned from recho call~~~~~~~~\n");
 	printk(retbuf);
 
-	if (ret == -ETIMEDOUT)
+	if (ret == -ETIMEDOUT) {
 		pr_info("  %s() CPU:%d PID:%d caller: %pS\n",
 			FUNC, smp_processor_id(), current->pid,
 			__builtin_return_address(0));
+	}
 
 	kfree(msg);
 	return ret;
 }
 
-SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dest_nid, const pid_t, dest_pid, 
+SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst_pid, 
 	const void  __user *, msg, unsigned long, msg_size,
 	void __user *, retbuf, unsigned long, ret_size)
 {
-	BUG();
+
+	// TODO: Sanity Checking
+
+	// Return setup
+	int ret = 0;
+	memset(retbuf, 0, sizeof(retbuf));
+
+	/* compose message */
+	int len_msg = sizeof(struct p2p_msg_struct);
+	void* out_msg = kmalloc(len_msg, GFP_KERNEL);
+	if (unlikely(!out_msg)) {
+		WARN(1, "OOM");
+		return -ENOMEM;
+	}
+
+	memset(out_msg, 0 sizeof(struct p2p_msg_struct));
+
+	struct p2p_msg_hdr * hdr = to_p2p_msg_header(out_msg);
+	void * msg_body = to_p2p_msg_body(out_msg);
+
+	p2p_msg_hdr->opcode = __NR_remote_send_reply;
+	p2p_msg_hdr->src_nid = LEGO_LOCAL_NID;
+	p2p_msg_hdr->src_pid = current->pid;
+	p2p_msg_hdr->dst_nid = dst_nid;
+	p2p_msg_hdr->dst_pid = dst_pid;
+	p2p_msg_hdr->msg_len = msg_size;
+
+	memcpy(msg_body, msg, msg_size);
+
+	pr_info("~~~~~~~~About to make remote send call~~~~~~~~\n");
+	/* Synchronously send it out */
+	ret = ibapi_send_reply_imm(dest_nid, out_msg, len_msg, retbuf,
+				   ret_size, false);
+	pr_info("~~~~~~~~Returned from remote send call~~~~~~~~\n");
+
+	printk(retbuf);
+
+	if (ret == -ETIMEDOUT) {
+		pr_info("  %s() CPU:%d PID:%d caller: %pS\n",
+			FUNC, smp_processor_id(), current->pid,
+			__builtin_return_address(0));
+	}
+
 }
 
 SYSCALL_DEFINE2(remote_recv, void __user *, recv_msg, unsigned long, recv_size)
 {
-	BUG();
+	
 }
 #endif /* CONFIG_EPOLL */

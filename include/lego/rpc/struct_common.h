@@ -29,7 +29,7 @@ struct common_header {
 	/*
 	 * XXX: Useless. Rmove me.
 	 */
-	unsigned int length;
+	// unsigned int length;
 } __aligned(COMMON_HEADER_ALIGNMENT);
 
 static inline struct common_header *to_common_header(void *msg)

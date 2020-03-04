@@ -39,6 +39,25 @@ static void handle_echo(struct common_header *hdr, u64 desc)
 	ibapi_reply_message(ECHO, ECHO_LEN, desc);
 }
 
+static void handle_remote_send(struct info_struct *info)
+{
+	struct p2p_msg_struct * info 
+	struct p2p_msg_hdr * hdr = to_p2p_msg_header(msg);
+	void * msg_body = to_p2p_msg_body(out_msg);
+
+	pr_info("~Receiving remote send: %u, from node: %u, pid: %d\n",
+		hdr->opcode, hdr->src_nid, hdr->src_pid);
+	pr_info("~Targeting node: %u, pid: %d\n",
+		hdr->dst_nid, hdr->dst_pid);
+	pr_info("---MSG LEN: %u---\n", hdr->msg_len);
+	pr_info("%s", msg_body);
+	pr_info("\n---MSG END---\n");
+
+	ibapi_reply_message(ECHO, ECHO_LEN, desc);
+}
+
+
+
 static int msg_dispatcher(struct info_struct *info)
 {
 	uintptr_t desc = info->desc;
@@ -48,7 +67,7 @@ static int msg_dispatcher(struct info_struct *info)
 	hdr = to_common_header(info->msg);
 	payload = to_payload(info->msg);
 
-	pr_info("~~~~~~~~~~Within Msg Handler~~~~~~~~~~~~~\n");
+	pr_info("~~~~~~~~~~Within Msg dispacher~~~~~~~~~~~~~\n");
 
 	/*
 	 * BIG FAT NOTE:
@@ -59,9 +78,13 @@ static int msg_dispatcher(struct info_struct *info)
 	switch (hdr->opcode) {
 		case P2P_RECHO:
 			pr_info("~~~~Extracted P2P_RECHO opcode. following through to handler~~~~\n");
-		default:
-			pr_info("~~~~~~~~~~About to handle echo~~~~~~~~~~~~~\n");
 			handle_echo(hdr, desc);
+			break;
+		case P2P_RSEND_REPLY:
+			pr_info("~~~~Extracted P2P_RSEND_REPLY opcode. following through to handler~~~~\n")
+			handle_remote_send(info);
+		default:
+			pr_info("~~~~~~~~~~msg dispacher done~~~~~~~~~~~~~\n");
 	}
 
 	return 0;

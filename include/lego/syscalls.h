@@ -262,7 +262,7 @@ asmlinkage long sys_recho(unsigned int dest_nid);
 
 
 /* to send an message to remote pComponent process */
-asmlinkage long sys_remote_send_reply(const unsigned int dest_nid, const pid_t dest_pid, const void * msg, unsigned long msg_size, void * retbuf, unsigned long ret_size);
+asmlinkage long sys_remote_send_reply(const unsigned int dst_nid, const pid_t dst_pid, const void * msg, unsigned long msg_size, void * retbuf, unsigned long ret_size);
 asmlinkage long sys_remote_recv(void * recv_msg, unsigned long recv_size);
 
 #endif /* _LEGO_SYSCALLS_H_ */
