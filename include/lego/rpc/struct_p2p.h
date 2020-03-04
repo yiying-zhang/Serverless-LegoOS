@@ -38,3 +38,5 @@ static inline void *to_p2p_msg_body(void *msg)
 {
 	return (void *)(msg + sizeof(struct p2p_msg_hdr));
 }
+
+#endif
