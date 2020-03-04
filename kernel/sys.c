@@ -863,6 +863,11 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 
 	// Return setup
 	int ret = 0;
+	void * in_msg = kmalloc(ret_size);
+	if (unlikely(!in_msg)) {
+		WARN(1, "OOM");
+		return -ENOMEM;
+	}
 	// memset(retbuf, 0, ret_size);
 
 	/* compose message */
@@ -904,11 +909,8 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 
 	pr_info("~~~~~~~~About to make remote send call, target node:%d~~~~~~~~\n", dst_nid);
 	/* Synchronously send it out */
-	ret = ibapi_send_reply_imm(dst_nid, out_msg, len_msg, retbuf,
-				   ret_size, false);
+	ret = ibapi_send_reply_imm(dst_nid, out_msg, len_msg, in_msg, ret_size, false);
 	pr_info("~~~~~~~~Returned from remote send call~~~~~~~~\n");
-
-	printk(retbuf);
 
 	if (ret == -ETIMEDOUT) {
 		pr_info("  %s() CPU:%d PID:%d caller: %pS\n",
@@ -916,6 +918,7 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 			__builtin_return_address(0));
 	}
 
+	copy_to_user(retbuf, in_msg, ret_size);
 }
 
 SYSCALL_DEFINE2(remote_recv, void __user *, recv_msg, unsigned long, recv_size)
