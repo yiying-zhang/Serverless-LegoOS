@@ -12,6 +12,7 @@
 
 #include <lego/rpc/struct_common.h>
 #include <lego/types.h>
+#include <lego/kernel.h>
 
 #define MAX_P2P_MSG_LEN 100
 
@@ -38,6 +39,17 @@ static inline struct p2p_msg_hdr *to_p2p_msg_header(void *msg)
 static inline void *to_p2p_msg_body(void *msg)
 {
 	return (void *)(msg + sizeof(struct p2p_msg_hdr));
+}
+
+static inline void print_p2p_msg_header(struct p2p_msg_hdr * hdr)
+{
+	pr_info(">>>p2p_msg_hdr:\n");
+	pr_info("\tOPCODE:%d\n", hdr->opcode);
+	pr_info("\tsrc_nid:%d\n", hdr->src_nid);
+	pr_info("\tsrc_pid:%d\n", hdr->src_pid);
+	pr_info("\tdst_nid:%d\n", hdr->dst_nid);
+	pr_info("\tdst_pid:%d\n", hdr->dst_pid);
+	pr_info("\tmsg_len:%u\n", hdr->msg_len);
 }
 
 #endif
