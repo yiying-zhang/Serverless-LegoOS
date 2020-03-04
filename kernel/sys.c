@@ -863,14 +863,14 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 
 	// Return setup
 	int ret = 0;
-	void * in_msg = kmalloc(ret_size);
+
+	pr_info("~~~~~~~~Allocate incoming and outgoing buffer~~~~~~~~\n");
+	void * in_msg = kmalloc(ret_size, GFP_KERNEL);
 	if (unlikely(!in_msg)) {
 		WARN(1, "OOM");
 		return -ENOMEM;
 	}
-	// memset(retbuf, 0, ret_size);
 
-	/* compose message */
 	int len_msg = sizeof(struct p2p_msg_struct);
 	void* out_msg = kmalloc(len_msg, GFP_KERNEL);
 	if (unlikely(!out_msg)) {
@@ -878,8 +878,8 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 		return -ENOMEM;
 	}
 
-	pr_info("~~~~~~~~Allocate outgoing buffer~~~~~~~~\n");
 	memset(out_msg, 0, sizeof(struct p2p_msg_struct));
+	memset(in_msg, 0, sizeof(struct p2p_msg_struct));
 	pr_info("~~~~~~~~Done allocate outgoing buffer~~~~~~~~\n");
 
 
