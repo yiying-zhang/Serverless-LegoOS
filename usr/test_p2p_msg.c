@@ -31,6 +31,8 @@ int main(void)
 		char* msg = ">>>>>Aloha from sender, you hear me?\n";
 		int msg_len = 39;
 
+		printf("msg addr is %p\n", (void *)msg);
+
 		int success_deliver_count = 0;
 
 		int retlen = P2P_MSG_BUFFER_SIZE;
