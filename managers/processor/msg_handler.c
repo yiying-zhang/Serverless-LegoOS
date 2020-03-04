@@ -49,7 +49,7 @@ static void handle_remote_send(struct info_struct *info)
 		hdr->opcode, hdr->src_nid, hdr->src_pid);
 	pr_info("~Targeting node: %u, pid: %d\n",
 		hdr->dst_nid, hdr->dst_pid);
-	pr_info("---MSG LEN: %u---\n", hdr->msg_len);
+	pr_info("---MSG LEN: %u---\n", hdr->msg_size);
 	pr_info("%s", msg_body);
 	pr_info("\n---MSG END---\n");
 
