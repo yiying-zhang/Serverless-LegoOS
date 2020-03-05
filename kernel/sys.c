@@ -920,9 +920,24 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 	return;
 }
 
-static int dequeue_msg(pid_t dst_pid, void * recv_buf, unsigned int recv_size);
+// static int dequeue_msg(pid_t dst_pid, void * recv_buf, unsigned int recv_size);
 SYSCALL_DEFINE2(remote_recv, void __user *, recv_msg, unsigned long, recv_size)
 {
-	return dequeue_msg(current->pid, recv_msg, recv_size);
+	struct task_struct * p = find_task_by_pid(dst_pid);
+	
+	while (!atomic_read(&(p->nr_msg_available))) {
+		cpu_relax();
+	}
+
+	spin_lock(&(p->msg_list_lock));
+	struct remote_msg * r_msg = list_entry((p->remote_msg_list).next,
+				 struct remote_msg, next);
+	list_del(&(r_msg->next));
+	atomic_dec(&(p->nr_msg_available));
+	spin_unlock(&(p->msg_list_lock));
+
+	copy_to_user(recv_buf, r_msg->msg, r_msg->msg_size);
+
+	return r_msg->msg_size;
 }
 #endif /* CONFIG_EPOLL */

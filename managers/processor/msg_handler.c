@@ -35,7 +35,7 @@ const int FAIL_ENQUEUED_LEN = 25;
 const char* FAIL_ENQUEUED = "~~~FAILED TO ENQUEUE~~~\n";
 
 static int enqueue_msg(pid_t dst_pid, void * msg_body, unsigned int msg_size);
-static int dequeue_msg(pid_t dst_pid, void * recv_buf, unsigned int recv_size);
+// static int dequeue_msg(pid_t dst_pid, void * recv_buf, unsigned int recv_size);
 
 struct info_struct {
 	uintptr_t desc;
@@ -107,25 +107,25 @@ static int enqueue_msg(pid_t dst_pid, void * msg_body, unsigned int msg_size) {
 	return 1;
 }
 
-static int dequeue_msg(pid_t dst_pid, void * recv_buf, unsigned int recv_size) {
+// static int dequeue_msg(pid_t dst_pid, void * recv_buf, unsigned int recv_size) {
 	
-	struct task_struct * p = find_task_by_pid(dst_pid);
+// 	struct task_struct * p = find_task_by_pid(dst_pid);
 	
-	while (!atomic_read(&(p->nr_msg_available))) {
-		cpu_relax();
-	}
+// 	while (!atomic_read(&(p->nr_msg_available))) {
+// 		cpu_relax();
+// 	}
 
-	spin_lock(&(p->msg_list_lock));
-	struct remote_msg * r_msg = list_entry((p->remote_msg_list).next,
-				 struct remote_msg, next);
-	list_del(&(r_msg->next));
-	atomic_dec(&(p->nr_msg_available));
-	spin_unlock(&(p->msg_list_lock));
+// 	spin_lock(&(p->msg_list_lock));
+// 	struct remote_msg * r_msg = list_entry((p->remote_msg_list).next,
+// 				 struct remote_msg, next);
+// 	list_del(&(r_msg->next));
+// 	atomic_dec(&(p->nr_msg_available));
+// 	spin_unlock(&(p->msg_list_lock));
 
-	copy_to_user(recv_buf, r_msg->msg, r_msg->msg_size);
+// 	copy_to_user(recv_buf, r_msg->msg, r_msg->msg_size);
 
-	return r_msg->msg_size;
-}
+// 	return r_msg->msg_size;
+// }
 
 
 static int msg_dispatcher(struct info_struct *info)
