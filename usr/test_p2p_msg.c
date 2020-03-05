@@ -31,9 +31,7 @@ int main(void)
 		
 		int msg_len = P2P_MSG_BUFFER_SIZE;
 		char msg[P2P_MSG_BUFFER_SIZE];
-		memset(msg, 0, P2P_MSG_BUFFER_SIZE);
-
-		strcat(msg, base_str);
+		
 
 		int success_deliver_count = 0;
 
@@ -42,9 +40,14 @@ int main(void)
 
 		while (success_deliver_count < SUCCESS_MSG_TRY) {
 
-			char digit[3] = "0\n";
+			memset(msg, 0, P2P_MSG_BUFFER_SIZE);
+			strcat(msg, base_str);
+
+			char digit[3] = "0\n\0";
 			digit[0] = (char)(success_deliver_count + '0');
 			strcat(msg, digit);
+
+			printf("[SENDER]: %s\n", msg);
 
 			remote_send_reply(TEST_DST_NID, TEST_DST_PID, 
 				msg, msg_len, retbuf, retlen);
