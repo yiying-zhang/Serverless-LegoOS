@@ -77,7 +77,7 @@ int main(void)
 			remote_recv(recv_msg, P2P_MSG_BUFFER_SIZE);
 			printf("[RECEIVER ITE:%d]: %s\n", success_receive_count, recv_msg);
 
-			success_receive_count += 1
+			success_receive_count += 1;
 		}
 
 		printf("[RECEIVER]: Finish receiving! 886\n");
