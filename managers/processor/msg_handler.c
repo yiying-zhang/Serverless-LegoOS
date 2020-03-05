@@ -31,7 +31,10 @@ const int SUCCESS_ENQUEUED_LEN = 29;
 const char* SUCCESS_ENQUEUED = "~~~SUCCESSFULLY ENQUEUE!~~~\n";
 
 const int FAIL_ENQUEUED_LEN = 25;
-const char* FAIL_ENQUEUE = "~~~FAILED TO ENQUEUE~~~\n";
+const char* FAIL_ENQUEUED = "~~~FAILED TO ENQUEUE~~~\n";
+
+static int enqueue_msg(pid_t dst_pid, void * msg_body, unsigned int msg_size);
+static int dequeue_msg(pid_t dst_pid, void * recv_buf, unsigned int recv_size);
 
 struct info_struct {
 	uintptr_t desc;
