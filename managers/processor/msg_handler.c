@@ -13,6 +13,7 @@
 #include <lego/string.h>
 #include <lego/fit_ibapi.h>
 #include <lego/kthread.h>
+#include <lego/pid.h>
 #include <processor/processor.h>
 #include <processor/vnode.h>
 #include <monitor/common.h>
@@ -84,8 +85,8 @@ static int enqueue_msg(pid_t dst_pid, void * msg_body, unsigned int msg_size) {
 	struct task_struct * p = find_task_by_pid(dst_pid);
 
 	// Destination not exist
-	if (p == NULL) {
-		return NULL;
+	if ((void *)p == NULL) {
+		return 0;
 	}
 
 	struct remote_msg * r_msg = kmalloc(sizeof(struct remote_msg), GFP_KERNEL);
