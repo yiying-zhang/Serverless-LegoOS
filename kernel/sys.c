@@ -920,6 +920,7 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 	return;
 }
 
+static int enqueue_msg(pid_t dst_pid, void * msg_body, unsigned int msg_size);
 SYSCALL_DEFINE2(remote_recv, void __user *, recv_msg, unsigned long, recv_size)
 {
 	return dequeue_msg(current->pid, recv_msg, recv_size);
