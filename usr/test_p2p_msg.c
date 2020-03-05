@@ -7,7 +7,7 @@
 #include "includeme.h"
 
 #define P2P_MSG_BUFFER_SIZE 100
-#define SUCCESS_MSG_TRY	2
+#define SUCCESS_MSG_TRY	1
 
 int main(void)
 {
@@ -19,16 +19,19 @@ int main(void)
 	int my_nid = get_local_nid();
 	int my_pid = getpid();
 
-	printf("[SENDER]: [LOCAL NID]: %d, [LOCAL PID]: %d\n", my_nid, my_pid);
+	printf("[LOCAL NID]: %d, [LOCAL PID]: %d\n", my_nid, my_pid);
 
-	// Take a short nap in case the receiver has yet up? Or rely on the failing mechanism?
 
 	//SENDER
 	if (my_nid == TEST_SRC_NID) {
+		// Take a short nap in case the receiver has yet up? Or rely on the failing mechanism?
+		sleep(10);
+
 		printf("[SENDER]: HI I'm Sender NID: %d, PID: %d\n", my_nid, my_pid);
 
-		char* base_str = ">>>>>Aloha from sender, you hear me? Iteration: ";
-		
+		char* base_str = ">>>>> Aloha from sender, you hear me? Iteration: ";
+		char digit[3] = "0\n\0";
+
 		int msg_len = P2P_MSG_BUFFER_SIZE;
 		char msg[P2P_MSG_BUFFER_SIZE];
 		
@@ -41,18 +44,18 @@ int main(void)
 		while (success_deliver_count < SUCCESS_MSG_TRY) {
 
 			memset(msg, 0, P2P_MSG_BUFFER_SIZE);
-			strcat(msg, base_str);
+			memset(retbuf, 0, P2P_MSG_BUFFER_SIZE);
 
-			char digit[3] = "0\n\0";
 			digit[0] = (char)(success_deliver_count + '0');
+
+			strcat(msg, base_str);
 			strcat(msg, digit);
 
-			printf("[SENDER]: %s\n", msg);
+			printf("[SENDER BEFORE SEND:%d]: %s\n", success_deliver_count, msg);
 
-			remote_send_reply(TEST_DST_NID, TEST_DST_PID, 
-				msg, msg_len, retbuf, retlen);
+			remote_send_reply(TEST_DST_NID, TEST_DST_PID, msg, msg_len, retbuf, retlen);
 
-			printf("[SENDER]: %s\n", retbuf);
+			printf("[SENDER DONE SEND ITE:%d]: %s\n", success_deliver_count, retbuf);
 
 			success_deliver_count += 1;
 		}
@@ -66,12 +69,16 @@ int main(void)
 		printf("[RECEIVER]: HI I'm Receiver NID: %d, PID: %d\n", my_nid, my_pid);
 
 		int success_receive_count = 0;
+		char recv_msg[P2P_MSG_BUFFER_SIZE];
 
-		// while (success_receive_count < SUCCESS_MSG_TRY) {
-		// 	// remote_recv();
-		// 	// print out the received msg
-		// 	// success += 1
-		// }
+		while (success_receive_count < SUCCESS_MSG_TRY) {
+			memset(recv_msg, 0, P2P_MSG_BUFFER_SIZE);
+
+			remote_recv(recv_msg, P2P_MSG_BUFFER_SIZE);
+			printf("[RECEIVER ITE:%d]: %s\n", success_receive_count, recv_msg);
+
+			success_receive_count += 1
+		}
 
 		printf("[RECEIVER]: Finish receiving! 886\n");
 

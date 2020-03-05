@@ -910,10 +910,9 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 
 	// Copy the return buffer back to user's ret buf
 	copy_to_user(retbuf, in_msg, ret_size);
-
 	pr_info("~~~~~~~~Finished copy to user retbuf~~~~~~~~\n");
 
-	// Need to free the two kmalloc stuff
+	/* Need to free the two kmalloc stuff, currently not implemented */
 	// kfree(out_msg);
 	// kfree(in_msg);
 	// pr_info("~~~~~~~~Finished free kernel buffers~~~~~~~~\n");
@@ -923,6 +922,6 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 
 SYSCALL_DEFINE2(remote_recv, void __user *, recv_msg, unsigned long, recv_size)
 {
-	BUG();
+	return dequeue_msg(current->pid, recv_msg, recv_size);
 }
 #endif /* CONFIG_EPOLL */
