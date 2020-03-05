@@ -103,7 +103,7 @@ static int enqueue_msg(pid_t dst_pid, void * msg_body, unsigned int msg_size) {
 	return 1;
 }
 
-static int dequeue_msg(pit_t dst_pid, void * recv_buf, unsigned int recv_size) {
+static int dequeue_msg(pid_t dst_pid, void * recv_buf, unsigned int recv_size) {
 	
 	struct task_struct * p = find_task_by_pid(dst_pid);
 	
