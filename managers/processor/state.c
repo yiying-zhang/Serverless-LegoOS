@@ -34,8 +34,16 @@ SYSCALL_DEFINE4(state_save, char*, name, unsigned long, name_size, unsigned long
     hdr->src_nid = LEGO_LOCAL_NID;
     payload = to_payload(msg);
 
-    copy_from_user(payload->name, name, name_size+1);
-    copy_from_user(payload->state, state, state_size+1);
+    if(copy_from_user(payload->name, name, name_size+1)){
+        retval = -EFAULT;
+        goto OUT;
+    }
+
+    if(copy_from_user(payload->state, state, state_size+1)){
+        retval = -EFAULT;
+        goto OUT;
+    }
+
     payload->name_size = name_size+1;
     payload->state_size = state_size+1;
 
@@ -43,20 +51,21 @@ SYSCALL_DEFINE4(state_save, char*, name, unsigned long, name_size, unsigned long
 
     /* check return value */
     if(retlen == -ETIMEDOUT){
-        kfree(msg);
-        return -1;
+        retval = -ETIMEDOUT;
+        goto OUT;
     }
 
+OUT:
     /* free allocated memory */
     kfree(msg);
-
     return retval;
 
 }
 
 SYSCALL_DEFINE4(state_load, char*, name, unsigned long, name_size, unsigned long, state_size, char*, state)
 {
-    struct p2m_state_load_reply retval;
+    struct p2m_state_load_reply reply;
+    ssize_t retval;
     ssize_t retlen;
     u32 len_msg;
     void *msg;
@@ -73,33 +82,38 @@ SYSCALL_DEFINE4(state_load, char*, name, unsigned long, name_size, unsigned long
     hdr->src_nid = LEGO_LOCAL_NID;
     payload = to_payload(msg);
 
-    copy_from_user(payload->name, name, name_size+1);
+    if(copy_from_user(payload->name, name, name_size+1)){
+        retval = -EFAULT;
+        goto OUT;
+    }
     payload->name_size = name_size+1;
 
-    retlen = ibapi_send_reply_imm(current_memory_home_node(), msg, len_msg, &retval, sizeof(retval),false);
+    retlen = ibapi_send_reply_imm(current_memory_home_node(), msg, len_msg, &reply, sizeof(reply),false);
 
     /* check return value */
     if(retlen == -ETIMEDOUT){
-        kfree(msg);
-        return -1;
+        retval = -ETIMEDOUT;
+        goto OUT;
     }
 
 
     /* reply, reply 0 means good */
-    if(retval.retval == 0){
+    if(reply.retval == 0){
         /* copy data to user space */
-        if(copy_to_user(state, (void*)retval.state, (unsigned long)strlen(retval.state)+1)){
-            kfree(msg);
-            return -EFAULT;
+        if(copy_to_user(state, (void*)retval.state, (unsigned long)strlen(reply.state)+1)){
+            retval = -EFAULT;
+            goto OUT;
         }
-
 
     }
 
+    retval = reply.retval;
+
+OUT:
     /* free allocated memory */
     kfree(msg);
 
-    return retval.retval;
+    return retval;
 
 }
 

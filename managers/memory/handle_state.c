@@ -10,6 +10,10 @@
 #include <lego/kernel.h>
 #include <lego/comp_common.h>
 #include <lego/printk.h>
+
+#include <lego/mutex.h>
+#include <lego/spinlock.h>
+#include <lego/semaphore.h>
 #include <lego/hashtable.h>
 
 #include <memory/thread_pool.h>
@@ -43,6 +47,10 @@ struct hlist_head * state_md; /* Create state_metadata as a hash table */
 #define STATE_MD_BITS 8
 #define STATE_MD_SIZE (1 << STATE_MD_BITS)
 
+static DEFINE_SPINLOCK(md_lock); /* Lock related to metadata store creation and deletion */
+spinlock_t * 
+
+
 /*
  * metadata entry
  */
@@ -68,17 +76,25 @@ void handle_p2m_state_save(struct p2m_state_save_payload * payload, struct commo
     ssize_t retval;
     retval = 0;
 
-    if (!state_md) {
-        printk("[Warning] state_md doesn't exist. Initializing.\n");
-        state_md = kmalloc(STATE_MD_SIZE * sizeof(struct hlist_head), GFP_KERNEL);
-        if (!state_md){
-            printk("[Error] Failed to create state metadata!\n");
-            retval = -ENOMEM;
-            goto out;
+    unsigned long flags;
+
+
+    if (!state_md) { /* If state_md is initialized, then there is no need to acquire md_lock */
+        spin_lock_irqsave(&md_lock, flags); /* Lock acquired for initialization */
+        if (!state_md) {
+            printk("[Warning] state_md doesn't exist. Initializing.\n");
+            state_md = kmalloc(STATE_MD_SIZE * sizeof(struct hlist_head), GFP_ATOMIC);
+            if (!state_md) {
+                printk("[Error] Failed to create state metadata!\n");
+                retval = -ENOMEM;
+                spin_unlock_irqsave(&md_lock, flags);
+                goto out;
+            }
+            int i;
+            for (i = 0; i < STATE_MD_SIZE; i++)
+                INIT_HLIST_HEAD(&state_md[i]);
         }
-        int i;
-        for (i =0; i < STATE_MD_SIZE; i++)
-            INIT_HLIST_HEAD(&state_md[i]);
+        spin_unlock_irqsave(&md_lock, flags);
     }
     printk("[Success] state_md initialized.\n");
 
