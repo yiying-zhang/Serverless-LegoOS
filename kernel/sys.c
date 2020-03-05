@@ -878,6 +878,7 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 		return -ENOMEM;
 	}
 
+	// Clean up the buffer
 	memset(out_msg, 0, sizeof(struct p2p_msg_struct));
 	memset(in_msg, 0, sizeof(struct p2p_msg_struct));
 	pr_info("~~~~~~~~Done allocate outgoing buffer~~~~~~~~\n");
@@ -912,10 +913,10 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 
 	pr_info("~~~~~~~~Finished copy to user retbuf~~~~~~~~\n");
 
-	kfree(out_msg);
-	kfree(in_msg);
-
-	pr_info("~~~~~~~~Finished free kernel buffers~~~~~~~~\n");
+	// Need to free the two kmalloc stuff
+	// kfree(out_msg);
+	// kfree(in_msg);
+	// pr_info("~~~~~~~~Finished free kernel buffers~~~~~~~~\n");
 
 	return;
 }
