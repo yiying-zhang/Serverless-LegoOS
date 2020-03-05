@@ -107,7 +107,7 @@ static int dequeue_msg(pid_t dst_pid, void * recv_buf, unsigned int recv_size) {
 	
 	struct task_struct * p = find_task_by_pid(dst_pid);
 	
-	while (!atomic_read(p->nr_msg_available)) {
+	while (!atomic_read(&(p->nr_msg_available))) {
 		cpu_relax();
 	}
 
