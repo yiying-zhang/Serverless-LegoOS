@@ -922,7 +922,7 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 
 struct remote_msg {
 	unsigned int msg_size;
-	char msg[MAX_P2P_MSG_SIZE];
+	char msg[MAX_P2P_MSG_LEN];
 
 	/* I don't understand why in victim_flush this ptr is called next */
 	struct list_head next;
@@ -931,7 +931,7 @@ struct remote_msg {
 // static int dequeue_msg(pid_t dst_pid, void * recv_buf, unsigned int recv_size);
 SYSCALL_DEFINE2(remote_recv, void __user *, recv_msg, unsigned long, recv_size)
 {
-	struct task_struct * p = find_task_by_pid(dst_pid);
+	struct task_struct * p = find_task_by_pid(current->pid);
 	
 	while (!atomic_read(&(p->nr_msg_available))) {
 		cpu_relax();
