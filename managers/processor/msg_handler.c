@@ -97,7 +97,7 @@ static int enqueue_msg(pid_t dst_pid, void * msg_body, unsigned int msg_size) {
 
 	spin_lock(&(p->msg_list_lock));
 	list_add_tail(&(r_msg->next), &(p->remote_msg_list));
-	atomic_inc(&(p->nr_msg_avaialble));
+	atomic_inc(&(p->nr_msg_available));
 	spin_unlock(&(p->msg_list_lock));
 
 	return 1;
@@ -107,7 +107,7 @@ static int dequeue_msg(pid_t dst_pid, void * recv_buf, unsigned int recv_size) {
 	
 	struct task_struct * p = find_task_by_pid(dst_pid);
 	
-	while (!atomic_read(p->nr_msg_avaialble)) {
+	while (!atomic_read(p->nr_msg_available)) {
 		cpu_relax();
 	}
 
@@ -115,7 +115,7 @@ static int dequeue_msg(pid_t dst_pid, void * recv_buf, unsigned int recv_size) {
 	struct remote_msg * r_msg = list_entry((p->remote_msg_list).next,
 				 struct remote_msg, next);
 	list_del(&(r_msg->next));
-	atomic_dec(&(p->nr_msg_avaialble));
+	atomic_dec(&(p->nr_msg_available));
 	spin_unlock(&(p->msg_list_lock));
 
 	copy_to_user(recv_buf, r_msg->msg, r_msg->msg_size);
