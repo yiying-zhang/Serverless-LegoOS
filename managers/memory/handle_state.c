@@ -11,16 +11,12 @@
 #include <lego/comp_common.h>
 #include <lego/printk.h>
 
-#include <lego/mutex.h>
 #include <lego/spinlock.h>
-#include <lego/semaphore.h>
+#include <lego/rwsem.h>
 #include <lego/hashtable.h>
 
 #include <memory/thread_pool.h>
 
-/*
- *
- */
 /**
  * hash_func - hash a string to unsigned long given table size
  * @key: key string to be hashed
@@ -42,14 +38,12 @@ unsigned long hash_func(const char * key, const unsigned int table_size)
     return h;
 }
 
-
 struct hlist_head * state_md; /* Create state_metadata as a hash table */
 #define STATE_MD_BITS 8
 #define STATE_MD_SIZE (1 << STATE_MD_BITS)
 
-static DEFINE_SPINLOCK(md_lock); /* Lock related to metadata store creation and deletion */
-spinlock_t * 
-
+DEFINE_SPINLOCK(md_lock); /* Lock related to metadata store creation and deletion */
+struct rw_semaphore md_sems[STATE_MD_SIZE]; /* Semaphore for each chain (hlist) in state_md */
 
 /*
  * metadata entry
@@ -74,65 +68,99 @@ void handle_p2m_state_save(struct p2m_state_save_payload * payload, struct commo
     printk("[Function] state_save\n");
     struct p2m_state_save_reply *retbuf;
     ssize_t retval;
+    unsigned long flags;
+    unsigned long hashval;
+    struct rw_semaphore * sem;
+
     retval = 0;
 
-    unsigned long flags;
-
-
     if (!state_md) { /* If state_md is initialized, then there is no need to acquire md_lock */
+        printk("[Warning] state_md doesn't exist. Initializing candidate.\n");
+        state_md_cand = kmalloc(STATE_MD_SIZE * sizeof(struct hlist_head), GFP_KERNEL);
+        if (!state_md_cand) {
+            printk("[Error] Failed to create state metadata!\n");
+            retval = -ENOMEM;
+            goto out;
+        }
+        int i;
+        for (i = 0; i < STATE_MD_SIZE; i++) {
+            INIT_HLIST_HEAD(&state_md_cand[i]);
+        }
+        printk("[Success] state_md_cand initialized.\n");
+
         spin_lock_irqsave(&md_lock, flags); /* Lock acquired for initialization */
         if (!state_md) {
-            printk("[Warning] state_md doesn't exist. Initializing.\n");
-            state_md = kmalloc(STATE_MD_SIZE * sizeof(struct hlist_head), GFP_ATOMIC);
-            if (!state_md) {
-                printk("[Error] Failed to create state metadata!\n");
-                retval = -ENOMEM;
-                spin_unlock_irqsave(&md_lock, flags);
-                goto out;
+            state_md = state_md_cand;
+            /* Also initialize all hlist semaphores. This should only be done once. */
+            for (i = 0; i < STATE_MD_SIZE; i++) {
+                init_rwsem(&md_sems[i]);
             }
-            int i;
-            for (i = 0; i < STATE_MD_SIZE; i++)
-                INIT_HLIST_HEAD(&state_md[i]);
+            spin_unlock_irqsave(&md_lock, flags);
+            printk("[Success] state_md and md_sems initialized.\n");
+        } else {
+            spin_unlock_irqsave(&md_lock, flags);
+            kfree(state_md_cand);
+            printk("[Warning] state_md already initialized by other thread. Aborting.\n");
+
         }
-        spin_unlock_irqsave(&md_lock, flags);
     }
-    printk("[Success] state_md initialized.\n");
 
     struct md_entry * entry = kmalloc(sizeof(struct md_entry), GFP_KERNEL);
-    if (!entry){
+    if (!entry) {
         printk("[Error] Failed to create data entry!\n");
         retval = -ENOMEM;
         goto out;
     }
     printk("[Success] entry initialized.\n");
 
-
-    // Save state to heap
     char * state = kmalloc(payload->state_size, GFP_KERNEL);
-    if (!state){
+    if (!state) {
         printk("[Error] Failed to allocate memory for state data!\n");
         retval = -ENOMEM;
         goto free_entry;
     }
-
     memcpy(state, payload->state, payload->state_size);
     printk("[Success] state initialized. {%s}\n", state);
 
     char * name = kmalloc(payload->name_size, GFP_KERNEL);
-    if (!name){
+    if (!name) {
         printk("[Error] Failed to allocate memory for state name!\n");
         retval = -ENOMEM;
         goto free_state;
     }
     memcpy(name, payload->name, payload->name_size);
-
     printk("[Success] name initialized. {%s}\n", name);
 
     entry->name = name;
     entry->data.addr = state;
     entry->data.size = payload->state_size;
 
-    hlist_add_head(&(entry->node), &state_md[hash_func(name, STATE_MD_SIZE)]);
+    hashval = hash_func(payload->name, STATE_MD_SIZE);
+    sem = &md_sems[hashval];
+
+    struct md_entry * curr;
+    down_write(sem); /* Acquire WRITE lock */
+    hlist_for_each_entry(curr, &state_md[hashval], node) {
+        printk("[Log] data=%s\n", curr->name);
+        if (!strcmp(curr->name, payload->name)){
+            printk("[Log] Found a matching state\n");
+            break;
+        }
+    }
+    if (curr != NULL) {
+        curr->data.addr = entry->data.addr;
+        curr->data.size = entry->data.size;
+    }
+    else {
+        hlist_add_head(&(entry->node), &state_md[hashval]);
+    }
+    up_write(sem); /* Release WRITE lock */
+
+    if (curr != NULL){
+        kfree(name);
+        kfree(entry);
+    }
+
     goto out;
 
 free_state:
@@ -158,6 +186,9 @@ void handle_p2m_state_load(struct p2m_state_load_payload * payload, struct commo
     // construct reply
     ssize_t retval;
     struct p2m_state_load_reply *retbuf;
+    unsigned long hashval;
+    struct rw_semaphore * sem;
+
     retval = 0;
     retbuf = thpool_buffer_tx(tb);
     tb_set_tx_size(tb, sizeof(*retbuf));
@@ -171,10 +202,12 @@ void handle_p2m_state_load(struct p2m_state_load_payload * payload, struct commo
         return;
     }
 
-    // loop over state_md
-    struct md_entry * curr;
+    hashval = hash_func(payload->name, STATE_MD_SIZE);
+    sem = &md_sems[hashval];
 
-    hlist_for_each_entry(curr, &state_md[hash_func(payload->name, STATE_MD_SIZE)], node) {
+    struct md_entry * curr;
+    down_read(sem); /* Acquire READ lock */
+    hlist_for_each_entry(curr, &state_md[hashval], node) {
         printk("[Log] data=%s\n", curr->name);
         if (!strcmp(curr->name, payload->name)){
             printk("[Log] Found a matching state\n");
@@ -182,5 +215,6 @@ void handle_p2m_state_load(struct p2m_state_load_payload * payload, struct commo
             break;
         }
     }
+    up_read(sem); /* Release READ lock */
 
 }
