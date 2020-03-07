@@ -25,7 +25,7 @@ int main(void)
 	//SENDER
 	if (my_nid == TEST_SRC_NID) {
 		// Take a short nap in case the receiver has yet up? Or rely on the failing mechanism?
-		sleep(10);
+		// sleep(10);
 
 		printf("[SENDER]: HI I'm Sender NID: %d, PID: %d\n", my_nid, my_pid);
 
@@ -34,7 +34,6 @@ int main(void)
 
 		int msg_len = P2P_MSG_BUFFER_SIZE;
 		char msg[P2P_MSG_BUFFER_SIZE];
-		
 
 		int success_deliver_count = 0;
 
