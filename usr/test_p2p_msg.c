@@ -7,7 +7,7 @@
 #include "includeme.h"
 
 #define P2P_MSG_BUFFER_SIZE 100
-#define SUCCESS_MSG_TRY	2
+#define SUCCESS_MSG_TRY	10
 
 int main(void)
 {
