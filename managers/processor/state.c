@@ -100,7 +100,7 @@ SYSCALL_DEFINE4(state_load, char*, name, unsigned long, name_size, unsigned long
     /* reply, reply 0 means good */
     if(reply.retval == 0){
         /* copy data to user space */
-        if(copy_to_user(state, (void*)retval.state, (unsigned long)strlen(reply.state)+1)){
+        if(copy_to_user(state, (void*)reply.state, (unsigned long)strlen(reply.state)+1)){
             retval = -EFAULT;
             goto OUT;
         }

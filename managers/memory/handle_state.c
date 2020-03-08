@@ -67,6 +67,7 @@ void handle_p2m_state_save(struct p2m_state_save_payload * payload, struct commo
 {
     printk("[Function] state_save\n");
     struct p2m_state_save_reply *retbuf;
+    struct hlist_head * state_md_cand;
     ssize_t retval;
     unsigned long flags;
     unsigned long hashval;
@@ -95,10 +96,10 @@ void handle_p2m_state_save(struct p2m_state_save_payload * payload, struct commo
             for (i = 0; i < STATE_MD_SIZE; i++) {
                 init_rwsem(&md_sems[i]);
             }
-            spin_unlock_irqsave(&md_lock, flags);
+            spin_unlock_irqrestore(&md_lock, flags);
             printk("[Success] state_md and md_sems initialized.\n");
         } else {
-            spin_unlock_irqsave(&md_lock, flags);
+            spin_unlock_irqrestore(&md_lock, flags);
             kfree(state_md_cand);
             printk("[Warning] state_md already initialized by other thread. Aborting.\n");
 
@@ -180,7 +181,7 @@ out:
  * @hdr: header struct for getting caller identifier
  * @tb: output buffer for constructing reply
  */
-void handle_p2m_state_load(struct p2m_state_load_payload * payload, struct common_header *hdr, truct thpool_buffer *tb)
+void handle_p2m_state_load(struct p2m_state_load_payload * payload, struct common_header *hdr, struct thpool_buffer *tb)
 {
     printk("[Function] state_load\n");
     // construct reply
