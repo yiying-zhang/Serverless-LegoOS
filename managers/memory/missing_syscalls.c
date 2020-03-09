@@ -314,12 +314,12 @@ SYSCALL_DEFINE4(state_load, char*, name, unsigned long, name_size, unsigned long
     BUG();
 }
 
-SYSCALL_DEFINE3(state_delete, char*, name, unsigned long, name_size, unsigned long, state_size)
+SYSCALL_DEFINE2(state_delete, char*, name, unsigned long, name_size)
 {
     BUG();
 }
 
-SYSCALL_DEFINE3(state_check, char*, name, unsigned long, name_size, unsigned long, state_size)
+SYSCALL_DEFINE2(state_check, char*, name, unsigned long, name_size)
 {
     BUG();
 }

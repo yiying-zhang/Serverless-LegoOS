@@ -100,7 +100,7 @@ SYSCALL_DEFINE4(state_load, char*, name, unsigned long, name_size, unsigned long
     /* reply, reply 0 means good */
     if(reply.retval == 0){
         /* copy data to user space */
-        if(copy_to_user(state, (void*)reply.state, reply.state_size){
+        if(copy_to_user(state, (void*)reply.state, reply.state_size)){
             retval = -EFAULT;
             goto OUT;
         }
@@ -117,7 +117,7 @@ OUT:
 
 }
 
-SYSCALL_DEFINE3(state_delete, char*, name, unsigned long, name_size)
+SYSCALL_DEFINE2(state_delete, char*, name, unsigned long, name_size)
 {
     struct p2m_state_delete_reply reply;
     ssize_t retval;
@@ -160,7 +160,7 @@ OUT:
 
 }
 
-SYSCALL_DEFINE3(state_check, char*, name, unsigned long, name_size, unsigned long)
+SYSCALL_DEFINE2(state_check, char*, name, unsigned long, name_size)
 {
     struct p2m_state_check_reply reply;
     ssize_t retval;
