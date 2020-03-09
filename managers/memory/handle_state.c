@@ -196,8 +196,8 @@ void handle_p2m_state_load(struct p2m_state_load_payload * payload, struct commo
     tb_set_tx_size(tb, sizeof(*retbuf));
 
     retval = -EINVAL;
-    strcpy(retbuf->state, "Not Found");
-    retbuf->state_size = strlen("Not Found") + 1;
+//    strcpy(retbuf->state, "Not Found");
+    retbuf->state_size = 0;
 
 
     if (!state_md) {
