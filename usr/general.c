@@ -55,7 +55,8 @@ static void lego_test_state_save(const char * name, const char * state)
 {
     printf("state_save inputs {name: %s, state %s}\n", name, state);
     long retval = syscall(667, name, strlen(name)+1, strlen(state)+1, state);
-    printf ("state_save returns: %ld\n", retval);
+	char * status = retval == 0 ? "Success" : "Failed";
+	printf ("state_save returns: %s\n", status);
 }
 
 #define BUFFER_SIZE 1024
@@ -64,7 +65,8 @@ static void lego_test_state_load(const char * name)
 	printf("state_load inputs {name: %s}\n", name);
     char buf[BUFFER_SIZE] = {0,};
     long retval = syscall(668, name, strlen(name)+1, BUFFER_SIZE, buf);
-    printf ("state_load returns: %ld, {state: %s}\n", retval, buf);
+	char * status = retval == 0 ? "Success" : "Failed";
+	printf ("state_load returns: %s, {state: %s}\n", status, buf);
 }
 
 static void lego_test_state_delete(const char * name)
@@ -106,7 +108,7 @@ static void lego_test_state_sequential(void){
 	lego_test_state_load(name2); // Not Found
 	lego_test_state_check(name2); // Failed
 	lego_test_state_save(name2, state2_m); // 0
-	lego_test_state_load(name2); // "Bob says 666"
+	lego_test_state_load(name2); // "Bob says 777 now"
 	lego_test_state_check(name2); // Success
 	lego_test_state_delete(name2); // Success
 
@@ -114,7 +116,7 @@ static void lego_test_state_sequential(void){
 
 int main(void)
 {
-	printf("pid: %d\n", getpid());
+//	printf("pid: %d\n", getpid());
 //	lego_time();
 
 //	lego_uname();

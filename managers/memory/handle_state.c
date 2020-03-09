@@ -140,7 +140,7 @@ void handle_p2m_state_save(struct p2m_state_save_payload * payload, struct commo
     sem = &md_sems[hashval];
 
     struct md_entry * curr;
-    unsigned int found = 0;
+    int found = 0;
     down_write(sem); /* Acquire WRITE lock */
     hlist_for_each_entry(curr, &state_md[hashval], node) {
         printk("[Log] data=%s\n", curr->name);
@@ -192,13 +192,16 @@ void handle_p2m_state_load(struct p2m_state_load_payload * payload, struct commo
     unsigned long hashval;
     struct rw_semaphore * sem;
 
-    retval = 0;
     retbuf = thpool_buffer_tx(tb);
     tb_set_tx_size(tb, sizeof(*retbuf));
 
+    retval = -EINVAL;
+    strcpy(retbuf->state, "Not Found");
+    retbuf->state_size = strlen("Not Found") + 1;
+
+
     if (!state_md) {
         printk("[Error] state_md doesn't exist. Stop.\n");
-        retval = -EINVAL;
         goto out;
     }
 
@@ -206,7 +209,6 @@ void handle_p2m_state_load(struct p2m_state_load_payload * payload, struct commo
     sem = &md_sems[hashval];
 
 	struct md_entry * curr;
-	unsigned int found = 0;
     down_read(sem); /* Acquire READ lock */
 
 	hlist_for_each_entry(curr, &state_md[hashval], node) {
@@ -215,17 +217,12 @@ void handle_p2m_state_load(struct p2m_state_load_payload * payload, struct commo
             printk("[Log] Found a matching state\n");
             memcpy(retbuf->state, curr->data.addr, curr->data.size);
             retbuf->state_size = curr->data.size;
-            found = 1;
+            retval = 0;
             break;
         }
     }
     up_read(sem); /* Release READ lock */
 
-    if (!found) {
-		retval = -EINVAL;
-		strcpy(retbuf->state, "Not Found");
-		retbuf->state_size = strlen("Not Found") + 1;
-	}
 out:
     retbuf->retval = retval;
 
