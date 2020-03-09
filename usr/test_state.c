@@ -48,12 +48,15 @@ static void *state_user_thread(size_t id)
 }
 
 
-#define TH_NUM 10
+#define TH_NUM 5
 int main(void)
 {
+	printf("Test starts\n");
 	int ret;
 	pthread_t th[TH_NUM];
 	unsigned int args[TH_NUM];
+
+	setbuf(stdout, NULL);
 
 	size_t i;
 
