@@ -194,7 +194,6 @@ void handle_p2m_state_load(struct p2m_state_load_payload * payload, struct commo
     retbuf = thpool_buffer_tx(tb);
     tb_set_tx_size(tb, sizeof(*retbuf));
 
-    retbuf->retval = retval;
     strcpy(retbuf->state, "Reply Placeholder");
 
     if (!state_md) {
@@ -213,9 +212,98 @@ void handle_p2m_state_load(struct p2m_state_load_payload * payload, struct commo
         if (!strcmp(curr->name, payload->name)){
             printk("[Log] Found a matching state\n");
             memcpy(retbuf->state, curr->data.addr, curr->data.size);
+            retbuf->state_size = curr->data.size;
             break;
         }
     }
     up_read(sem); /* Release READ lock */
+    retbuf->retval = retval;
+
+}
+
+/**
+ * handle_p2m_state_delete - delete state data referenced by name
+ * @payload: payload struct storing name
+ * @hdr: header struct for getting caller identifier
+ * @tb: output buffer for constructing reply
+ */
+void handle_p2m_state_delete(struct p2m_state_delete_payload * payload, struct common_header *hdr, struct thpool_buffer *tb)
+{
+    printk("[Function] state_delete\n");
+    // construct reply
+    ssize_t retval;
+    struct p2m_state_delete_reply *retbuf;
+    unsigned long hashval;
+    struct rw_semaphore * sem;
+
+    retval = -EINVAL;
+    retbuf = thpool_buffer_tx(tb);
+    tb_set_tx_size(tb, sizeof(*retbuf));
+
+    if (!state_md) {
+        printk("[Error] state_md doesn't exist. Stop.\n");
+        retval = -EINVAL;
+        return;
+    }
+
+    hashval = hash_func(payload->name, STATE_MD_SIZE);
+    sem = &md_sems[hashval];
+
+    struct md_entry * curr;
+    down_read(sem); /* Acquire READ lock */
+    hlist_for_each_entry(curr, &state_md[hashval], node) {
+        printk("[Log] data=%s\n", curr->name);
+        if (!strcmp(curr->name, payload->name)){
+            printk("[Log] Found a matching state\n");
+            hash_del(&(curr->node));
+            retval = 0;
+            break;
+        }
+    }
+    up_read(sem); /* Release READ lock */
+    retbuf->retval = retval;
+
+}
+
+/**
+ * handle_p2m_state_check - check if state data referenced by name exists
+ * @payload: payload struct storing name
+ * @hdr: header struct for getting caller identifier
+ * @tb: output buffer for constructing reply
+ */
+void handle_p2m_state_check(struct p2m_state_check_payload * payload, struct common_header *hdr, struct thpool_buffer *tb)
+{
+    printk("[Function] state_check\n");
+    // construct reply
+    ssize_t retval;
+    struct p2m_state_load_reply *retbuf;
+    unsigned long hashval;
+    struct rw_semaphore * sem;
+
+    retval = -EINVAL;
+    retbuf = thpool_buffer_tx(tb);
+    tb_set_tx_size(tb, sizeof(*retbuf));
+
+    if (!state_md) {
+        printk("[Error] state_md doesn't exist. Stop.\n");
+        retval = -EINVAL;
+        return;
+    }
+
+    hashval = hash_func(payload->name, STATE_MD_SIZE);
+    sem = &md_sems[hashval];
+
+    struct md_entry * curr;
+    down_read(sem); /* Acquire READ lock */
+    hlist_for_each_entry(curr, &state_md[hashval], node) {
+        printk("[Log] data=%s\n", curr->name);
+        if (!strcmp(curr->name, payload->name)){
+            printk("[Log] Found a matching state\n");
+            retval = 0;
+            break;
+        }
+    }
+    up_read(sem); /* Release READ lock */
+    retbuf->retval = retval;
 
 }

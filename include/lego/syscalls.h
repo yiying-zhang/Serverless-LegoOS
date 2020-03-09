@@ -255,8 +255,10 @@ asmlinkage long sys_mq_receive(char* mq_name, unsigned long name_size, unsigned 
 asmlinkage long sys_mq_close(char* mq_name, unsigned long name_size);
 
 // State Management
-asmlinkage long sys_state_save(char * name, unsigned long name_size, unsigned long state_size, const char * state);
-asmlinkage long sys_state_load(char * name, unsigned long name_size, unsigned long state_size, char * state);
+asmlinkage long sys_state_save(char * name, unsigned long name_size, unsigned long state_size, const void * state);
+asmlinkage long sys_state_load(char * name, unsigned long name_size, unsigned long state_size, void * state);
+asmlinkage long sys_state_delete(char * name, unsigned long name_size, unsigned long state_size);
+asmlinkage long sys_state_check(char * name, unsigned long name_size, unsigned long state_size);
 
 
 #endif /* _LEGO_SYSCALLS_H_ */

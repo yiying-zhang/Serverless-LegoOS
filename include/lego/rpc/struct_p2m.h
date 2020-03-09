@@ -413,11 +413,29 @@ struct p2m_state_load_payload {
     int name_size;
     char name[MAX_FILENAME_LENGTH];
 };
-
 struct p2m_state_load_reply {
     int retval;
+    int state_size;
     char state[MAX_STATE_LENGTH];
 };
 void handle_p2m_state_load(struct p2m_state_load_payload * payload, struct common_header *hdr, struct thpool_buffer *tb);
+
+struct p2m_state_delete_payload {
+    int name_size;
+    char name[MAX_FILENAME_LENGTH];
+};
+struct p2m_state_delete_reply {
+    int retval;
+};
+void handle_p2m_state_delete(struct p2m_state_delete_payload * payload, struct common_header *hdr, struct thpool_buffer *tb);
+
+struct p2m_state_check_payload {
+    int name_size;
+    char name[MAX_FILENAME_LENGTH];
+};
+struct p2m_state_check_reply {
+    int retval;
+};
+void handle_p2m_state_check(struct p2m_state_check_payload * payload, struct common_header *hdr, struct thpool_buffer *tb);
 
 #endif /* _LEGO_RPC_STRUCT_P2M_H */

@@ -15,7 +15,7 @@
 
 #include <processor/processor.h>
 
-SYSCALL_DEFINE4(state_save, char*, name, unsigned long, name_size, unsigned long, state_size, const char*, state)
+SYSCALL_DEFINE4(state_save, char*, name, unsigned long, name_size, unsigned long, state_size, const void*, state)
 {
     ssize_t retval;
     ssize_t retlen;
@@ -34,18 +34,18 @@ SYSCALL_DEFINE4(state_save, char*, name, unsigned long, name_size, unsigned long
     hdr->src_nid = LEGO_LOCAL_NID;
     payload = to_payload(msg);
 
-    if(copy_from_user(payload->name, name, name_size+1)){
+    if(copy_from_user(payload->name, name, name_size)){
         retval = -EFAULT;
         goto OUT;
     }
 
-    if(copy_from_user(payload->state, state, state_size+1)){
+    if(copy_from_user(payload->state, state, state_size)){
         retval = -EFAULT;
         goto OUT;
     }
 
-    payload->name_size = name_size+1;
-    payload->state_size = state_size+1;
+    payload->name_size = name_size;
+    payload->state_size = state_size;
 
     retlen = ibapi_send_reply_imm(current_memory_home_node(), msg, len_msg, &retval, sizeof(retval),false);
 
@@ -62,7 +62,7 @@ OUT:
 
 }
 
-SYSCALL_DEFINE4(state_load, char*, name, unsigned long, name_size, unsigned long, state_size, char*, state)
+SYSCALL_DEFINE4(state_load, char*, name, unsigned long, name_size, unsigned long, state_size, void*, state)
 {
     struct p2m_state_load_reply reply;
     ssize_t retval;
@@ -82,11 +82,11 @@ SYSCALL_DEFINE4(state_load, char*, name, unsigned long, name_size, unsigned long
     hdr->src_nid = LEGO_LOCAL_NID;
     payload = to_payload(msg);
 
-    if(copy_from_user(payload->name, name, name_size+1)){
+    if(copy_from_user(payload->name, name, name_size)){
         retval = -EFAULT;
         goto OUT;
     }
-    payload->name_size = name_size+1;
+    payload->name_size = name_size;
 
     retlen = ibapi_send_reply_imm(current_memory_home_node(), msg, len_msg, &reply, sizeof(reply),false);
 
@@ -100,7 +100,7 @@ SYSCALL_DEFINE4(state_load, char*, name, unsigned long, name_size, unsigned long
     /* reply, reply 0 means good */
     if(reply.retval == 0){
         /* copy data to user space */
-        if(copy_to_user(state, (void*)reply.state, (unsigned long)strlen(reply.state)+1)){
+        if(copy_to_user(state, (void*)reply.state, reply.state_size){
             retval = -EFAULT;
             goto OUT;
         }
@@ -117,6 +117,91 @@ OUT:
 
 }
 
+SYSCALL_DEFINE3(state_delete, char*, name, unsigned long, name_size)
+{
+    struct p2m_state_delete_reply reply;
+    ssize_t retval;
+    ssize_t retlen;
+    u32 len_msg;
+    void *msg;
+    struct common_header* hdr;
+    struct p2m_state_delete_payload* payload;
 
+    len_msg = sizeof(*hdr) + sizeof(*payload);
+    msg = kmalloc(len_msg, GFP_KERNEL);
+    if(!msg)
+        return -ENOMEM;
+
+    hdr = (struct common_header *)msg;
+    hdr->opcode = P2M_STATE_DELETE;
+    hdr->src_nid = LEGO_LOCAL_NID;
+    payload = to_payload(msg);
+
+    if(copy_from_user(payload->name, name, name_size)){
+        retval = -EFAULT;
+        goto OUT;
+    }
+    payload->name_size = name_size;
+
+    retlen = ibapi_send_reply_imm(current_memory_home_node(), msg, len_msg, &reply, sizeof(reply),false);
+
+    /* check return value */
+    if(retlen == -ETIMEDOUT){
+        retval = -ETIMEDOUT;
+        goto OUT;
+    }
+
+    retval = reply.retval;
+
+OUT:
+    /* free allocated memory */
+    kfree(msg);
+    return retval;
+
+}
+
+SYSCALL_DEFINE3(state_check, char*, name, unsigned long, name_size, unsigned long)
+{
+    struct p2m_state_check_reply reply;
+    ssize_t retval;
+    ssize_t retlen;
+    u32 len_msg;
+    void *msg;
+    struct common_header* hdr;
+    struct p2m_state_check_payload* payload;
+
+    len_msg = sizeof(*hdr) + sizeof(*payload);
+    msg = kmalloc(len_msg, GFP_KERNEL);
+    if(!msg)
+        return -ENOMEM;
+
+    hdr = (struct common_header *)msg;
+    hdr->opcode = P2M_STATE_CHECK;
+    hdr->src_nid = LEGO_LOCAL_NID;
+    payload = to_payload(msg);
+
+    if(copy_from_user(payload->name, name, name_size)){
+        retval = -EFAULT;
+        goto OUT;
+    }
+    payload->name_size = name_size;
+
+    retlen = ibapi_send_reply_imm(current_memory_home_node(), msg, len_msg, &reply, sizeof(reply),false);
+
+    /* check return value */
+    if(retlen == -ETIMEDOUT){
+        retval = -ETIMEDOUT;
+        goto OUT;
+    }
+
+    retval = reply.retval;
+
+OUT:
+    /* free allocated memory */
+    kfree(msg);
+
+    return retval;
+
+}
 
 //#endif /* _LEGO_PROCESSOR_NODE_H_ */

@@ -129,8 +129,11 @@
 #define RET_ESIGSEGV		((__u32)(RET_SIGNAL_BASE+SIGSEGV)) /* Segmentation fault*/
 
 /* State Management */
-#define P2M_STATE_SAVE		    ((__u32)__NR_state_save)
-#define P2M_STATE_LOAD		    ((__u32)__NR_state_load)
+#define P2M_STATE_SAVE		((__u32)__NR_state_save)
+#define P2M_STATE_LOAD		((__u32)__NR_state_load)
+#define P2M_STATE_DELETE	((__u32)__NR_state_delete)
+#define P2M_STATE_CHECK	((__u32)__NR_state_check)
+
 
 
 
