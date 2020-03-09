@@ -57,8 +57,6 @@ int main(void)
 			
 
 			printf("[SENDER DONE SEND ITE:%d]: %s\n", success_deliver_count, retbuf);
-			printf("[SENDER SEND TIME SPAN:%lu]", (end_ns - start_ns));
-
 			success_deliver_count += 1;
 		}
 
