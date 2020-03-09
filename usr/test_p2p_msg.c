@@ -52,10 +52,9 @@ int main(void)
 
 			printf("[SENDER BEFORE SEND:%d]: %s\n", success_deliver_count, msg);
 
-			unsigned long start_ns, end_ns;
-			start_ns = sched_clock();
+			
 			remote_send_reply(TEST_DST_NID, TEST_DST_PID, msg, msg_len, retbuf, retlen);
-			end_ns = sched_clock();
+			
 
 			printf("[SENDER DONE SEND ITE:%d]: %s\n", success_deliver_count, retbuf);
 			printf("[SENDER SEND TIME SPAN:%lu]", (end_ns - start_ns));

@@ -857,6 +857,8 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 	const void  __user *, msg, unsigned long, msg_size,
 	void __user *, retbuf, unsigned long, ret_size)
 {
+	unsigned long start_ns, end_ns;
+	start_ns = sched_clock();
 
 	// TODO: Sanity Checking
 	// pr_info("~~~~~~~dst_nid: %d, dst_pid: %d~~~~\n", dst_nid, dst_pid);
@@ -916,6 +918,9 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 	// kfree(out_msg);
 	// kfree(in_msg);
 	// pr_info("~~~~~~~~Finished free kernel buffers~~~~~~~~\n");
+
+	end_ns = sched_clock();
+	pr_info("TIME SPENT TO SEND: %lu\n", end_ns - start_ns);
 
 	return;
 }
