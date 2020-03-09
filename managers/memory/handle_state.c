@@ -34,7 +34,7 @@ unsigned long hash_func(const char * key, const unsigned int table_size)
         o = o * t % (table_size - 1);
     }
     // Verbose debugging info for now
-    printk ("[Success] hashing {%s} to %d\n", key_copy, h);
+//    printk ("[Success] hashing {%s} to %d\n", key_copy, h);
     return h;
 }
 
