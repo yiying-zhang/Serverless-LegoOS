@@ -11,135 +11,184 @@
 #include <lego/comp_common.h>
 #include <lego/printk.h>
 #include <lego/hashtable.h>
-
 #include <memory/thread_pool.h>
 
-//TODO: handle_p2m_state_dummy_get
-struct p2m_state_reply {
-    ssize_t		retval;
-};
 
-void handle_p2m_state_dummy_get(struct p2m_state_struct *payload, struct thpool_buffer *tb)
+static int lookup_mnode_for_state_name(char* name)
 {
-    // Print number from payload
-    printk("HEYYY! Handling message for state management: %ld", payload->number);
-//    pr_info("handling message: %ld\n", payload->number);
 
-    ssize_t retval = 6666;
-    void *buf;
-    struct p2m_state_reply *retbuf;
-    retbuf = thpool_buffer_tx(tb);
-    buf = (char *)retbuf;
-    tb_set_tx_size(tb, sizeof(retval));
+#ifdef CONFIG_GMM
+    printk("Using GMM to look for state memory node\n");
+//    struct common_header* hdr;
+    struct m2mm_state_lookup payload;
+    int reply;
+    int ret = 0;
 
-    retbuf->retval = retval;
+    ret = ibapi_send_reply_imm(CONFIG_GMM_NODEID, M2MM_STATE_LOOKUP,
+            &send, sizeof(struct m2mm_state_lookup),
+            reply, sizeof(int),
+            false, DEF_NET_TIMEOUT);
+
+    if (ret < 0)
+        return ret;
+
+#else
+    // GMM not set, only one memory node available
+    printk("Using default memory node as state memory node\n");
+    reply = DEF_MEM_HOMENODE;
+
+#endif /* CONFIG_GMM */
+
+    return reply;
 }
 
 
-/*
- *  state_save
+/**
+ * hash_func - hash a string to unsigned long given table size
+ * @key: key string to be hashed
+ * @table_size: a positive number specifying table size
  */
-struct hlist_head * state_md; /* Create state_metadata as a hash table */
-#define STATE_MD_SIZE 10
+unsigned long hash_func(const char * key, const unsigned int table_size)
+{
+    unsigned int h = 0;
+    unsigned int o = 31415;
+    const unsigned int t = 27183;
+    char * key_copy = key;
+    while (*key)
+    {
+        h = (o * h + *key++) % table_size;
+        o = o * t % (table_size - 1);
+    }
+    // Verbose debugging info for now
+    printk ("[Success] hashing {%s} to %d\n", key_copy, h);
+    return h;
+}
 
+
+struct hlist_head * state_md; /* Create state_metadata as a hash table */
+#define STATE_MD_BITS 8
+#define STATE_MD_SIZE (1 << STATE_MD_BITS)
+
+/*
+ * metadata entry
+ */
 struct md_entry {
-    char * name;
+    char * name; /* state name as the key for hashing */
     struct {
         void * addr;
         size_t size;
-    } data;
-    struct hlist_node * node;
-}
+    } data; /* saved state address and size */
+    struct hlist_node node; /* the node linking next entry along the hlist */
+};
 
-void handle_p2m_state_save(struct p2m_state_save_payload * payload, struct thpool_buffer *tb)
+/**
+ * handle_p2m_state_save - create state_md if not exist and save state with name as the key (tentatively)
+ * @payload: payload struct storing name and state data
+ * @hdr: header struct for getting caller identifier
+ * @tb: output buffer for constructing reply
+ */
+void handle_p2m_state_save(struct p2m_state_save_payload * payload, struct common_header *hdr, struct thpool_buffer *tb)
 {
     printk("[Function] state_save\n");
+    struct p2m_state_save_reply *retbuf;
+    ssize_t retval;
+    retval = 0;
 
     if (!state_md) {
-        printk("[Warning] state_md doesn't exist. Attempt to initialize.\n");
+        printk("[Warning] state_md doesn't exist. Initializing.\n");
         state_md = kmalloc(STATE_MD_SIZE * sizeof(struct hlist_head), GFP_KERNEL);
         if (!state_md){
             printk("[Error] Failed to create state metadata!\n");
-            return -ENOMEN;
+            retval = -ENOMEM;
+            goto out;
         }
-        for (int i =0; i < STATE_MD_SIZE; i++)
+        int i;
+        for (i =0; i < STATE_MD_SIZE; i++)
             INIT_HLIST_HEAD(&state_md[i]);
     }
+    printk("[Success] state_md initialized.\n");
 
-    struct md_entry entry = kmalloc(sizeof(struct md_entry), GFP_KERNEL);
+    struct md_entry * entry = kmalloc(sizeof(struct md_entry), GFP_KERNEL);
     if (!entry){
         printk("[Error] Failed to create data entry!\n");
-        return -ENOMEN;
+        retval = -ENOMEM;
+        goto out;
     }
+    printk("[Success] entry initialized.\n");
 
 
-    // kmalloc saved state
+    // Save state to heap
     char * state = kmalloc(payload->state_size, GFP_KERNEL);
     if (!state){
         printk("[Error] Failed to allocate memory for state data!\n");
-        return -ENOMEN;
+        retval = -ENOMEM;
+        goto free_entry;
     }
+
     memcpy(state, payload->state, payload->state_size);
+    printk("[Success] state initialized. {%s}\n", state);
 
     char * name = kmalloc(payload->name_size, GFP_KERNEL);
     if (!name){
         printk("[Error] Failed to allocate memory for state name!\n");
-        return -ENOMEN;
+        retval = -ENOMEM;
+        goto free_state;
     }
     memcpy(name, payload->name, payload->name_size);
+
+    printk("[Success] name initialized. {%s}\n", name);
 
     entry->name = name;
     entry->data.addr = state;
     entry->data.size = payload->state_size;
 
-    hash_add(*state_md, &state_md->node, state_md->name);
+    hlist_add_head(&(entry->node), &state_md[hash_func(name, STATE_MD_SIZE)]);
+    goto out;
 
+free_state:
+    kfree(state);
+free_entry:
+    kfree(entry);
+out:
     // construct reply
-    ssize_t retval = 0;
-    struct p2m_state_save_reply *retbuf;
     retbuf = thpool_buffer_tx(tb);
     tb_set_tx_size(tb, sizeof(*retbuf));
     retbuf->retval = retval;
 }
 
-
-/*
- *  state_load
+/**
+ * handle_p2m_state_load - load state data to output buffer referenced by name (assume no duplicates, tentatively)
+ * @payload: payload struct storing name
+ * @hdr: header struct for getting caller identifier
+ * @tb: output buffer for constructing reply
  */
-
-void handle_p2m_state_load(struct p2m_state_load_payload * payload, struct thpool_buffer *tb)
+void handle_p2m_state_load(struct p2m_state_load_payload * payload, struct common_header *hdr, truct thpool_buffer *tb)
 {
     printk("[Function] state_load\n");
-
-    if (!state_md) {
-        printk("[Error] state_md doesn't exist. Nothing to load.\n");
-    }
-
-    char * name = kmalloc(payload->name_size, GFP_KERNEL);
-    if (!name){
-        printk("[Error] Failed to allocate memory for state name!\n");
-        return -ENOMEN;
-    }
-    memcpy(name, payload->name, payload->name_size);
-
     // construct reply
-    ssize_t retval = 0;
+    ssize_t retval;
     struct p2m_state_load_reply *retbuf;
+    retval = 0;
     retbuf = thpool_buffer_tx(tb);
     tb_set_tx_size(tb, sizeof(*retbuf));
 
     retbuf->retval = retval;
     strcpy(retbuf->state, "Reply Placeholder");
 
-    // loop over state_md
-    struct md_entry * current;
-//    struct md_entry * tmp;
+    if (!state_md) {
+        printk("[Error] state_md doesn't exist. Stop.\n");
+        retval = -EINVAL;
+        return;
+    }
 
-    hash_for_each_possible(*state_md, current, node, name){
-        printk("[Log] data=%s\n", current->name);
-        if (!strcmp(current->name, name)){
+    // loop over state_md
+    struct md_entry * curr;
+
+    hlist_for_each_entry(curr, &state_md[hash_func(payload->name, STATE_MD_SIZE)], node) {
+        printk("[Log] data=%s\n", curr->name);
+        if (!strcmp(curr->name, payload->name)){
             printk("[Log] Found a matching state\n");
-            memcpy(retbuf->state, current->data.addr, current->data.size);
+            memcpy(retbuf->state, curr->data.addr, curr->data.size);
             break;
         }
     }

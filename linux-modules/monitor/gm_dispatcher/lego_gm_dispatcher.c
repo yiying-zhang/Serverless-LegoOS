@@ -75,6 +75,10 @@ static int req_dispatcher(void)
 		handle_p2sm_alloc_nodes((int *)rcvbuf, desc);
 		break;
 
+	case M2MM_STATE_LOOKUP:
+	    handle_m2mm_state_lookup(payload);
+	    break;
+
 	default:
 		handle_bad_request(hdr, desc);
 	}

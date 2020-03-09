@@ -185,3 +185,16 @@ module_init(lego_gmm_module_init);
 module_exit(lego_gmm_module_exit);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Wuklab@Purdue");
+
+/*
+ * State management: state mnode lookup
+ */
+int handle_m2mm_state_lookup(struct m2mm_state_lookup *payload) {
+    pr_info("lego memory monitor module state lookup is called.\n");
+    pr_info("lego memory monitor says we have %d memory nodes\n", MEMORY_NODE_COUNT);
+
+    //TODO: add hash function, hashing payload->name
+    int node = 1;
+    pr_info("lego memory monitor chose mnode %d for state name %s\n", node, payload->name);
+    return node;
+}

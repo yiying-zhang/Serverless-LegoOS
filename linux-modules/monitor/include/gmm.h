@@ -23,4 +23,7 @@ int choose_node(void);
 int handle_m2mm_consult(struct consult_info *, u64, struct common_header *);
 void handle_m2mm_status_report(struct m2mm_status_report *payload, u64 desc);
 
+/* state management: mnode lookup */
+int handle_m2mm_state_lookup(struct m2mm_state_lookup *payload);
+
 #endif /* _LEGO_GMM_H */
