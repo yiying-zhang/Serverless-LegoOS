@@ -72,7 +72,7 @@ static void lego_test_state_delete(const char * name)
 	printf("state_delete inputs {name: %s}\n", name);
 	long retval = syscall(669, name, strlen(name)+1);
 	char * status = retval > 0 ? "Failure" : "Success";
-	printf ("state_delete returns: %s\n", status);
+	printf ("state_delete returns: %ld\n", retval);
 }
 
 static void lego_test_state_check(const char * name)
@@ -80,7 +80,7 @@ static void lego_test_state_check(const char * name)
 	printf("state_check inputs {name: %s}\n", name);
 	long retval = syscall(670, name, strlen(name)+1);
 	char * status = retval > 0 ? "Failure" : "Success";
-	printf ("state_check returns: %s\n", status);
+	printf ("state_check returns: %ld\n", retval);
 }
 
 static void lego_test_state_sequential(void){
