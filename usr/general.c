@@ -90,6 +90,7 @@ static void lego_test_state_sequential(void){
     char * state1_m = "Bob left 0xFB1DBA5.";
 	char * name2 = "Bob's function666";
 	char * state2 = "Bob says 666";
+	char * state2_m = "Bob says 777 now";
 
 	lego_test_state_load(name1); // Failed
 	lego_test_state_check(name1); // Failed
