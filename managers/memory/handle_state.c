@@ -194,8 +194,6 @@ void handle_p2m_state_load(struct p2m_state_load_payload * payload, struct commo
     retbuf = thpool_buffer_tx(tb);
     tb_set_tx_size(tb, sizeof(*retbuf));
 
-    strcpy(retbuf->state, "Reply Placeholder");
-
     if (!state_md) {
         printk("[Error] state_md doesn't exist. Stop.\n");
         retval = -EINVAL;
@@ -218,6 +216,13 @@ void handle_p2m_state_load(struct p2m_state_load_payload * payload, struct commo
         }
     }
     up_read(sem); /* Release READ lock */
+
+    if (curr == NULL) {
+		retval = -EINVAL;
+		strcpy(retbuf->state, "Not Found");
+		retbuf->state_size = strlen("Not Found") + 1;
+	}
+
     retbuf->retval = retval;
 
 }
@@ -256,6 +261,8 @@ void handle_p2m_state_delete(struct p2m_state_delete_payload * payload, struct c
         printk("[Log] data=%s\n", curr->name);
         if (!strcmp(curr->name, payload->name)){
             printk("[Log] Found a matching state\n");
+            kfree(curr->data.addr);
+            kfree(curr->name);
             hash_del(&(curr->node));
             retval = 0;
             break;
