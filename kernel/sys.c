@@ -859,12 +859,12 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 {
 
 	// TODO: Sanity Checking
-	pr_info("~~~~~~~dst_nid: %d, dst_pid: %d~~~~\n", dst_nid, dst_pid);
+	// pr_info("~~~~~~~dst_nid: %d, dst_pid: %d~~~~\n", dst_nid, dst_pid);
 
 	// Return setup
 	int ret = 0;
 
-	pr_info("~~~~~~~~Allocate incoming and outgoing buffer~~~~~~~~\n");
+	// pr_info("~~~~~~~~Allocate incoming and outgoing buffer~~~~~~~~\n");
 	void * in_msg = kmalloc(ret_size, GFP_KERNEL);
 	if (unlikely(!in_msg)) {
 		WARN(1, "OOM");
@@ -881,26 +881,26 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 	// Clean up the buffer
 	memset(out_msg, 0, sizeof(struct p2p_msg_struct));
 	memset(in_msg, 0, sizeof(struct p2p_msg_struct));
-	pr_info("~~~~~~~~Done allocate outgoing buffer~~~~~~~~\n");
+	// pr_info("~~~~~~~~Done allocate outgoing buffer~~~~~~~~\n");
 
-	pr_info("~~~~~~~~Turn hdr~~~~~~~~\n");
+	// pr_info("~~~~~~~~Turn hdr~~~~~~~~\n");
 	struct p2p_msg_hdr * hdr = to_p2p_msg_header(out_msg);
-	pr_info("~~~~~~~~Turn body~~~~~~~~\n");
+	// pr_info("~~~~~~~~Turn body~~~~~~~~\n");
 	void * msg_body = to_p2p_msg_body(out_msg);
-	pr_info("~~~~~~~~Done Turn~~~~~~~~\n");
+	// pr_info("~~~~~~~~Done Turn~~~~~~~~\n");
 
-	pr_info("~~~~~~~~Assigning hdr~~~~~~~~\n");
+	// pr_info("~~~~~~~~Assigning hdr~~~~~~~~\n");
 	fill_p2p_msg_hdr(hdr, __NR_remote_send_reply, LEGO_LOCAL_NID, current->pid, dst_nid, dst_pid, msg_size);
 	// DEBUG use only
 	print_p2p_msg_header(hdr);
 
-	pr_info("~~~~~~~~Copying msg body~~~~~~~~\n");
+	// pr_info("~~~~~~~~Copying msg body~~~~~~~~\n");
 	copy_from_user(msg_body, msg, msg_size);
 
-	pr_info("~~~~~~~~About to make remote send call~~~~~~~~\n");
+	// pr_info("~~~~~~~~About to make remote send call~~~~~~~~\n");
 	/* Synchronously send it out */
 	ret = ibapi_send_reply_imm(dst_nid, out_msg, out_len, in_msg, ret_size, false);
-	pr_info("~~~~~~~~Returned from remote send call~~~~~~~~\n");
+	// pr_info("~~~~~~~~Returned from remote send call~~~~~~~~\n");
 
 	if (ret == -ETIMEDOUT) {
 		pr_info("  %s() CPU:%d PID:%d caller: %pS\n",
@@ -910,7 +910,7 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 
 	// Copy the return buffer back to user's ret buf
 	copy_to_user(retbuf, in_msg, ret_size);
-	pr_info("~~~~~~~~Finished copy to user retbuf~~~~~~~~\n");
+	// pr_info("~~~~~~~~Finished copy to user retbuf~~~~~~~~\n");
 
 	/* Need to free the two kmalloc stuff, currently not implemented */
 	// kfree(out_msg);

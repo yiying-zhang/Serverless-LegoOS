@@ -65,11 +65,11 @@ static void handle_remote_send(struct info_struct *info)
 	struct p2p_msg_hdr * hdr = to_p2p_msg_header(msg);
 	void * msg_body = to_p2p_msg_body(msg);
 
-	pr_info("~Receiving remote send: %u, from node: %u, pid: %d\n", hdr->opcode, hdr->src_nid, hdr->src_pid);
-	pr_info("~Targeting node: %u, pid: %d\n", hdr->dst_nid, hdr->dst_pid);
-	pr_info("---MSG LEN: %u---\n", hdr->msg_size);
-	pr_info("%s", msg_body);
-	pr_info("\n---MSG END---\n");
+	// pr_info("~Receiving remote send: %u, from node: %u, pid: %d\n", hdr->opcode, hdr->src_nid, hdr->src_pid);
+	// pr_info("~Targeting node: %u, pid: %d\n", hdr->dst_nid, hdr->dst_pid);
+	// pr_info("---MSG LEN: %u---\n", hdr->msg_size);
+	// pr_info("%s", msg_body);
+	// pr_info("\n---MSG END---\n");
 
 	int ret = enqueue_msg(hdr->dst_pid, msg_body, hdr->msg_size);
 
@@ -137,7 +137,7 @@ static int msg_dispatcher(struct info_struct *info)
 	hdr = to_common_header(info->msg);
 	payload = to_payload(info->msg);
 
-	pr_info("~~~~~~~~~~Within Msg dispacher~~~~~~~~~~~~~\n");
+	// pr_info("~~~~~~~~~~Within Msg dispacher~~~~~~~~~~~~~\n");
 
 	/*
 	 * BIG FAT NOTE:
@@ -151,12 +151,12 @@ static int msg_dispatcher(struct info_struct *info)
 			handle_echo(hdr, desc);
 			break;
 		case P2P_RSEND_REPLY:
-			pr_info("~~~~Extracted P2P_RSEND_REPLY opcode. following through to handler~~~~\n");
+			// pr_info("~~~~Extracted P2P_RSEND_REPLY opcode. following through to handler~~~~\n");
 			handle_remote_send(info);
 			break;
 		// default:
 		
-		pr_info("~~~~~~~~~~msg dispacher done~~~~~~~~~~~~~\n");
+		// pr_info("~~~~~~~~~~msg dispacher done~~~~~~~~~~~~~\n");
 	}
 
 	return 0;
@@ -196,12 +196,12 @@ static int msg_handler(void *unused)
 		hdr = to_common_header(info->msg);
 		payload = to_payload(info->msg);
 
-		pr_info("~~~~MSG handler GOT A NEW MSG!~~~~~~~\n");
-		pr_info("~~~~OPCODE %d, Source nid:%d~~~~\n", hdr->opcode ,hdr->src_nid);
+		// pr_info("~~~~MSG handler GOT A NEW MSG!~~~~~~~\n");
+		// pr_info("~~~~OPCODE %d, Source nid:%d~~~~\n", hdr->opcode ,hdr->src_nid);
 
-		if (hdr->src_nid == 0 || hdr->src_nid == 1) {
-			pr_info("~~~~Reading source nid:%d from header~~~~\n", hdr->src_nid);
-		}
+		// if (hdr->src_nid == 0 || hdr->src_nid == 1) {
+		// 	pr_info("~~~~Reading source nid:%d from header~~~~\n", hdr->src_nid);
+		// }
 
 		msg_dispatcher(info);
 	}
