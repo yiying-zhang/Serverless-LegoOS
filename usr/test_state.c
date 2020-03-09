@@ -7,7 +7,7 @@
 #include <string.h>
 #include <pthread.h>
 
-#define STATUS(retval) (retval == 0 ? "Success" : "Failed";)
+#define STATUS(retval) (retval == 0 ? "Success" : "Failed")
 
 static void lego_test_state_save(const char * name, const char * state, size_t th_id)
 {
@@ -62,7 +62,6 @@ int main(void)
 		ret = pthread_create( &th[i], NULL , state_user_thread , i);
 		if (ret) {
 			printf("pthread_create failed at id %ld\n", i);
-			exit(-1);
 		}
 	}
 
