@@ -205,9 +205,10 @@ void handle_p2m_state_load(struct p2m_state_load_payload * payload, struct commo
     hashval = hash_func(payload->name, STATE_MD_SIZE);
     sem = &md_sems[hashval];
 
-    struct md_entry * curr;
+	struct md_entry * curr;
     down_read(sem); /* Acquire READ lock */
-    hlist_for_each_entry(curr, &state_md[hashval], node) {
+
+	hlist_for_each_entry(curr, &state_md[hashval], node) {
         printk("[Log] data=%s\n", curr->name);
         if (!strcmp(curr->name, payload->name)){
             printk("[Log] Found a matching state\n");
@@ -250,7 +251,7 @@ void handle_p2m_state_delete(struct p2m_state_delete_payload * payload, struct c
     sem = &md_sems[hashval];
 
     struct md_entry * curr;
-    down_read(sem); /* Acquire READ lock */
+    down_write(sem); /* Acquire READ lock */
     hlist_for_each_entry(curr, &state_md[hashval], node) {
         printk("[Log] data=%s\n", curr->name);
         if (!strcmp(curr->name, payload->name)){
@@ -260,7 +261,7 @@ void handle_p2m_state_delete(struct p2m_state_delete_payload * payload, struct c
             break;
         }
     }
-    up_read(sem); /* Release READ lock */
+    up_write(sem); /* Release READ lock */
     retbuf->retval = retval;
 
 }
@@ -276,7 +277,7 @@ void handle_p2m_state_check(struct p2m_state_check_payload * payload, struct com
     printk("[Function] state_check\n");
     // construct reply
     ssize_t retval;
-    struct p2m_state_load_reply *retbuf;
+    struct p2m_state_check_reply *retbuf;
     unsigned long hashval;
     struct rw_semaphore * sem;
 
@@ -295,7 +296,7 @@ void handle_p2m_state_check(struct p2m_state_check_payload * payload, struct com
 
     struct md_entry * curr;
     down_read(sem); /* Acquire READ lock */
-    hlist_for_each_entry(curr, &state_md[hashval], node) {
+	hlist_for_each_entry(curr, &state_md[hashval], node) {
         printk("[Log] data=%s\n", curr->name);
         if (!strcmp(curr->name, payload->name)){
             printk("[Log] Found a matching state\n");
