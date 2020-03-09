@@ -140,15 +140,17 @@ void handle_p2m_state_save(struct p2m_state_save_payload * payload, struct commo
     sem = &md_sems[hashval];
 
     struct md_entry * curr;
+    unsigned int found = 0;
     down_write(sem); /* Acquire WRITE lock */
     hlist_for_each_entry(curr, &state_md[hashval], node) {
         printk("[Log] data=%s\n", curr->name);
         if (!strcmp(curr->name, payload->name)){
             printk("[Log] Found a matching state\n");
+            found = 1;
             break;
         }
     }
-    if (curr != NULL) {
+    if (found) {
         curr->data.addr = entry->data.addr;
         curr->data.size = entry->data.size;
     }
@@ -157,7 +159,7 @@ void handle_p2m_state_save(struct p2m_state_save_payload * payload, struct commo
     }
     up_write(sem); /* Release WRITE lock */
 
-    if (curr != NULL){
+    if (found){
         kfree(name);
         kfree(entry);
     }
@@ -197,13 +199,14 @@ void handle_p2m_state_load(struct p2m_state_load_payload * payload, struct commo
     if (!state_md) {
         printk("[Error] state_md doesn't exist. Stop.\n");
         retval = -EINVAL;
-        return;
+        goto out;
     }
 
     hashval = hash_func(payload->name, STATE_MD_SIZE);
     sem = &md_sems[hashval];
 
 	struct md_entry * curr;
+	unsigned int found = 0;
     down_read(sem); /* Acquire READ lock */
 
 	hlist_for_each_entry(curr, &state_md[hashval], node) {
@@ -212,17 +215,18 @@ void handle_p2m_state_load(struct p2m_state_load_payload * payload, struct commo
             printk("[Log] Found a matching state\n");
             memcpy(retbuf->state, curr->data.addr, curr->data.size);
             retbuf->state_size = curr->data.size;
+            found = 1;
             break;
         }
     }
     up_read(sem); /* Release READ lock */
 
-    if (curr == NULL) {
+    if (!found) {
 		retval = -EINVAL;
 		strcpy(retbuf->state, "Not Found");
 		retbuf->state_size = strlen("Not Found") + 1;
 	}
-
+out:
     retbuf->retval = retval;
 
 }
@@ -249,7 +253,7 @@ void handle_p2m_state_delete(struct p2m_state_delete_payload * payload, struct c
     if (!state_md) {
         printk("[Error] state_md doesn't exist. Stop.\n");
         retval = -EINVAL;
-        return;
+		goto out;
     }
 
     hashval = hash_func(payload->name, STATE_MD_SIZE);
@@ -269,6 +273,7 @@ void handle_p2m_state_delete(struct p2m_state_delete_payload * payload, struct c
         }
     }
     up_write(sem); /* Release READ lock */
+out:
     retbuf->retval = retval;
 
 }
@@ -295,7 +300,7 @@ void handle_p2m_state_check(struct p2m_state_check_payload * payload, struct com
     if (!state_md) {
         printk("[Error] state_md doesn't exist. Stop.\n");
         retval = -EINVAL;
-        return;
+		goto out;
     }
 
     hashval = hash_func(payload->name, STATE_MD_SIZE);
@@ -312,6 +317,7 @@ void handle_p2m_state_check(struct p2m_state_check_payload * payload, struct com
         }
     }
     up_read(sem); /* Release READ lock */
+out:
     retbuf->retval = retval;
 
 }
