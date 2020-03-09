@@ -91,19 +91,23 @@ static void lego_test_state_sequential(void){
 	char * name2 = "Bob's function666";
 	char * state2 = "Bob says 666";
 
-	lego_test_state_load(name1);
-	lego_test_state_check(name1);
-	lego_test_state_save(name1, state1);
-	lego_test_state_save(name1, state1_m);
-	lego_test_state_save(name2, state2);
-	lego_test_state_delete(name1);
-	lego_test_state_check(name1);
-	lego_test_state_delete(name1);
-	lego_test_state_check(name1);
-	lego_test_state_save(name2, state2_m);
-	lego_test_state_delete(name2);
-	lego_test_state_load(name2);
-	lego_test_state_check(name2);
+	lego_test_state_load(name1); // Failed
+	lego_test_state_check(name1); // Failed
+	lego_test_state_save(name1, state1); // 0
+	lego_test_state_save(name1, state1_m); // 0
+	lego_test_state_save(name2, state2); // 0
+	lego_test_state_delete(name1); // Success
+	lego_test_state_check(name1); // Failed
+	lego_test_state_delete(name1); // Failed
+	lego_test_state_check(name1); // Failed
+	lego_test_state_save(name2, state2_m); // 0
+	lego_test_state_delete(name2); // Success
+	lego_test_state_load(name2); // Not Found
+	lego_test_state_check(name2); // Failed
+	lego_test_state_save(name2, state2_m); // 0
+	lego_test_state_load(name2); // "Bob says 666"
+	lego_test_state_check(name2); // Success
+	lego_test_state_delete(name2); // Success
 
 }
 
