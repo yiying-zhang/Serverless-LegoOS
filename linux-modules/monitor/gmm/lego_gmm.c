@@ -181,6 +181,19 @@ static void __exit lego_gmm_module_exit(void)
 	pr_info("lego memory monitor module exit\n");
 }
 
+/*
+ * State management: state mnode lookup
+ */
+int handle_p2mm_state_lookup(struct p2mm_state_lookup *payload) {
+    pr_info("lego memory monitor module state lookup is called.\n");
+    pr_info("lego memory monitor says we have %d memory nodes\n", MEMORY_NODE_COUNT);
+
+    //TODO: add hash function, hashing payload->name
+    int node = DEFAULT_MEM_HOMENODE;
+    pr_info("lego memory monitor chose mnode %d for state name %s\n", node, payload->name);
+    return node;
+}
+
 module_init(lego_gmm_module_init);
 module_exit(lego_gmm_module_exit);
 MODULE_LICENSE("GPL");

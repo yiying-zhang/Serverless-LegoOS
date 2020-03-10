@@ -15,6 +15,35 @@
 
 #include <processor/processor.h>
 
+#include <monitor/common.h>
+
+static int lookup_mnode_for_state_name(char* name, int name_size, int* reply)
+{
+    int ret = 0;
+
+#ifdef CONFIG_GMM
+    printk("Using GMM to look for state memory node\n");
+
+    struct p2mm_state_lookup* payload;
+    payload = kmalloc(sizeof(p2mm_state_lookup), GFP_KERNEL)
+    payload->name = name;
+    payload->name_size = name_size;
+
+    ret = ibapi_send_reply_imm(CONFIG_GMM_NODEID, P2MM_STATE_LOOKUP,
+            &send, sizeof(struct p2mm_state_lookup),
+            reply, sizeof(int),
+            false, DEF_NET_TIMEOUT);
+
+#else
+    // GMM not set, only one memory node available
+    printk("Using default memory node as state memory node\n");
+    *reply = DEF_MEM_HOMENODE;
+
+#endif /* CONFIG_GMM */
+
+    return ret;
+}
+
 SYSCALL_DEFINE4(state_save, char*, name, unsigned long, name_size, unsigned long, state_size, const void*, state)
 {
     ssize_t retval;
@@ -23,6 +52,9 @@ SYSCALL_DEFINE4(state_save, char*, name, unsigned long, name_size, unsigned long
     void* msg;
     struct common_header* hdr;
     struct p2m_state_save_payload* payload;
+
+    int mnode = -1;
+    int p2mm_ret = 0;
 
     len_msg = sizeof(*hdr)+sizeof(*payload);
     msg = kmalloc(len_msg, GFP_KERNEL);
@@ -47,7 +79,14 @@ SYSCALL_DEFINE4(state_save, char*, name, unsigned long, name_size, unsigned long
     payload->name_size = name_size;
     payload->state_size = state_size;
 
-    retlen = ibapi_send_reply_imm(current_memory_home_node(), msg, len_msg, &retval, sizeof(retval),false);
+    // Consulting mm for state mnode
+    p2mm_ret = lookup_mnode_for_state_name(name, name_size, &mnode);
+    if (p2mm_ret < 0 || mnode < 0) {
+        retval = -1; // no valid mnode for state
+        goto OUT;
+    }
+
+    retlen = ibapi_send_reply_imm(mnode, msg, len_msg, &retval, sizeof(retval),false);
 
     /* check return value */
     if(retlen == -ETIMEDOUT){

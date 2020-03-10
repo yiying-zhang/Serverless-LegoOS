@@ -100,4 +100,12 @@ struct pm2p_broadcast_vnode_struct {
 	int ip;
 };
 
+/*
+ * State management mnode lookup
+ */
+struct p2mm_state_lookup {
+    char* name;
+    int name_size;
+};
+
 #endif /* _LEGO_MONITOR_COMMON_H */

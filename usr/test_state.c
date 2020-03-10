@@ -7,7 +7,7 @@
 #include <string.h>
 #include <pthread.h>
 
-#define STATUS(retval) (retval == 0 ? "Success" : "Failed";)
+#define STATUS(retval) (retval == 0 ? "Success" : "Failed")
 
 static void lego_test_state_save(const char * name, const char * state, size_t th_id)
 {
