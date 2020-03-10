@@ -873,7 +873,7 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 	PROFILE_POINT_TIME(remote_send_reply_copy_from_usr)
 	PROFILE_POINT_TIME(remote_send_reply_copy_to_usr)
 
-	PROFILE_START(remote_send_reply)
+	PROFILE_START(remote_send_reply);
 
 	// unsigned long start_ns, end_ns;
 	// start_ns = sched_clock();
