@@ -49,8 +49,9 @@ static void *state_user_thread(size_t id)
 	char_id[0] = id + '0';
 	char state[BUFFER_SIZE] = "Bob is handled by ";
 	strcat(state, char_id);
-	lego_test_state_save(name, &state, id);
 	sleep(get_random_by_range(1, 5));
+	lego_test_state_save(name, &state, id);
+	sleep(get_random_by_range(1, 3));
 	lego_test_state_load(name, id);
 
 }
