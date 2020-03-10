@@ -24,6 +24,8 @@
 
 #include <asm/numa.h>
 
+#include <lego/profile.h>
+
 /* Non-implemented system calls get redirected here. */
 asmlinkage long sys_ni_syscall(void)
 {
@@ -853,12 +855,26 @@ SYSCALL_DEFINE1(recho, unsigned int, dest_nid) {
 	return ret;
 }
 
+DEFINE_PROFILE_POINT(remote_send_reply)
+DEFINE_PROFILE_POINT(remote_send_reply_ibapi)
+DEFINE_PROFILE_POINT(remote_send_reply_io_alloc)
+DEFINE_PROFILE_POINT(remote_send_reply_hdr_fill)
+DEFINE_PROFILE_POINT(remote_send_reply_copy_from_usr)
+DEFINE_PROFILE_POINT(remote_send_reply_copy_to_usr)
+
 SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst_pid, 
 	const void  __user *, msg, unsigned long, msg_size,
 	void __user *, retbuf, unsigned long, ret_size)
 {
-	unsigned long start_ns, end_ns;
-	start_ns = sched_clock();
+	PROFILE_POINT_TIME(remote_send_reply)
+	PROFILE_POINT_TIME(remote_send_reply_ibapi)
+	PROFILE_POINT_TIME(remote_send_reply_io_alloc)
+	PROFILE_POINT_TIME(remote_send_reply_hdr_fill)
+	PROFILE_POINT_TIME(remote_send_reply_copy_from_usr)
+	PROFILE_POINT_TIME(remote_send_reply_copy_to_usr)
+
+	// unsigned long start_ns, end_ns;
+	// start_ns = sched_clock();
 
 	// TODO: Sanity Checking
 	// pr_info("~~~~~~~dst_nid: %d, dst_pid: %d~~~~\n", dst_nid, dst_pid);
@@ -867,6 +883,8 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 	int ret = 0;
 
 	// pr_info("~~~~~~~~Allocate incoming and outgoing buffer~~~~~~~~\n");
+
+	PROFILE_START(remote_send_reply_io_alloc);
 	void * in_msg = kmalloc(ret_size, GFP_KERNEL);
 	if (unlikely(!in_msg)) {
 		WARN(1, "OOM");
@@ -883,6 +901,8 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 	// Clean up the buffer
 	memset(out_msg, 0, sizeof(struct p2p_msg_struct));
 	memset(in_msg, 0, sizeof(struct p2p_msg_struct));
+	PROFILE_LEAVE(remote_send_reply_io_alloc);
+
 	// pr_info("~~~~~~~~Done allocate outgoing buffer~~~~~~~~\n");
 
 	// pr_info("~~~~~~~~Turn hdr~~~~~~~~\n");
@@ -892,16 +912,23 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 	// pr_info("~~~~~~~~Done Turn~~~~~~~~\n");
 
 	// pr_info("~~~~~~~~Assigning hdr~~~~~~~~\n");
+	PROFILE_START(remote_send_reply_hdr_fill);
 	fill_p2p_msg_hdr(hdr, __NR_remote_send_reply, LEGO_LOCAL_NID, current->pid, dst_nid, dst_pid, msg_size);
+	PROFILE_LEAVE(remote_send_reply_hdr_fill);
+
 	// DEBUG use only
-	print_p2p_msg_header(hdr);
+	// print_p2p_msg_header(hdr);
 
 	// pr_info("~~~~~~~~Copying msg body~~~~~~~~\n");
+	PROFILE_START(remote_send_reply_copy_from_usr);
 	copy_from_user(msg_body, msg, msg_size);
+	PROFILE_LEAVE(remote_send_reply_copy_from_usr);
 
 	// pr_info("~~~~~~~~About to make remote send call~~~~~~~~\n");
 	/* Synchronously send it out */
+	PROFILE_START(remote_send_reply_ibapi);
 	ret = ibapi_send_reply_imm(dst_nid, out_msg, out_len, in_msg, ret_size, false);
+	PROFILE_LEAVE(remote_send_reply_ibapi);
 	// pr_info("~~~~~~~~Returned from remote send call~~~~~~~~\n");
 
 	if (ret == -ETIMEDOUT) {
@@ -911,7 +938,9 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 	}
 
 	// Copy the return buffer back to user's ret buf
+	PROFILE_START(remote_send_reply_copy_to_usr);
 	copy_to_user(retbuf, in_msg, ret_size);
+	PROFILE_LEAVE(remote_send_reply_copy_to_usr);
 	// pr_info("~~~~~~~~Finished copy to user retbuf~~~~~~~~\n");
 
 	/* Need to free the two kmalloc stuff, currently not implemented */
@@ -919,9 +948,11 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 	// kfree(in_msg);
 	// pr_info("~~~~~~~~Finished free kernel buffers~~~~~~~~\n");
 
-	end_ns = sched_clock();
-	pr_info("TIME SPENT TO SEND: %lu\n", end_ns - start_ns);
+	// end_ns = sched_clock();
+	// pr_info("TIME SPENT TO SEND: %lu\n", end_ns - start_ns);
 
+	PROFILE_LEAVE(remote_send_reply);
+	print_profile_points();
 	return;
 }
 
@@ -938,6 +969,7 @@ SYSCALL_DEFINE2(remote_recv, void __user *, recv_msg, unsigned long, recv_size)
 {
 	struct task_struct * p = find_task_by_pid(current->pid);
 	
+	/* Dequeue Code */
 	while (!atomic_read(&(p->nr_msg_available))) {
 		cpu_relax();
 	}
