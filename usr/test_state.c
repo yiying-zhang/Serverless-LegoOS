@@ -35,6 +35,13 @@ static void lego_test_state_check(const char * name, size_t th_id)
 	printf ("(%d) [CHECK] inputs {name: %s}\nreturns {%s}", th_id, name, STATUS(retval));
 }
 
+static int get_random_by_range(int lower, int upper)
+{
+	int i;
+	return (rand() % (upper - lower + 1)) + lower;
+}
+
+
 static void *state_user_thread(size_t id)
 {
 	char * name = "Bob";
@@ -43,6 +50,7 @@ static void *state_user_thread(size_t id)
 	char state[BUFFER_SIZE] = "Bob is handled by ";
 	strcat(state, char_id);
 	lego_test_state_save(name, &state, id);
+	sleep(get_random_by_range(1, 5));
 	lego_test_state_load(name, id);
 
 }
