@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-#define NUM_THREADS 5
+#define NUM_THREADS 100
 
 struct thread_data
 {
