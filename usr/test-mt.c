@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-void printMsg(void *num) {
+void *printMsg(void *num) {
     int i = 0;
     int *num_ptr = (int *)num;
     for (i = 0; i < 10; i++) {
