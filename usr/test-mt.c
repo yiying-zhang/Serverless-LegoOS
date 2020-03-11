@@ -18,7 +18,7 @@ void *PrintHello(void *threadarg)
    my_data = (struct thread_data *) threadarg;
 
    int i;
-   for (i = 0; i < 100; i++) {
+   for (i = 0; i < 1000; i++) {
        printf("%d", my_data->thread_id);
    }
 
@@ -41,7 +41,7 @@ int main ()
    for( i=0; i < NUM_THREADS; i++ )    
    {
 
-      printf("main() : creating thread %d", i);
+      //printf("main() : creating thread %d", i);
 
       td[i].thread_id = i;
 
