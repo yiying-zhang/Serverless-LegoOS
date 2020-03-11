@@ -6,7 +6,6 @@
 
 struct thread_data {
     int  thread_id;
-    char *message;
 };
 
 // print struct ID 100 times
@@ -31,7 +30,6 @@ int main() {
 
     for (i = 0; i < NUM_THREADS; i++) {
         td[i].thread_id = i;
-        td[i].message = "This is message";
         rc = pthread_create(&threads[i], NULL, printHundredIDs, (void *)&td[i]);
       
         if (rc) {
