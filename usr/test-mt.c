@@ -36,7 +36,7 @@ int main ()
    for( i=0; i < NUM_THREADS; i++ )    
    {
 
-      printf("main() : creating thread %d" i);
+      printf("main() : creating thread %d", i);
 
       td[i].thread_id = i;
 
