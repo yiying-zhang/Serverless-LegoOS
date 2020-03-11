@@ -2,20 +2,54 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-void *printMsg(void *num) {
-    int i = 0;
-    int *num_ptr = (int *)num;
-    for (i = 0; i < 10; i++) {
-        printf("Thread number is %d", *num_ptr);
-    }
+#define NUM_THREADS 5
+
+struct thread_data
+{
+  int  thread_id;
+  char *message;
+};
+
+
+void *PrintHello(void *threadarg)
+{
+   struct thread_data *my_data;   
+
+   my_data = (struct thread_data *) threadarg;
+
+   printf("Thread ID : %d" my_data->thread_id);
+
+   printf("Message : %s" my_data->message);
+
+   pthread_exit(NULL);
 }
 
-void main() {
-    pthread_t tid1, tid2; 
-    int a = 1;
-    int b = 2;
-    pthread_create(&tid1, NULL, printMsg, &a);
-    pthread_create(&tid1, NULL, printMsg, &b);
-    pthread_join(tid1, NULL); 
-    pthread_join(tid2, NULL); 
+int main ()
+{
+   pthread_t threads[NUM_THREADS];
+
+   struct thread_data td[NUM_THREADS];
+
+   int rc, i;
+
+
+   for( i=0; i < NUM_THREADS; i++ )    
+   {
+
+      printf("main() : creating thread %d" i);
+
+      td[i].thread_id = i;
+
+      td[i].message = "This is message";
+
+      rc = pthread_create(&threads[i], NULL, PrintHello, (void *)&td[i]);
+
+      if (rc){
+
+         printf("Error : unable to create thread, %d", rc);
+
+         exit(-1);    
+      }    
+   }    
+   pthread_exit(NULL);    
 }
