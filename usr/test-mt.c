@@ -19,7 +19,7 @@ void *PrintHello(void *threadarg)
 
    int i;
    for (i = 0; i < 100; i++) {
-       printf(my_data->thread_id);
+       printf("%d", my_data->thread_id);
    }
 
    //printf("Thread ID : %d", my_data->thread_id);
