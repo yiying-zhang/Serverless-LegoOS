@@ -9,7 +9,7 @@ struct thread_data {
     char *message;
 };
 
-
+// print struct ID 100 times
 void *printHundredIDs(void *threadarg) {
     struct thread_data *my_data;   
 
@@ -23,7 +23,7 @@ void *printHundredIDs(void *threadarg) {
     pthread_exit(NULL);
 }
 
-// Create 100 threads and print out thread ID 100 times in each thread
+// Create 100 threads and print out struct ID 100 times in each thread 
 int main() {
     pthread_t threads[NUM_THREADS];
     struct thread_data td[NUM_THREADS];
