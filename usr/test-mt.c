@@ -17,9 +17,14 @@ void *PrintHello(void *threadarg)
 
    my_data = (struct thread_data *) threadarg;
 
-   printf("Thread ID : %d", my_data->thread_id);
+   int i;
+   for (i = 0; i < 100; i++) {
+       printf(my_data->thread_id);
+   }
 
-   printf("Message : %s", my_data->message);
+   //printf("Thread ID : %d", my_data->thread_id);
+
+   //printf("Message : %s", my_data->message);
 
    pthread_exit(NULL);
 }
