@@ -6,7 +6,7 @@
 #include <linux/unistd.h>
 #include "includeme.h"
 
-#define P2P_MSG_BUFFER_SIZE 100000
+#define P2P_MSG_BUFFER_SIZE 40000
 #define SUCCESS_MSG_TRY	1000
 
 int main(void)
