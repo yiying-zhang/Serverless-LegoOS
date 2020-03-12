@@ -6,7 +6,7 @@
 #include <linux/unistd.h>
 #include "includeme.h"
 
-#define P2P_MSG_BUFFER_SIZE 100
+#define P2P_MSG_BUFFER_SIZE 1000
 #define SUCCESS_MSG_TRY	1000
 
 int main(void)
@@ -51,13 +51,12 @@ int main(void)
 			strcat(msg, digit);
 
 			printf("[SENDER BEFORE SEND:%d]: %s\n", success_deliver_count, msg);
-
-			
 			remote_send_reply(TEST_DST_NID, TEST_DST_PID, msg, msg_len, retbuf, retlen);
-			
-
 			printf("[SENDER DONE SEND ITE:%d]: %s\n", success_deliver_count, retbuf);
+			
 			success_deliver_count += 1;
+
+			sleep(1)
 		}
 
 
