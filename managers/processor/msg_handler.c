@@ -23,7 +23,7 @@
 
 #define MAX_RXBUF_SIZE	(20 * PAGE_SIZE)
 
-#define MAX_P2P_MSG_SIZE 20000
+#define MAX_P2P_MSG_SIZE 25000
 
 const int ECHO_LEN = 49;
 const char* ECHO = "~~~WASSUP THIS IS UNA Echo MSG from Receiver~~~\n";
