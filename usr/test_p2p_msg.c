@@ -56,7 +56,7 @@ int main(void)
 			
 			success_deliver_count += 1;
 
-			sleep(0.01);
+			// sleep(0.01);
 		}
 
 
