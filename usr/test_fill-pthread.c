@@ -101,8 +101,8 @@ static void zipf_run(void)
 	timeval_sub(&result, &te, &ts);
 
 	fprintf(stderr, " %s(nr=%d)(tid=%d)  Total LLC runtime [%ld.%ld (s)] / "
-		"nr_pages [%d] (%dMB) ---> LLC_miss_latency [%ld (ns)]\n", __func__,
-		nr_run, tid, result.tv_sec, result.tv_usec/1000, nr_pages,
+		"nr_pages [%d] (%dMB) ---> LLC_miss_latency [%ld (ns)]\n",
+		__func__, nr_run, tid, result.tv_sec, result.tv_usec/1000, nr_pages,
 		(nr_pages * PAGE_SIZE)/1024/1024,
 		(1000000000*result.tv_sec + 1000*result.tv_usec)/nr_pages);
 

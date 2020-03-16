@@ -93,6 +93,17 @@ timeval_add(struct timeval *a, struct timeval *b)
 	return result;
 }
 
+static inline void
+timeval_add(struct timeval * result, struct timeval *a, struct timeval *b)
+{
+	result->tv_sec = a->tv_sec + b->tv_sec;
+	result->tv_usec = a->tv_usec + b->tv_usec;
+	if (result->tv_usec >= 1000000) {
+		result->tv_sec += 1;
+		result->tv_usec -= 1000000;
+	}
+}
+
 static inline pid_t gettid(void)
 {
 	syscall(SYS_gettid);

@@ -1,0 +1,183 @@
+#include "includeme.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <string.h>
+
+#define NR_THREADS 1
+#define TOTAL_PAYLOAD_SIZE 1024
+#define SINGLE_PAYLOAD_SIZE TOTAL_PAYLOAD_SIZE/NR_THREADS
+#define SUCCESS_MSG_TRY 1000
+
+#define TEST_SRC_NID = 0;
+#define TEST_SRC_PID = 14;
+#define TEST_DST_NID = 1;
+#define TEST_DST_PID = 14;
+
+struct thread_data {
+    int  thread_id;
+    char * msg;
+    void * retbuf;
+};
+
+// print struct ID 100 times
+void *printHundredIDs(void *threadarg) {
+    struct thread_data *my_data;   
+
+    my_data = (struct thread_data *) threadarg;
+    int i;
+
+    for (i = 0; i < 100; i++) {
+        printf("Thread ID : %d ", my_data->thread_id);
+    }
+
+    pthread_exit(NULL);
+}
+
+
+static void *thread_func(void *arg)
+{
+    int tid = gettid();
+    printf("Thread [%d] running\n", tid);
+
+    struct thread_data *my_data = (struct thread_data *) arg;
+
+    bool is_leader = false;
+    pthread_spin_lock(&trial_result_lock);
+    nr_active_thread += 1;
+    if (nr_active_thread == 1) { is_leader = true; }
+    pthread_spin_unlock(&trial_result_lock);
+
+    pthread_barrier_wait(&send_finish_barrier);
+
+    if (is_leader) { gettimeofday(&ts, NULL); }
+
+    remote_send_reply(TEST_DST_NID, TEST_DST_PID, msg, SINGLE_PAYLOAD_SIZE, my_data->retbuf, SINGLE_PAYLOAD_SIZE);
+
+    pthread_spin_lock(&trial_result_lock);
+    nr_active_thread -= 1;
+    if (nr_active_thread == 0) { gettimeofday(&te, NULL); }
+    pthread_spin_unlock(&trial_result_lock);
+}
+
+static char * msg;
+static pthread_spinlock_t trial_result_lock;
+static pthread_barrier_t send_finish_barrier;
+static int nr_active_thread;
+static struct timeval ts, te;
+
+int spawn_thread_and_send(struct timeval * time_span, pthread_t * tid, struct thread_data * td) {
+
+    pthread_barrier_init(&send_finish_barrier, NULL, NR_THREADS);
+    pthread_spin_init(&trial_result_lock, PTHREAD_PROCESS_PRIVATE);
+
+    bool thread_init_failed = false;
+    for (i = 0; i < NR_THREADS; i++) {
+        ret = pthread_create(&tid[i], NULL, thread_func, (void *)&td[i]);
+        if (ret) {
+            die("fail to create new thread");
+            thread_init_failed = true;
+            break;
+        }
+    }
+    if (thread_init_failed) { return false; }
+
+    for (i = 0; i < NR_THREADS; i++) {
+        pthread_join(tid[i], NULL);
+    }
+
+    timeval_sub(time_span, &te, &ts);
+
+    return true;
+}
+
+// Create 100 threads and print out struct ID 100 times in each thread 
+int main() {
+
+    int my_nid = get_local_nid();
+    int my_pid = getpid();
+
+    printf("[LOCAL NID]: %d, [LOCAL PID]: %d\n", my_nid, my_pid);
+
+    if (my_nid == TEST_SRC_NID) {
+        printf("[SENDER]: HI I'm Sender NID: %d, PID: %d\n", my_nid, my_pid);
+
+        /* Thread data initialization stage */
+        int msg_len = SINGLE_PAYLOAD_SIZE;
+        msg = malloc(SINGLE_PAYLOAD_SIZE);
+
+        if (msg == NULL) {
+            printf("msg init failed\n");
+            return;
+        }
+
+        char * retbuf_arr[NR_THREADS];
+        int retlen = SINGLE_PAYLOAD_SIZE;
+        for (int i = 0; i < NR_THREADS; i++) {
+            retbuf_arr[i] = malloc(SINGLE_PAYLOAD_SIZE);
+            if (retbuf_arr[i] == NULL) {
+                printf("retbuf init failed!\n");
+                return;
+            }
+        }
+
+        struct thread_data td[NR_THREADS];
+        for (i = 0; i < nr_threads; i++) {
+            td[i].thread_id = i;
+            td[i].retbuf = retbuf;
+        }
+
+        int success_deliver_count = 0;
+        struct timeval final_result;
+
+        pthread_t tid[NR_THREADS];
+
+        while (success_deliver_count < SUCCESS_MSG_TRY) {
+
+            nr_active_thread = 0;
+
+            char num_buffer[20];
+            itoa(success_deliver_count, buffer, 10);
+            memset(msg, 0, msg_len);
+            strcat(msg, num_buffer);
+
+            struct timeval single_exp_time;
+
+            printf("[SENDER BEFORE SEND:%d]: %s\n", success_deliver_count, msg);
+            int exp_ret = spawn_thread_and_send(&single_exp_time, tid, td);
+
+            if (exp_ret == 0) {
+                printf("Experiment Failed: Trail [%d]\n", success_deliver_count);
+                continue;
+            }
+
+            timeval_add(&final_result, &final_result, &single_exp_time)
+            success_deliver_count += 1;
+            printf("[SENDER DONE SEND ITE:%d]: %s\n", success_deliver_count);
+
+            fprintf(stderr, "(nr=%d)(tot_payload=%d)\tTotal Time [%ld.%ld (s)]\tAverage Time [%ld (ns)]\n",
+                success_deliver_count, TOTAL_PAYLOAD_SIZE, final_result.tv_sec, final_result.tv_usec/1000,
+                (1000000000*final_result.tv_sec + 1000*final_result.tv_usec)/success_deliver_count);
+        }
+    }
+    else {
+
+        printf("[RECEIVER]: HI I'm Receiver NID: %d, PID: %d\n", my_nid, my_pid);
+
+        int success_receive_count = 0;
+        char recv_msg[SINGLE_PAYLOAD_SIZE];
+
+        while (success_receive_count < SUCCESS_MSG_TRY * NR_THREADS) {
+            memset(recv_msg, 0, SINGLE_PAYLOAD_SIZE);
+
+            remote_recv(recv_msg, SINGLE_PAYLOAD_SIZE);
+            printf("[RECEIVER ITE:%d]: %s\n", success_receive_count, recv_msg);
+
+            success_receive_count += 1;
+        }
+
+        printf("[RECEIVER]: Finish receiving! 886\n");
+    }
+
+
+}
