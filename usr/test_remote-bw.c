@@ -4,7 +4,7 @@
 #include <pthread.h>
 #include <string.h>
 
-#define NR_THREADS 1
+#define NR_THREADS 2
 #define TOTAL_PAYLOAD_SIZE 1024
 #define SINGLE_PAYLOAD_SIZE TOTAL_PAYLOAD_SIZE/NR_THREADS
 #define SUCCESS_MSG_TRY 100
@@ -138,6 +138,7 @@ int main() {
 
         int success_deliver_count = 0;
         struct timeval final_result;
+        timeval_sub(&final_result, &final_result, &final_result);
 
         pthread_t tid[NR_THREADS];
 
