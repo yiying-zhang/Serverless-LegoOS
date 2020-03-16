@@ -9,10 +9,10 @@
 #define SINGLE_PAYLOAD_SIZE TOTAL_PAYLOAD_SIZE/NR_THREADS
 #define SUCCESS_MSG_TRY 1000
 
-#define TEST_SRC_NID = 0;
-#define TEST_SRC_PID = 14;
-#define TEST_DST_NID = 1;
-#define TEST_DST_PID = 14;
+#define TEST_SRC_NID 0
+#define TEST_SRC_PID 14
+#define TEST_DST_NID 1
+#define TEST_DST_PID 14
 
 struct thread_data {
     int  thread_id;
@@ -34,6 +34,12 @@ void *printHundredIDs(void *threadarg) {
     pthread_exit(NULL);
 }
 
+static char * msg;
+static pthread_spinlock_t trial_result_lock;
+static pthread_barrier_t send_finish_barrier;
+static int nr_active_thread;
+static struct timeval ts, te;
+
 
 static void *thread_func(void *arg)
 {
@@ -42,10 +48,10 @@ static void *thread_func(void *arg)
 
     struct thread_data *my_data = (struct thread_data *) arg;
 
-    bool is_leader = false;
+    int is_leader = 0;
     pthread_spin_lock(&trial_result_lock);
     nr_active_thread += 1;
-    if (nr_active_thread == 1) { is_leader = true; }
+    if (nr_active_thread == 1) { is_leader = 1; }
     pthread_spin_unlock(&trial_result_lock);
 
     pthread_barrier_wait(&send_finish_barrier);
@@ -60,27 +66,21 @@ static void *thread_func(void *arg)
     pthread_spin_unlock(&trial_result_lock);
 }
 
-static char * msg;
-static pthread_spinlock_t trial_result_lock;
-static pthread_barrier_t send_finish_barrier;
-static int nr_active_thread;
-static struct timeval ts, te;
-
 int spawn_thread_and_send(struct timeval * time_span, pthread_t * tid, struct thread_data * td) {
 
     pthread_barrier_init(&send_finish_barrier, NULL, NR_THREADS);
     pthread_spin_init(&trial_result_lock, PTHREAD_PROCESS_PRIVATE);
 
     bool thread_init_failed = false;
-    for (i = 0; i < NR_THREADS; i++) {
-        ret = pthread_create(&tid[i], NULL, thread_func, (void *)&td[i]);
+    for (int i = 0; i < NR_THREADS; i++) {
+        int ret = pthread_create(&tid[i], NULL, thread_func, (void *)&td[i]);
         if (ret) {
             die("fail to create new thread");
-            thread_init_failed = true;
+            thread_init_failed = 1;
             break;
         }
     }
-    if (thread_init_failed) { return false; }
+    if (thread_init_failed) { return 0; }
 
     for (i = 0; i < NR_THREADS; i++) {
         pthread_join(tid[i], NULL);
@@ -122,9 +122,9 @@ int main() {
         }
 
         struct thread_data td[NR_THREADS];
-        for (i = 0; i < nr_threads; i++) {
+        for (int i = 0; i < NR_THREADS; i++) {
             td[i].thread_id = i;
-            td[i].retbuf = retbuf;
+            td[i].retbuf = retbuf_arr[i];
         }
 
         int success_deliver_count = 0;
@@ -137,7 +137,7 @@ int main() {
             nr_active_thread = 0;
 
             char num_buffer[20];
-            itoa(success_deliver_count, buffer, 10);
+            sprintf(num_buffer, "%d", success_deliver_count); 
             memset(msg, 0, msg_len);
             strcat(msg, num_buffer);
 
@@ -151,7 +151,7 @@ int main() {
                 continue;
             }
 
-            timeval_add_res(&final_result, &final_result, &single_exp_time)
+            timeval_add_res(&final_result, &final_result, &single_exp_time);
             success_deliver_count += 1;
             printf("[SENDER DONE SEND ITE:%d]: %s\n", success_deliver_count);
 
