@@ -151,7 +151,7 @@ int main() {
                 continue;
             }
 
-            timeval_add(&final_result, &final_result, &single_exp_time)
+            timeval_add_res(&final_result, &final_result, &single_exp_time)
             success_deliver_count += 1;
             printf("[SENDER DONE SEND ITE:%d]: %s\n", success_deliver_count);
 
