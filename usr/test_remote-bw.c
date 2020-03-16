@@ -75,6 +75,8 @@ int spawn_thread_and_send(struct timeval * time_span, pthread_t * tid, struct th
     pthread_barrier_init(&send_finish_barrier, NULL, NR_THREADS);
     pthread_spin_init(&trial_result_lock, PTHREAD_PROCESS_PRIVATE);
 
+    printf("Finished barrier setup and spin init\n");
+
     int thread_init_failed = 0;
     for (int i = 0; i < NR_THREADS; i++) {
         int ret = pthread_create(&tid[i], NULL, thread_func, (void *)&td[i]);
@@ -86,9 +88,12 @@ int spawn_thread_and_send(struct timeval * time_span, pthread_t * tid, struct th
     }
     if (thread_init_failed) { return 0; }
 
+    printf("Thread creation all done\n");
     for (int i = 0; i < NR_THREADS; i++) {
         pthread_join(tid[i], NULL);
     }
+
+    printf("Thread all joined\n");
 
     timeval_sub(time_span, &te, &ts);
 
