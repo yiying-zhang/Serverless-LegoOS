@@ -7,12 +7,12 @@
 #define NR_THREADS 1
 #define TOTAL_PAYLOAD_SIZE 1024
 #define SINGLE_PAYLOAD_SIZE TOTAL_PAYLOAD_SIZE/NR_THREADS
-#define SUCCESS_MSG_TRY 1000
+#define SUCCESS_MSG_TRY 100
 
 #define TEST_SRC_NID 0
-#define TEST_SRC_PID 14
+#define TEST_SRC_PID 22
 #define TEST_DST_NID 1
-#define TEST_DST_PID 14
+#define TEST_DST_PID 22
 
 struct thread_data {
     int  thread_id;
