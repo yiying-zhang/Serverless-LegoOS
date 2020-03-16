@@ -54,6 +54,7 @@ static void *thread_func(void *arg)
     if (nr_active_thread == 1) { is_leader = 1; }
     pthread_spin_unlock(&trial_result_lock);
 
+    printf("Thread [%d] waiting before barrier\n", tid);
     pthread_barrier_wait(&send_finish_barrier);
 
     if (is_leader) { gettimeofday(&ts, NULL); }
