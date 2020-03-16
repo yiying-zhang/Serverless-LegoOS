@@ -71,7 +71,7 @@ int spawn_thread_and_send(struct timeval * time_span, pthread_t * tid, struct th
     pthread_barrier_init(&send_finish_barrier, NULL, NR_THREADS);
     pthread_spin_init(&trial_result_lock, PTHREAD_PROCESS_PRIVATE);
 
-    bool thread_init_failed = false;
+    int thread_init_failed = 0;
     for (int i = 0; i < NR_THREADS; i++) {
         int ret = pthread_create(&tid[i], NULL, thread_func, (void *)&td[i]);
         if (ret) {
@@ -82,13 +82,13 @@ int spawn_thread_and_send(struct timeval * time_span, pthread_t * tid, struct th
     }
     if (thread_init_failed) { return 0; }
 
-    for (i = 0; i < NR_THREADS; i++) {
+    for (int i = 0; i < NR_THREADS; i++) {
         pthread_join(tid[i], NULL);
     }
 
     timeval_sub(time_span, &te, &ts);
 
-    return true;
+    return 1;
 }
 
 // Create 100 threads and print out struct ID 100 times in each thread 
