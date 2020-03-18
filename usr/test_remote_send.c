@@ -151,7 +151,6 @@ int main() {
             sprintf(num_buffer, "%d", success_deliver_count); 
 
             for (int i = 0; i < NR_THREADS; i++) {
-                td[i].msg = malloc(SINGLE_PAYLOAD_SIZE);
                 memset(td[i].msg, 0, msg_len);
                 strcat(td[i].msg, num_buffer);
             }
