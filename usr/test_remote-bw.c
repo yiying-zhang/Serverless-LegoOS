@@ -4,10 +4,10 @@
 #include <pthread.h>
 #include <string.h>
 
-#define NR_THREADS 2
+#define NR_THREADS 1
 #define TOTAL_PAYLOAD_SIZE 1024
 #define SINGLE_PAYLOAD_SIZE TOTAL_PAYLOAD_SIZE/NR_THREADS
-#define SUCCESS_MSG_TRY 100
+#define SUCCESS_MSG_TRY 15
 
 #define TEST_SRC_NID 0
 #define TEST_SRC_PID 22
@@ -20,19 +20,19 @@ struct thread_data {
     void * retbuf;
 };
 
-// print struct ID 100 times
-void *printHundredIDs(void *threadarg) {
-    struct thread_data *my_data;   
+// // print struct ID 100 times
+// void *printHundredIDs(void *threadarg) {
+//     struct thread_data *my_data;   
 
-    my_data = (struct thread_data *) threadarg;
-    int i;
+//     my_data = (struct thread_data *) threadarg;
+//     int i;
 
-    for (i = 0; i < 100; i++) {
-        printf("Thread ID : %d ", my_data->thread_id);
-    }
+//     for (i = 0; i < 100; i++) {
+//         printf("Thread ID : %d ", my_data->thread_id);
+//     }
 
-    pthread_exit(NULL);
-}
+//     pthread_exit(NULL);
+// }
 
 static char * msg;
 static pthread_spinlock_t trial_result_lock;
