@@ -3,9 +3,11 @@
 #include <sys/types.h>
 #include <sys/resource.h>
 #include <stdio.h>
-#include <linux/unistd.h>
+#include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
+#include <linux/unistd.h>
+
 
 #define STATE_DEBUG_ON 0
 
@@ -38,24 +40,70 @@ static void lego_test_state_check(const char * name, size_t th_id)
 	if (STATE_DEBUG_ON) printf ("(%d) [CHECK] inputs {name: %s}\nreturns {%s}", th_id, name, STATUS(retval));
 }
 
-static int get_random_by_range(int lower, int upper)
+static int rand_by_range(int lower, int upper)
 {
 	int i;
 	return (rand() % (upper - lower + 1)) + lower;
 }
 
+static void gen_rand_alphanum(char *s, const int len) {
+	static const char alphanum[] =
+			"0123456789"
+			"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+			"abcdefghijklmnopqrstuvwxyz";
 
+	for (int i = 0; i < len; ++i) {
+		s[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
+	}
+
+	s[len] = 0;
+
+}
+
+#define MAX_ITER_PER_TH 100
+#define NAME_SIZE 3
+#define STATE_SIZE 256
 static void *state_user_thread(size_t id)
 {
-	char * name = "Bob";
-	char char_id[2] = ".";
-	char_id[0] = id + '0';
-	char state[BUFFER_SIZE] = "Bob is handled by ";
-	strcat(state, char_id);
-	sleep(get_random_by_range(1, 5));
-	lego_test_state_save(name, &state, id);
-	sleep(get_random_by_range(1, 3));
-	lego_test_state_load(name, id);
+	clock_t t;
+	char name[NAME_SIZE];
+	char state[STATE_SIZE];
+	long retval;
+	double timetaken = 0;
+	gen_rand_alphanum(name, NAME_SIZE-1);
+	gen_rand_alphanum(state, STATE_SIZE-1);
+	int func_id = rand_by_range(0, 4);
+	char buf[STATE_SIZE] = {0,};
+
+	int i;
+	for (i = 0; i < MAX_ITER_PER_TH; i++){
+		t = clock();
+
+		if (func_id == 0){
+			retval = syscall(667, name, strlen(name)+1, strlen(state)+1, state);
+		} else if (func_id == 1){
+			retval = syscall(668, name, strlen(name)+1, STATE_SIZE, buf);
+		} else if (func_id == 2){
+			retval = syscall(669, name, strlen(name)+1);
+		} else {
+			retval = syscall(670, name, strlen(name)+1);
+		}
+		t = clock() - t;
+		timetaken = timetaken + ((double)t)/CLOCKS_PER_SEC;
+	}
+
+	// End timing
+	printf("Thread[%d] Elapsed CPU time %ld\n", id, timetaken);
+
+	//	char * name = "Bob";
+	//	char char_id[2] = ".";
+	//	char_id[0] = id + '0';
+	//	char state[BUFFER_SIZE] = "Bob is handled by ";
+	//	strcat(state, char_id);
+	//	sleep(rand_by_range(1, 5));
+	//	lego_test_state_save(name, &state, id);
+	//	sleep(rand_by_range(1, 3));
+	//	lego_test_state_load(name, id);
 
 }
 
