@@ -158,7 +158,7 @@ int main() {
 
             struct timeval single_exp_time;
 
-            printf("[SENDER BEFORE SEND:%d]: %s\n", success_deliver_count, msg);
+            printf("[SENDER BEFORE SEND:%d]: %s\n", success_deliver_count, td[i].msg);
             int exp_ret = spawn_thread_and_send(&single_exp_time, tid, td);
             if (exp_ret == 0) {
                 printf("Experiment Failed: Trail [%d]\n", success_deliver_count);
