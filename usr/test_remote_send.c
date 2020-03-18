@@ -34,7 +34,6 @@ struct thread_data {
 //     pthread_exit(NULL);
 // }
 
-static char * msg;
 static pthread_spinlock_t trial_result_lock;
 // static pthread_barrier_t send_finish_barrier;
 static int nr_active_thread;
@@ -61,7 +60,7 @@ static void *thread_func(void *arg)
     if (is_leader) { gettimeofday(&ts, NULL); }
 
     printf("Thread [%d] before remote send\n", tid);
-    remote_send_reply(TEST_DST_NID, TEST_DST_PID, msg, SINGLE_PAYLOAD_SIZE, my_data->retbuf, SINGLE_PAYLOAD_SIZE);
+    remote_send_reply(TEST_DST_NID, TEST_DST_PID, my_data->msg, SINGLE_PAYLOAD_SIZE, my_data->retbuf, SINGLE_PAYLOAD_SIZE);
     printf("Thread [%d] back from remote send\n", tid);
 
     pthread_spin_lock(&trial_result_lock);
@@ -113,24 +112,28 @@ int main() {
     if (my_nid == TEST_SRC_NID) {
         printf("[SENDER]: HI I'm Sender NID: %d, PID: %d\n", my_nid, my_pid);
 
+        struct thread_data td[NR_THREADS];
+
         /* Thread data initialization stage */
         int msg_len = SINGLE_PAYLOAD_SIZE;
-        msg = malloc(SINGLE_PAYLOAD_SIZE);
+        for (int i = 0; i < NR_THREADS; i++) {
+            td[i].thread_id = i;
+            td[i].msg = malloc(SINGLE_PAYLOAD_SIZE);
 
-        if (msg == NULL) {
-            printf("msg init failed\n");
-            return;
+            if ( td[i].msg == NULL) {
+                printf("msg init failed!\n");
+                break;
+            }
         }
 
         int retlen = SINGLE_PAYLOAD_SIZE;
-        struct thread_data td[NR_THREADS];
         for (int i = 0; i < NR_THREADS; i++) {
             td[i].thread_id = i;
             td[i].retbuf = malloc(SINGLE_PAYLOAD_SIZE);
 
             if ( td[i].retbuf == NULL) {
                 printf("retbuf init failed!\n");
-                return;
+                break;
             }
         }
 
@@ -146,8 +149,12 @@ int main() {
 
             char num_buffer[20];
             sprintf(num_buffer, "%d", success_deliver_count); 
-            memset(msg, 0, msg_len);
-            strcat(msg, num_buffer);
+
+            for (int i = 0; i < NR_THREADS; i++) {
+                td[i].msg = malloc(SINGLE_PAYLOAD_SIZE);
+                memset(td[i].msg, 0, msg_len);
+                strcat(td[i].msg, num_buffer);
+            }
 
             struct timeval single_exp_time;
 
