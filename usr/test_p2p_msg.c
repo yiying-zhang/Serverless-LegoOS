@@ -12,9 +12,9 @@
 int main(void)
 {
 	const int TEST_SRC_NID = 0;
-	const int TEST_SRC_PID = 14;
+	const int TEST_SRC_PID = 18;
 	const int TEST_DST_NID = 1;
-	const int TEST_DST_PID = 14;
+	const int TEST_DST_PID = 18;
 
 	int my_nid = get_local_nid();
 	int my_pid = getpid();
