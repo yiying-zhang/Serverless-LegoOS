@@ -7,6 +7,7 @@
 #include <string.h>
 #include <pthread.h>
 #include <linux/unistd.h>
+#include "includeme.h"
 
 
 #define STATE_DEBUG_ON 0
@@ -62,7 +63,7 @@ static void gen_rand_alphanum(char *s, const int len) {
 
 #define MAX_ITER_PER_TH 100
 #define NAME_SIZE 3
-#define STATE_SIZE 256
+#define STATE_SIZE 4096
 static void *state_user_thread(size_t id)
 {
 
@@ -95,7 +96,8 @@ static void *state_user_thread(size_t id)
 		timeval_sub(&result, &te, &ts);
 
 		/* Get elapsed time in ms */
-		timetaken = timetaken + (double)result.tv_sec*1000 + (double)result.tv_usec/1000
+		printf("Thread[%d] timetaken %ld\n", id, (double)result.tv_sec*1000 + (double)result.tv_usec/1000);
+		timetaken = timetaken + (double)result.tv_sec*1000 + (double)result.tv_usec/1000;
 	}
 
 	// End timing
@@ -128,7 +130,7 @@ int main(void)
 
 	if (STATE_DEBUG_ON) printf("Creating %d threads\n", TH_NUM);
 	for(i=0;i<TH_NUM;i++) {
-		ret = pthread_create( &th[i], NULL , state_user_thread , &i);
+		ret = pthread_create( &th[i], NULL , state_user_thread , i);
 		if (ret) {
 			if (STATE_DEBUG_ON) printf("pthread_create failed at id %ld\n", i);
 		}
