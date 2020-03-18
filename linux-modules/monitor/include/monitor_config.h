@@ -54,7 +54,7 @@ const static int pnode_nids[PROCESSOR_NODE_COUNT] =
  *
  * mnode_nids:				memory node id array with size MEMORY_NODE_COUNT
  */
-#define MEMORY_NODE_COUNT		1
+#define MEMORY_NODE_COUNT		3
 #define CONFIG_MEM_NR_NODES		CONFIG_FIT_NR_NODES
 #define RR_CHOOSE_INTERVAL		4
 #define PURE_RR_CHOOSE			0
@@ -63,6 +63,8 @@ const static int pnode_nids[PROCESSOR_NODE_COUNT] =
 const static int mnode_nids[MEMORY_NODE_COUNT] =
 {
 	1,
+	2,
+	3,
 };
 
 #endif /* _LEGO_MONITOR_CONFIG_H */
