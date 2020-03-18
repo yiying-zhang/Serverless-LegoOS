@@ -7,12 +7,15 @@
 #include <string.h>
 #include <pthread.h>
 
+#define STATE_DEBUG_ON 0
+
 #define STATUS(retval) (retval == 0 ? "Success" : "Failed")
+
 
 static void lego_test_state_save(const char * name, const char * state, size_t th_id)
 {
     long retval = syscall(667, name, strlen(name)+1, strlen(state)+1, state);
-	printf ("(%d) [SAVE] inputs {name: %s, state %s}\nreturns {%s}", th_id, name, state, STATUS(retval));
+	if (STATE_DEBUG_ON) printf ("(%d) [SAVE] inputs {name: %s, state %s}\nreturns {%s}", th_id, name, state, STATUS(retval));
 }
 
 #define BUFFER_SIZE 256
@@ -20,19 +23,19 @@ static void lego_test_state_load(const char * name, size_t th_id)
 {
     char buf[BUFFER_SIZE] = {0,};
     long retval = syscall(668, name, strlen(name)+1, BUFFER_SIZE, buf);
-	printf ("(%d) [LOAD] inputs {name: %s}\nreturns {%s, state: %s}", th_id, name, STATUS(retval), buf);
+	if (STATE_DEBUG_ON) printf ("(%d) [LOAD] inputs {name: %s}\nreturns {%s, state: %s}", th_id, name, STATUS(retval), buf);
 }
 
 static void lego_test_state_delete(const char * name, size_t th_id)
 {
 	long retval = syscall(669, name, strlen(name)+1);
-	printf ("(%d) [DELETE] inputs {name: %s}\nreturns {%s}", th_id, name, STATUS(retval));
+	if (STATE_DEBUG_ON) printf ("(%d) [DELETE] inputs {name: %s}\nreturns {%s}", th_id, name, STATUS(retval));
 }
 
 static void lego_test_state_check(const char * name, size_t th_id)
 {
 	long retval = syscall(670, name, strlen(name)+1);
-	printf ("(%d) [CHECK] inputs {name: %s}\nreturns {%s}", th_id, name, STATUS(retval));
+	if (STATE_DEBUG_ON) printf ("(%d) [CHECK] inputs {name: %s}\nreturns {%s}", th_id, name, STATUS(retval));
 }
 
 static int get_random_by_range(int lower, int upper)
@@ -60,7 +63,7 @@ static void *state_user_thread(size_t id)
 #define TH_NUM 5
 int main(void)
 {
-	printf("Test starts\n");
+	if (STATE_DEBUG_ON) printf("Test starts\n");
 	int ret;
 	pthread_t th[TH_NUM];
 	unsigned int args[TH_NUM];
@@ -69,21 +72,21 @@ int main(void)
 
 	size_t i;
 
-	printf("Creating %d threads\n", TH_NUM);
+	if (STATE_DEBUG_ON) printf("Creating %d threads\n", TH_NUM);
 	for(i=0;i<TH_NUM;i++) {
 		ret = pthread_create( &th[i], NULL , state_user_thread , i);
 		if (ret) {
-			printf("pthread_create failed at id %ld\n", i);
+			if (STATE_DEBUG_ON) printf("pthread_create failed at id %ld\n", i);
 		}
 	}
 
-	printf("Waiting %d threads to finish\n", TH_NUM);
+	if (STATE_DEBUG_ON) printf("Waiting %d threads to finish\n", TH_NUM);
 
 	for(i=0;i<TH_NUM;i++) {
 		pthread_join(th[i], NULL);
 	}
 
-	printf("Test exits successfully\n");
+	if (STATE_DEBUG_ON) printf("Test exits successfully\n");
 
 }
 
