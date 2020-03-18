@@ -65,11 +65,12 @@ static void gen_rand_alphanum(char *s, const int len) {
 #define STATE_SIZE 256
 static void *state_user_thread(size_t id)
 {
-	clock_t t;
+
+	struct timeval ts, te, result;
+
 	char name[NAME_SIZE];
 	char state[STATE_SIZE];
 	long retval;
-	double timetaken = 0;
 	gen_rand_alphanum(name, NAME_SIZE-1);
 	gen_rand_alphanum(state, STATE_SIZE-1);
 	int func_id = rand_by_range(0, 4);
@@ -77,7 +78,8 @@ static void *state_user_thread(size_t id)
 
 	int i;
 	for (i = 0; i < MAX_ITER_PER_TH; i++){
-		t = clock();
+
+		gettimeofday(&ts, NULL);
 
 		if (func_id == 0){
 			retval = syscall(667, name, strlen(name)+1, strlen(state)+1, state);
@@ -88,8 +90,12 @@ static void *state_user_thread(size_t id)
 		} else {
 			retval = syscall(670, name, strlen(name)+1);
 		}
-		t = clock() - t;
-		timetaken = timetaken + ((double)t)/CLOCKS_PER_SEC;
+
+		gettimeofday(&te, NULL);
+		timeval_sub(&result, &te, &ts);
+
+		/* Get elapsed time in ms */
+		timetaken = timetaken + (double)result.tv_sec*1000 + (double)result.tv_usec/1000
 	}
 
 	// End timing
