@@ -67,7 +67,6 @@ static void *state_user_thread(size_t id)
 {
 
 	struct timeval ts, te, result;
-
 	char name[NAME_SIZE];
 	char state[STATE_SIZE];
 	long retval;
@@ -75,6 +74,7 @@ static void *state_user_thread(size_t id)
 	gen_rand_alphanum(state, STATE_SIZE-1);
 	int func_id = rand_by_range(0, 4);
 	char buf[STATE_SIZE] = {0,};
+	double timetaken = 0;
 
 	int i;
 	for (i = 0; i < MAX_ITER_PER_TH; i++){
@@ -128,7 +128,7 @@ int main(void)
 
 	if (STATE_DEBUG_ON) printf("Creating %d threads\n", TH_NUM);
 	for(i=0;i<TH_NUM;i++) {
-		ret = pthread_create( &th[i], NULL , state_user_thread , i);
+		ret = pthread_create( &th[i], NULL , state_user_thread , &i);
 		if (ret) {
 			if (STATE_DEBUG_ON) printf("pthread_create failed at id %ld\n", i);
 		}
