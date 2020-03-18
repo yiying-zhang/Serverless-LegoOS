@@ -96,12 +96,12 @@ static void *state_user_thread(size_t id)
 		timeval_sub(&result, &te, &ts);
 
 		/* Get elapsed time in ms */
-		printf("Thread[%d] timetaken %ld\n", id, (double)result.tv_sec*1000 + (double)result.tv_usec/1000);
-		timetaken = timetaken + (double)result.tv_sec*1000 + (double)result.tv_usec/1000;
+		printf("Thread[%d] timetaken %lf\n", id, (double)result.tv_sec + (double)result.tv_usec/(double)1000000);
+		timetaken = timetaken + (double)result.tv_sec + (double)result.tv_usec/(double)1000000;
 	}
 
 	// End timing
-	printf("Thread[%d] Elapsed CPU time %ld\n", id, timetaken);
+	printf("Thread[%d] Elapsed CPU time %lf\n", id, timetaken);
 
 	//	char * name = "Bob";
 	//	char char_id[2] = ".";
@@ -116,7 +116,7 @@ static void *state_user_thread(size_t id)
 }
 
 
-#define TH_NUM 5
+#define TH_NUM 1
 int main(void)
 {
 	if (STATE_DEBUG_ON) printf("Test starts\n");
