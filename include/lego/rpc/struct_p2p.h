@@ -14,7 +14,7 @@
 #include <lego/types.h>
 #include <lego/kernel.h>
 
-#define MAX_P2P_MSG_LEN 20000
+#define MAX_P2P_MSG_LEN 1024
 
 struct p2p_msg_hdr {
 	unsigned int opcode;		/* OPCODE should be useless in our case */
