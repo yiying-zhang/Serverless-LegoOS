@@ -51,7 +51,7 @@ int main(void)
 			strcat(msg, digit);
 
 			printf("[SENDER BEFORE SEND:%d]: %s\n", success_deliver_count, msg);
-			remote_send_reply(TEST_DST_NID, TEST_DST_PID, msg, msg_len, retbuf, retlen);
+			remote_send_reply(TEST_DST_NID, my_pid, msg, msg_len, retbuf, retlen);
 			printf("[SENDER DONE SEND ITE:%d]: %s\n", success_deliver_count, retbuf);
 			
 			success_deliver_count += 1;

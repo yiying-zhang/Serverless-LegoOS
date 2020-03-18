@@ -984,6 +984,7 @@ SYSCALL_DEFINE2(remote_recv, void __user *, recv_msg, unsigned long, recv_size)
 	spin_unlock(&(p->msg_list_lock));
 
 	copy_to_user(recv_msg, r_msg->msg, r_msg->msg_size);
+	kfree(r_msg);
 
 	return r_msg->msg_size;
 }
