@@ -43,9 +43,11 @@ static struct timeval ts, te;
 static void *thread_func(void *arg)
 {
     // int tid = gettid();
-    // printf("Thread [%d] running\n", tid);
 
     struct thread_data *my_data = (struct thread_data *) arg;
+    int tid = my_data->thread_id;
+    printf("Thread [%d] running\n", tid);
+
 
     int is_leader = 0;
     pthread_spin_lock(&trial_result_lock);
