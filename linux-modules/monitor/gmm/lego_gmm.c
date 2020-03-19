@@ -197,7 +197,7 @@ int handle_p2mm_state_lookup(struct p2mm_state_lookup *payload) {
     char * key_copy = payload->name;
     while (*key_copy)
     {
-        h = (o * h + *key++) % MEMORY_NODE_COUNT;
+        h = (o * h + *key_copy++) % MEMORY_NODE_COUNT;
         o = o * t % (MEMORY_NODE_COUNT - 1);
     }
     node = h;
