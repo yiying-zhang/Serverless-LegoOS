@@ -10,9 +10,9 @@
 #define SUCCESS_MSG_TRY 10
 
 #define TEST_SRC_NID 0
-#define TEST_SRC_PID 18
+#define TEST_SRC_PID 24
 #define TEST_DST_NID 1
-#define TEST_DST_PID 18
+#define TEST_DST_PID 24
 
 struct thread_data {
     int  thread_id;
