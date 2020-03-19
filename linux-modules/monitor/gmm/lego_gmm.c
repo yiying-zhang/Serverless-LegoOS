@@ -205,6 +205,7 @@ int handle_p2mm_state_lookup(struct p2mm_state_lookup *payload) {
     pr_info("lego memory monitor chose mnode %d for state name %s\n", node, payload->name);
     return 1;
 }
+EXPORT_SYMBOL(handle_p2mm_state_lookup);
 
 module_init(lego_gmm_module_init);
 module_exit(lego_gmm_module_exit);
