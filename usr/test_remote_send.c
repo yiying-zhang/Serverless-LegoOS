@@ -86,7 +86,7 @@ int spawn_thread_and_send(struct timeval * time_span, pthread_t * tid, struct th
         //     thread_init_failed = 1;
         //     break;
         // }
-        thread_func((void *)td[0]);
+        thread_func((void *)&td[0]);
     }
     if (thread_init_failed) { return 0; }
 
