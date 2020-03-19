@@ -4,8 +4,8 @@
 #include <pthread.h>
 #include <string.h>
 
-#define NR_THREADS 2
-#define TOTAL_PAYLOAD_SIZE 1024
+#define NR_THREADS 1
+#define TOTAL_PAYLOAD_SIZE 512
 #define SINGLE_PAYLOAD_SIZE TOTAL_PAYLOAD_SIZE/NR_THREADS
 #define SUCCESS_MSG_TRY 30
 
@@ -42,8 +42,8 @@ static struct timeval ts, te;
 
 static void *thread_func(void *arg)
 {
-    int tid = gettid();
-    printf("Thread [%d] running\n", tid);
+    // int tid = gettid();
+    // printf("Thread [%d] running\n", tid);
 
     struct thread_data *my_data = (struct thread_data *) arg;
 
@@ -67,7 +67,7 @@ static void *thread_func(void *arg)
     nr_active_thread -= 1;
     if (nr_active_thread == 0) { gettimeofday(&te, NULL); }
     pthread_spin_unlock(&trial_result_lock);
-    pthread_exit(NULL);
+    // pthread_exit(NULL);
 }
 
 int spawn_thread_and_send(struct timeval * time_span, pthread_t * tid, struct thread_data * td) {
@@ -78,12 +78,13 @@ int spawn_thread_and_send(struct timeval * time_span, pthread_t * tid, struct th
 
     int thread_init_failed = 0;
     for (int i = 0; i < NR_THREADS; i++) {
-        int ret = pthread_create(&tid[i], NULL, thread_func, (void *)&td[i]);
-        if (ret) {
-            die("fail to create new thread");
-            thread_init_failed = 1;
-            break;
-        }
+        // int ret = pthread_create(&tid[i], NULL, thread_func, (void *)&td[i]);
+        // if (ret) {
+        //     die("fail to create new thread");
+        //     thread_init_failed = 1;
+        //     break;
+        // }
+        thread_func((void *)td[0]);
     }
     if (thread_init_failed) { return 0; }
 
