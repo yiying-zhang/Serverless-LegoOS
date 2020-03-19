@@ -13,7 +13,9 @@
 #ifdef CONFIG_GMM
 void __init gmm_init(void);
 #else
-static inline void gmm_init(void) { }
+static inline void gmm_init(void) {
+    pr_info("HEY! CONFIG_GMM does not defined"); // TBR: to be removed for testing
+}
 #endif
 
 #endif /* _GMM_HANDLER_H */
