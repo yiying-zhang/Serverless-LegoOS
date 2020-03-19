@@ -118,7 +118,7 @@ static void *state_user_thread(size_t id)
 
 }
 
-#define TH_NUM 4
+#define TH_NUM 2
 int main(void)
 {
 	if (STATE_DEBUG_ON) printf("Test starts\n");
