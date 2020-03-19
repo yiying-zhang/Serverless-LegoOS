@@ -98,6 +98,8 @@ int spawn_thread_and_send(struct timeval * time_span, pthread_t * tid, struct th
 
     timeval_sub(time_span, &te, &ts);
 
+    printf("Time Span Sub Finished\n");
+
     return 1;
 }
 
@@ -169,10 +171,12 @@ int main() {
                 printf("Experiment Failed: Trail [%d]\n", success_deliver_count);
                 continue;
             }
+            printf("[SENDER DONE SEND ITE:%d]: %s\n", success_deliver_count);
+
 
             timeval_add_res(&final_result, &final_result, &single_exp_time);
+            printf("[SENDER ITE: %d] time computation finished\n", success_deliver_count);
             success_deliver_count += 1;
-            printf("[SENDER DONE SEND ITE:%d]: %s\n", success_deliver_count);
 
             fprintf(stderr, "(nr=%d)(tot_payload=%d)\tTotal Time [%ld.%ld (s)]\tAverage Time [%ld (ns)]\n",
                 success_deliver_count, TOTAL_PAYLOAD_SIZE, final_result.tv_sec, final_result.tv_usec/1000,
