@@ -61,7 +61,7 @@ static void gen_rand_alphanum(char *s, const int len) {
 
 }
 
-#define MAX_ITER_PER_TH 100
+#define MAX_ITER_PER_TH 10000
 #define NAME_SIZE 3
 #define STATE_SIZE 4096
 static void *state_user_thread(size_t id)
@@ -96,8 +96,8 @@ static void *state_user_thread(size_t id)
 		timeval_sub(&result, &te, &ts);
 
 		/* Get elapsed time in ms */
-		printf("Thread[%d] timetaken %lf\n", id, (double)result.tv_sec + (double)result.tv_usec/(double)1000000);
-		timetaken = timetaken + (double)result.tv_sec + (double)result.tv_usec/(double)1000000;
+//		printf("Thread[%d] timetaken %lf\n", id, (double)result.tv_sec + (double)result.tv_usec/(double)1000000);
+		timetaken = timetaken + (double)result.tv_sec*(double)1000 + (double)result.tv_usec/(double)1000;
 	}
 
 	// End timing
@@ -116,7 +116,7 @@ static void *state_user_thread(size_t id)
 }
 
 
-#define TH_NUM 1
+#define TH_NUM 5
 int main(void)
 {
 	if (STATE_DEBUG_ON) printf("Test starts\n");
