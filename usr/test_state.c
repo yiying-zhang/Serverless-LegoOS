@@ -62,9 +62,8 @@ static void gen_rand_alphanum(char *s, const int len) {
 }
 
 #define MAX_ITER_PER_TH 10000
-#define NAME_SIZE 5
-#define STATE_SIZE 1048576
-#define TH_NUM 4
+#define NAME_SIZE 4
+#define STATE_SIZE 2048
 
 static void *state_user_thread(size_t id)
 {
@@ -117,7 +116,7 @@ static void *state_user_thread(size_t id)
 
 }
 
-
+#define TH_NUM 4
 int main(void)
 {
 	if (STATE_DEBUG_ON) printf("Test starts\n");
