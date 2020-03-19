@@ -89,7 +89,9 @@ int spawn_thread_and_send(struct timeval * time_span, pthread_t * tid, struct th
 
     printf("Thread creation all done\n");
     for (int i = 0; i < NR_THREADS; i++) {
+        printf("THREAD BEFORE JOIN: %d\n", i);
         pthread_join(tid[i], NULL);
+        printf("THREAD AFTER JOIN: %d\n", i);
     }
 
     printf("Thread all joined\n");
@@ -156,6 +158,8 @@ int main() {
                 memset(td[i].msg, 0, msg_len);
                 strcat(td[i].msg, num_buffer);
             }
+
+            memset(tid, 0, sizeof(pthread_t) * NR_THREADS);
 
             struct timeval single_exp_time;
 
