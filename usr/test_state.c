@@ -61,7 +61,7 @@ static void gen_rand_alphanum(char *s, const int len) {
 
 }
 
-#define MAX_ITER_PER_TH 5000
+#define MAX_ITER_PER_TH 20000
 #define NAME_SIZE 5
 #define STATE_SIZE 2048
 
@@ -72,14 +72,16 @@ static void *state_user_thread(size_t id)
 	char name[NAME_SIZE];
 	char state[STATE_SIZE];
 	long retval;
-	gen_rand_alphanum(name, NAME_SIZE-1);
-	gen_rand_alphanum(state, STATE_SIZE-1);
-	int func_id = rand_by_range(0, 4);
+
+	int func_id;
 	char buf[STATE_SIZE] = {0,};
 	double timetaken = 0;
 
 	int i;
 	for (i = 0; i < MAX_ITER_PER_TH; i++){
+		func_id = rand_by_range(0, 3);
+		gen_rand_alphanum(name, NAME_SIZE-1);
+		gen_rand_alphanum(state, STATE_SIZE-1);
 
 		gettimeofday(&ts, NULL);
 
