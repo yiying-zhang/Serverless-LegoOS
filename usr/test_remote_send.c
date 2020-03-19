@@ -67,12 +67,12 @@ static void *thread_func(void *arg)
     // nr_active_thread -= 1;
     // if (nr_active_thread == 0) { gettimeofday(&te, NULL); }
     // pthread_spin_unlock(&trial_result_lock);
+    pthread_exit(NULL);
 }
 
 int spawn_thread_and_send(struct timeval * time_span, pthread_t * tid, struct thread_data * td) {
 
     // pthread_barrier_init(&send_finish_barrier, NULL, NR_THREADS);
-    pthread_spin_init(&trial_result_lock, PTHREAD_PROCESS_PRIVATE);
 
     printf("Finished barrier setup and spin init\n");
 
@@ -142,6 +142,8 @@ int main() {
         timeval_sub(&final_result, &final_result, &final_result);
 
         pthread_t tid[NR_THREADS];
+
+        pthread_spin_init(&trial_result_lock, PTHREAD_PROCESS_PRIVATE);
 
         while (success_deliver_count < SUCCESS_MSG_TRY) {
 
