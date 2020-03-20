@@ -22,7 +22,7 @@ static int lookup_mnode_for_state_name(char* name, int name_size, int* reply)
 {
     int ret = 0;
 
-#ifdef CONFIG_GMM
+#ifdef CONFIG_USE_GMM
     printk("Using GMM to look for state memory node\n");
 
     struct p2mm_state_lookup* payload;
@@ -40,7 +40,7 @@ static int lookup_mnode_for_state_name(char* name, int name_size, int* reply)
     printk("Using default memory node as state memory node\n");
     *reply = DEF_MEM_HOMENODE;
 
-#endif /* CONFIG_GMM */
+#endif /* CONFIG_USE_GMM */
 
     return ret;
 }
