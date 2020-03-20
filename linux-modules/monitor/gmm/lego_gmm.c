@@ -191,17 +191,21 @@ int handle_p2mm_state_lookup(struct p2mm_state_lookup *payload, u64 desc, struct
     int ret;
     int node;
 
-//    unsigned int h = 0;
-//    unsigned int o = 31415;
-//    const unsigned int t = 27183;
-//    char * key_copy = payload->name;
-//    while (*key_copy)
-//    {
-//        h = (o * h + *key_copy++) % MEMORY_NODE_COUNT;
-//        o = o * t % (MEMORY_NODE_COUNT - 1);
-//    }
-//    node = h;
-    node = 3;
+//    char name[payload->name_size] = payload->name;
+
+    unsigned int h = 0;
+    unsigned int o = 31415;
+    const unsigned int t = 27183;
+
+    char * key = &payload->name;
+    while (*key)
+    {
+        h = (o * h + *key++) % MEMORY_NODE_COUNT;
+        o = o * t % (MEMORY_NODE_COUNT - 1);
+    }
+
+    node = h;
+
     pr_info("lego memory monitor chose mnode %d\n", node);
     ret = ibapi_reply_message(&node, sizeof(node), desc);
     pr_info("lego memory monitor reply message have ret %d\n", ret);
