@@ -159,6 +159,23 @@ config VNODE_MAP_ORDER
 
 	  If unsure, use default.
 endif #if GPM
+
+config USE_GMM
+	bool "Global memory monitor"
+	default n
+	help
+	  Enable this to use Global memory monitor
+
+if USE_GMM
+config GMM_NODEID
+	int "GMM IB node ID"
+	default 3
+	help
+	  if running a multiple monitor on same machine, IB node
+	  ID can be same as Storage node, GPM and GSM's
+
+endif #if GMM
+
 endmenu
 
 menu "Processor Side DEBUG Options"

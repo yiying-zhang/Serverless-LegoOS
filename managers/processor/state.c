@@ -82,6 +82,7 @@ SYSCALL_DEFINE4(state_save, char*, name, unsigned long, name_size, unsigned long
 
     // Consulting mm for state mnode
     p2mm_ret = lookup_mnode_for_state_name(name, name_size, &mnode);
+    printk("lookup_mnode says: use node %d ", p2mm_ret);
     if (p2mm_ret < 0 || mnode < 0) {
         retval = -1; // no valid mnode for state
         goto OUT;
