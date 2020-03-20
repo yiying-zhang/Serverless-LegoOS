@@ -7,7 +7,7 @@
 #define NR_THREADS 1
 #define TOTAL_PAYLOAD_SIZE 512
 #define SINGLE_PAYLOAD_SIZE TOTAL_PAYLOAD_SIZE/NR_THREADS
-#define SUCCESS_MSG_TRY 30
+#define SUCCESS_MSG_TRY 5
 
 #define TEST_SRC_NID 0
 #define TEST_SRC_PID 24
@@ -61,9 +61,9 @@ static void *thread_func(void *arg)
 
     if (is_leader) { gettimeofday(&ts, NULL); }
 
-    printf("Thread [%d] before remote send\n", tid);
+    // printf("Thread [%d] before remote send\n", tid);
     remote_send_reply(TEST_DST_NID, TEST_DST_PID, my_data->msg, SINGLE_PAYLOAD_SIZE, my_data->retbuf, SINGLE_PAYLOAD_SIZE);
-    printf("Thread [%d] back from remote send\n", tid);
+    // printf("Thread [%d] back from remote send\n", tid);
 
     pthread_spin_lock(&trial_result_lock);
     nr_active_thread -= 1;
@@ -71,8 +71,6 @@ static void *thread_func(void *arg)
     pthread_spin_unlock(&trial_result_lock);
 
     printf("Thread [%d] back te setting\n", tid);
-
-
     pthread_exit(NULL);
 }
 
