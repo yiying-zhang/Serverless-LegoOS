@@ -4,8 +4,8 @@
 #include <pthread.h>
 #include <string.h>
 
-#define NR_THREADS 2
-#define TOTAL_PAYLOAD_SIZE 1024
+#define NR_THREADS 1
+#define TOTAL_PAYLOAD_SIZE 512
 #define SINGLE_PAYLOAD_SIZE TOTAL_PAYLOAD_SIZE/NR_THREADS
 #define SUCCESS_MSG_TRY 3
 
