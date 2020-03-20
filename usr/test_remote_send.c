@@ -7,7 +7,7 @@
 #define NR_THREADS 1
 #define TOTAL_PAYLOAD_SIZE 512
 #define SINGLE_PAYLOAD_SIZE TOTAL_PAYLOAD_SIZE/NR_THREADS
-#define SUCCESS_MSG_TRY 3
+#define SUCCESS_MSG_TRY 11
 
 #define TEST_SRC_NID 0
 #define TEST_SRC_PID 24
@@ -96,7 +96,7 @@ int spawn_thread_and_send(struct timeval * time_span, pthread_t * tid, struct th
     printf("Thread creation all done\n");
     for (int i = 0; i < NR_THREADS; i++) {
         printf("THREAD BEFORE JOIN: %d\n", i);
-        pthread_join(tid[i], NULL);
+        // pthread_join(tid[i], NULL);
         printf("THREAD AFTER JOIN: %d\n", i);
     }
 
