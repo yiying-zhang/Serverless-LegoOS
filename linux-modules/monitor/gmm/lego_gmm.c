@@ -187,7 +187,7 @@ static void __exit lego_gmm_module_exit(void)
 int handle_p2mm_state_lookup(struct p2mm_state_lookup *payload) {
     pr_info("lego memory monitor module state lookup is called.\n");
     pr_info("lego memory monitor says we have %d memory nodes\n", MEMORY_NODE_COUNT);
-
+    pr_info("lego memory monitor before %d\n", 1);
     //TODO: add hash function, hashing payload->name
     int node;
 
@@ -202,7 +202,7 @@ int handle_p2mm_state_lookup(struct p2mm_state_lookup *payload) {
 //    }
 //    node = h;
     node = 1;
-    pr_info("lego memory monitor chose mnode %d\n", node);
+    pr_info("lego memory monitor chose mnode %d\n", 1);
     return 1;
 }
 EXPORT_SYMBOL(handle_p2mm_state_lookup);
