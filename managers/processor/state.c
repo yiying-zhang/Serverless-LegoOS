@@ -58,13 +58,14 @@ static int lookup_mnode_for_state_name(char* name, int name_size, int* reply)
     }
     payload->name_size = name_size;
 
-    retlen = ibapi_send_reply_imm(CONFIG_GMM_NODEID, msg, len_msg, reply, sizeof(reply), false);
+    retlen = ibapi_send_reply_timeout(CONFIG_GMM_NODEID, msg, len_msg, reply, sizeof(reply), false, 10);
 
     /* check return value */
     if(retlen == -ETIMEDOUT){
         retval = -ETIMEDOUT;
         goto OUT;
     }
+    retval = *reply;
 
     printk("p2mm messaging returned with ret code: %d\n", retval);
     printk("p2mm messaging returned with reply mnode: %d\n", *reply);
