@@ -24,6 +24,10 @@
 static inline void state_debug(const char *fmt, ...) { }
 #endif
 
+#define state_err(fmt, ...)						\
+	state_debug("%s()-%d CPU%2d " fmt "\n",				\
+		__func__, __LINE__, smp_processor_id(), __VA_ARGS__)
+
 /**
  * hash_func - hash a string to unsigned long given table size
  * @key: key string to be hashed
