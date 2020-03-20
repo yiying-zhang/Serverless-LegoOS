@@ -66,8 +66,8 @@ static int lookup_mnode_for_state_name(char* name, int name_size, int* reply)
         goto OUT;
     }
 
-    printk("p2mm messaging returned with ret code: %d\n", ret);
-    printk("p2mm messaging returned with reply mnode: %d\n", reply);
+    printk("p2mm messaging returned with ret code: %d\n", retval);
+    printk("p2mm messaging returned with reply mnode: %d\n", *reply);
 
 #else
     // GMM not set, only one memory node available
