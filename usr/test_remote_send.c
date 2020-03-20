@@ -4,10 +4,10 @@
 #include <pthread.h>
 #include <string.h>
 
-#define NR_THREADS 1
+#define NR_THREADS 2
 #define SINGLE_PAYLOAD_SIZE 4096
 #define TOTAL_PAYLOAD_SIZE SINGLE_PAYLOAD_SIZE * NR_THREADS
-#define SUCCESS_MSG_TRY 10
+#define SUCCESS_MSG_TRY 5
 
 #define TEST_SRC_NID 0
 #define TEST_SRC_PID 24
