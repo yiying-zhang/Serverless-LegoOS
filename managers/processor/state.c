@@ -22,8 +22,7 @@ static inline void state_debug(const char *fmt, ...) { }
 #endif
 
 #define state_err(fmt, ...)						\
-	pr_debug("%s()-%d CPU%2d " fmt "\n",				\
-		__func__, __LINE__, smp_processor_id(), __VA_ARGS__)
+	pr_debug("%s():%d " fmt, __func__, __LINE__, __VA_ARGS__)
 
 static int lookup_mnode_for_state_name(char* name, int name_size, int* reply)
 {
