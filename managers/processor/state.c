@@ -16,7 +16,7 @@
 
 #ifdef CONFIG_DEBUG_STATE
 #define state_debug(fmt, ...) \
-	pr_debug("%s():%d " fmt, __func__, __LINE__, __VA_ARGS__)
+	printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
 #else
 static inline void state_debug(const char *fmt, ...) { }
 #endif

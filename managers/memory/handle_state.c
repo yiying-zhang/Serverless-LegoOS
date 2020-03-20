@@ -17,13 +17,13 @@
 
 #ifdef CONFIG_DEBUG_STATE
 #define state_debug(fmt, ...) \
-	pr_debug("%s():%d " fmt, __func__, __LINE__, __VA_ARGS__)
+	printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
 #else
 static inline void state_debug(const char *fmt, ...) { }
 #endif
 
 #define state_err(fmt, ...)	\
-	pr_err(fmt, __func__, __LINE__, __VA_ARGS__)
+	printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
 
 /**
  * hash_func - hash a string to unsigned long given table size
