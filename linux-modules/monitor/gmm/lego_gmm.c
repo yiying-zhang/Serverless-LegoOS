@@ -193,9 +193,11 @@ int handle_p2mm_state_lookup(struct p2mm_state_lookup *payload, u64 desc, struct
     unsigned int o = 31415;
     const unsigned int t = 27183;
 
-    int loc = 0;
-    while (loc < payload->name_size){
-        h = (o * h + payload->name[loc++]) % MEMORY_NODE_COUNT;
+    char * key = &(payload->name);
+    while (*key)
+    {
+        pr_info("%c",*key);
+        h = (o * h + *key++) % MEMORY_NODE_COUNT;
         o = o * t % (MEMORY_NODE_COUNT - 1);
     }
 
