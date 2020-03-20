@@ -20,20 +20,54 @@
 
 static int lookup_mnode_for_state_name(char* name, int name_size, int* reply)
 {
-    int ret = 0;
+    int retval = 0;
 
 #ifdef CONFIG_USE_GMM
     printk("Using GMM to look for state memory node\n");
 
+//    struct p2mm_state_lookup* payload;
+//    payload = kmalloc(sizeof(struct p2mm_state_lookup), GFP_KERNEL);
+//    payload->name = name;
+//    payload->name_size = name_size;
+//
+//    ret = ibapi_send_reply_imm(CONFIG_GMM_NODEID, P2MM_STATE_LOOKUP,
+//            payload, sizeof(struct p2mm_state_lookup),
+//            reply, sizeof(int),
+//            false);
+//    printk("p2mm messaging return with code: %d\n": ret);
+
+    ssize_t retlen;
+    u32 len_msg;
+    void *msg;
+    struct common_header* hdr;
     struct p2mm_state_lookup* payload;
-    payload = kmalloc(sizeof(struct p2mm_state_lookup), GFP_KERNEL);
-    payload->name = name;
+
+    len_msg = sizeof(*hdr) + sizeof(*payload);
+    msg = kmalloc(len_msg, GFP_KERNEL);
+    if(!msg)
+        return -ENOMEM;
+
+    hdr = (struct common_header *)msg;
+    hdr->opcode = P2MM_STATE_LOOKUP;
+    hdr->src_nid = LEGO_LOCAL_NID;
+    payload = to_payload(msg);
+
+    if(copy_from_user(payload->name, name, name_size)){
+        retval = -EFAULT;
+        goto OUT;
+    }
     payload->name_size = name_size;
 
-    ret = net_send_reply_timeout(CONFIG_GMM_NODEID, P2MM_STATE_LOOKUP,
-            payload, sizeof(struct p2mm_state_lookup),
-            reply, sizeof(int),
-            false, DEF_NET_TIMEOUT);
+    retlen = ibapi_send_reply_imm(CONFIG_GMM_NODEID, msg, len_msg, reply, sizeof(reply), false);
+
+    /* check return value */
+    if(retlen == -ETIMEDOUT){
+        retval = -ETIMEDOUT;
+        goto OUT;
+    }
+
+    printk("p2mm messaging returned with ret code: %d\n": ret);
+    printk("p2mm messaging returned with reply mnode: %d\n": reply);
 
 #else
     // GMM not set, only one memory node available
@@ -85,6 +119,7 @@ SYSCALL_DEFINE4(state_save, char*, name, unsigned long, name_size, unsigned long
     printk("lookup_mnode says: use node %d ", p2mm_ret);
     if (p2mm_ret < 0 || mnode < 0) {
         retval = -1; // no valid mnode for state
+        printk("Invalid mnode for state save\n");
         goto OUT;
     }
 

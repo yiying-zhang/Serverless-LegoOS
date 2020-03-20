@@ -191,18 +191,18 @@ int handle_p2mm_state_lookup(struct p2mm_state_lookup *payload) {
     //TODO: add hash function, hashing payload->name
     int node;
 
-    unsigned int h = 0;
-    unsigned int o = 31415;
-    const unsigned int t = 27183;
-    char * key_copy = payload->name;
-    while (*key_copy)
-    {
-        h = (o * h + *key_copy++) % MEMORY_NODE_COUNT;
-        o = o * t % (MEMORY_NODE_COUNT - 1);
-    }
-    node = h;
-
-    pr_info("lego memory monitor chose mnode %d for state name %s\n", node, payload->name);
+//    unsigned int h = 0;
+//    unsigned int o = 31415;
+//    const unsigned int t = 27183;
+//    char * key_copy = payload->name;
+//    while (*key_copy)
+//    {
+//        h = (o * h + *key_copy++) % MEMORY_NODE_COUNT;
+//        o = o * t % (MEMORY_NODE_COUNT - 1);
+//    }
+//    node = h;
+    node = 1;
+    pr_info("lego memory monitor chose mnode %d\n", node);
     return 1;
 }
 EXPORT_SYMBOL(handle_p2mm_state_lookup);
