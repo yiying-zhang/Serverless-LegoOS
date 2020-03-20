@@ -202,7 +202,7 @@ int handle_p2mm_state_lookup(struct p2mm_state_lookup *payload) {
 //    }
 //    node = h;
     node = 1;
-    pr_info("lego memory monitor chose mnode %d\n", node);
+    pr_info("lego memory monitor chose mnode %d\n", node)//;
     return 1;
 }
 EXPORT_SYMBOL(handle_p2mm_state_lookup);
