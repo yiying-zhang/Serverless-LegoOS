@@ -10,7 +10,7 @@
 #include "includeme.h"
 
 
-#define STATE_DEBUG_ON 0
+#define STATE_DEBUG_ON 1
 
 #define STATUS(retval) (retval == 0 ? "Success" : "Failed")
 

@@ -365,6 +365,13 @@ config DEBUG_PIPE
 
 	  If unsure, say N.
 
+config DEBUG_STATE
+	bool "Debug state"
+	default n
+	help
+	  Enable this to debug state management subsystem. This option only enables
+	  debug information on processor side.
+
 endmenu # "Debug Option"
 
 endif	# if COMP_PROCESSOR
