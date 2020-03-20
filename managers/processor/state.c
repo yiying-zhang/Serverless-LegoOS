@@ -26,7 +26,7 @@ static int lookup_mnode_for_state_name(char* name, int name_size, int* reply)
     printk("Using GMM to look for state memory node\n");
 
     struct p2mm_state_lookup* payload;
-    payload = kmalloc(sizeof(p2mm_state_lookup), GFP_KERNEL);
+    payload = kmalloc(sizeof(struct p2mm_state_lookup), GFP_KERNEL);
     payload->name = name;
     payload->name_size = name_size;
 
