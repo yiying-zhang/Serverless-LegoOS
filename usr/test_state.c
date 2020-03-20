@@ -35,6 +35,13 @@ static void lego_test_state_check(const char * name, size_t th_id)
 	printf ("(%d) [CHECK] inputs {name: %s}\nreturns {%s}", th_id, name, STATUS(retval));
 }
 
+static int get_random_by_range(int lower, int upper)
+{
+	int i;
+	return (rand() % (upper - lower + 1)) + lower;
+}
+
+
 static void *state_user_thread(size_t id)
 {
 	char * name = "Bob";
@@ -42,18 +49,23 @@ static void *state_user_thread(size_t id)
 	char_id[0] = id + '0';
 	char state[BUFFER_SIZE] = "Bob is handled by ";
 	strcat(state, char_id);
+	sleep(get_random_by_range(1, 5));
 	lego_test_state_save(name, &state, id);
+	sleep(get_random_by_range(1, 3));
 	lego_test_state_load(name, id);
 
 }
 
 
-#define TH_NUM 10
+#define TH_NUM 5
 int main(void)
 {
+	printf("Test starts\n");
 	int ret;
 	pthread_t th[TH_NUM];
 	unsigned int args[TH_NUM];
+
+	setbuf(stdout, NULL);
 
 	size_t i;
 
@@ -62,7 +74,6 @@ int main(void)
 		ret = pthread_create( &th[i], NULL , state_user_thread , i);
 		if (ret) {
 			printf("pthread_create failed at id %ld\n", i);
-			exit(-1);
 		}
 	}
 
