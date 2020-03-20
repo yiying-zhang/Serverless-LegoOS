@@ -26,14 +26,13 @@ static int lookup_mnode_for_state_name(char* name, int name_size, int* reply)
     printk("Using GMM to look for state memory node\n");
 
     struct p2mm_state_lookup* payload;
-    int reply;
-    payload = kmalloc(sizeof(p2mm_state_lookup), GFP_KERNEL)
+    payload = kmalloc(sizeof(p2mm_state_lookup), GFP_KERNEL);
     payload->name = name;
     payload->name_size = name_size;
 
     ret = net_send_reply_timeout(CONFIG_GMM_NODEID, P2MM_STATE_LOOKUP,
             payload, sizeof(struct p2mm_state_lookup),
-            &reply, sizeof(int),
+            reply, sizeof(int),
             false, DEF_NET_TIMEOUT);
 
 #else
