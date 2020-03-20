@@ -61,20 +61,20 @@ static void gen_rand_alphanum(char *s, const int len) {
 
 }
 
-#define MAX_ITER_PER_TH 500
+#define MAX_ITER_PER_TH 10000
 #define NAME_SIZE 25
-#define STATE_SIZE 8192
+#define STATE_SIZE 1024
 
 static void *state_user_thread(size_t id)
 {
 
 	struct timeval ts, te, result;
 	char name[NAME_SIZE];
-	char * state = malloc(STATE_SIZE);
+	char state[STATE_SIZE];
 	long retval;
 
 	int func_id;
-	char * buf = malloc(STATE_SIZE);
+	char buf[STATE_SIZE] = {0,};
 	double timetaken = 0;
 
 	int i;
@@ -103,9 +103,7 @@ static void *state_user_thread(size_t id)
 	}
 
 	// End timing
-	printf("Thread [%d] time elapsed: %lf ms\n", id, timetaken);
-	free(state);
-	free(buf);
+	printf("Thread [%d] time elapsed %lf ms\n", id, timetaken);
 
 	//	char * name = "Bob";
 	//	char char_id[2] = ".";
