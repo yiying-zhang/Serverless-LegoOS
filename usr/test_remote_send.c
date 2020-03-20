@@ -80,22 +80,22 @@ int spawn_thread_and_send(struct timeval * time_span, pthread_t * tid, struct th
 
     int thread_init_failed = 0;
     for (int i = 0; i < NR_THREADS; i++) {
-        // int ret = pthread_create(&tid[i], NULL, thread_func, (void *)&td[i]);
-        // if (ret) {
-        //     die("fail to create new thread");
-        //     thread_init_failed = 1;
-        //     break;
-        // }
-        thread_func((void *)&td[0]);
+        int ret = pthread_create(&tid[i], NULL, thread_func, (void *)&td[i]);
+        if (ret) {
+            die("fail to create new thread");
+            thread_init_failed = 1;
+            break;
+        }
+        // thread_func((void *)&td[0]);
     }
     if (thread_init_failed) { return 0; }
 
-    printf("Thread creation all done\n");
-    for (int i = 0; i < NR_THREADS; i++) {
-        printf("THREAD BEFORE JOIN: %d\n", i);
-        // pthread_join(tid[i], NULL);
-        printf("THREAD AFTER JOIN: %d\n", i);
-    }
+    // printf("Thread creation all done\n");
+    // for (int i = 0; i < NR_THREADS; i++) {
+    //     printf("THREAD BEFORE JOIN: %d\n", i);
+    //     // pthread_join(tid[i], NULL);
+    //     printf("THREAD AFTER JOIN: %d\n", i);
+    // }
 
     printf("Thread all joined\n");
 
