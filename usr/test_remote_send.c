@@ -57,13 +57,13 @@ static void *thread_func(void *arg)
 
     printf("Thread [%d] waiting before barrier\n", tid);
     pthread_barrier_wait(&send_finish_barrier);
-    // printf("Thread [%d] pass the barrier\n", tid);
+    printf("Thread [%d] pass the barrier\n", tid);
 
     if (is_leader) { gettimeofday(&ts, NULL); }
 
-    // printf("Thread [%d] before remote send\n", tid);
+    printf("Thread [%d] before remote send\n", tid);
     remote_send_reply(TEST_DST_NID, TEST_DST_PID, my_data->msg, SINGLE_PAYLOAD_SIZE, my_data->retbuf, SINGLE_PAYLOAD_SIZE);
-    // printf("Thread [%d] back from remote send\n", tid);
+    printf("Thread [%d] back from remote send\n", tid);
 
     pthread_spin_lock(&trial_result_lock);
     nr_active_thread -= 1;
