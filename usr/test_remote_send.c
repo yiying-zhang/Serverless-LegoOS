@@ -102,16 +102,16 @@ int spawn_thread_and_send(struct timeval * time_span, pthread_t * tid, struct th
 
     printf("Thread all joined\n");
 
-    // for (;;) {
-    //     pthread_spin_lock(&trial_result_lock);
-    //     if (nr_active_thread != 0) {
-    //         continue;
-    //     } else {
-    //         pthread_spin_unlock(&trial_result_lock);
-    //         break;
-    //     }
-    //     pthread_spin_unlock(&trial_result_lock);
-    // }
+    for (;;) {
+        pthread_spin_lock(&trial_result_lock);
+        if (nr_active_thread != 0) {
+            continue;
+        } else {
+            pthread_spin_unlock(&trial_result_lock);
+            break;
+        }
+        pthread_spin_unlock(&trial_result_lock);
+    }
 
 
     timeval_sub(time_span, &te, &ts);
