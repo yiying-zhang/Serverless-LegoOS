@@ -16,13 +16,13 @@
 
 #if CONFIG_DEBUG_STATE
 #define state_debug(fmt, ...) \
-	pr_debug("%s():%d " fmt, __func__, __LINE__, __VA_ARGS__)
+	state_debug("%s():%d " fmt, __func__, __LINE__, __VA_ARGS__)
 #else
 static inline void state_debug(const char *fmt, ...) { }
 #endif
 
 #define state_err(fmt, ...)						\
-	pr_debug("%s()-%d CPU%2d " fmt "\n",				\
+	state_debug("%s()-%d CPU%2d " fmt "\n",				\
 		__func__, __LINE__, smp_processor_id(), __VA_ARGS__)
 
 static int lookup_mnode_for_state_name(char* name, int name_size, int* reply)
@@ -30,7 +30,7 @@ static int lookup_mnode_for_state_name(char* name, int name_size, int* reply)
     int retval = 0;
 
 #ifdef CONFIG_USE_GMM
-    pr_debug("Using GMM to look for state memory node\n");
+    state_debug("Using GMM to look for state memory node\n");
 
     ssize_t retlen;
     struct p2mm_state_lookup payload;
@@ -38,7 +38,7 @@ static int lookup_mnode_for_state_name(char* name, int name_size, int* reply)
     payload.hdr.opcode = P2MM_STATE_LOOKUP;
 
     if(copy_from_user(payload.name, name, name_size)){
-        pr_err("p2mm messaging bad address for name");
+        state_err("p2mm messaging bad address for name");
         retval = -EFAULT;
         goto OUT;
     }
@@ -48,19 +48,19 @@ static int lookup_mnode_for_state_name(char* name, int name_size, int* reply)
 
     /* check return value */
     if(retlen == -ETIMEDOUT){
-        pr_debug("p2mm messaging returned timeout");
+        state_debug("p2mm messaging returned timeout");
         retval = -ETIMEDOUT;
         goto OUT;
     }
     retval = *reply;
 
-    pr_debug("p2mm messaging returned with ret code: %d\n", retval);
-    pr_debug("p2mm messaging returned with reply mnode: %d\n", *reply);
+    state_debug("p2mm messaging returned with ret code: %d\n", retval);
+    state_debug("p2mm messaging returned with reply mnode: %d\n", *reply);
 
 
 #else
     // GMM not set, only one memory node available
-    pr_debug("Using default memory node as state memory node\n");
+    state_debug("Using default memory node as state memory node\n");
     *reply = DEF_MEM_HOMENODE;
 
 #endif /* CONFIG_USE_GMM */
@@ -106,10 +106,10 @@ SYSCALL_DEFINE4(state_save, char*, name, unsigned long, name_size, unsigned long
 
     // Consulting mm for state mnode
     p2mm_ret = lookup_mnode_for_state_name(name, name_size, &mnode);
-    pr_debug("lookup_mnode says: use node %d \n", p2mm_ret);
+    state_debug("lookup_mnode says: use node %d \n", p2mm_ret);
     if (p2mm_ret < 0 || mnode < 0) {
         retval = -1; // no valid mnode for state
-        pr_err("Invalid mnode for state save\n");
+        state_err("Invalid mnode for state save\n");
         goto OUT;
     }
 
@@ -159,10 +159,10 @@ SYSCALL_DEFINE4(state_load, char*, name, unsigned long, name_size, unsigned long
 
     // Consulting mm for state mnode
     p2mm_ret = lookup_mnode_for_state_name(name, name_size, &mnode);
-    pr_debug("lookup_mnode says: use node %d ", mnode);
+    state_debug("lookup_mnode says: use node %d ", mnode);
     if (p2mm_ret < 0 || mnode < 0) {
         retval = -1; // no valid mnode for state
-        pr_err("Invalid mnode for state load\n");
+        state_err("Invalid mnode for state load\n");
         goto OUT;
     }
 
@@ -226,10 +226,10 @@ SYSCALL_DEFINE2(state_delete, char*, name, unsigned long, name_size)
 
     // Consulting mm for state mnode
     p2mm_ret = lookup_mnode_for_state_name(name, name_size, &mnode);
-    pr_debug("lookup_mnode says: use node %d ", p2mm_ret);
+    state_debug("lookup_mnode says: use node %d ", p2mm_ret);
     if (p2mm_ret < 0 || mnode < 0) {
         retval = -1; // no valid mnode for state
-        pr_err("Invalid mnode for state delete\n");
+        state_err("Invalid mnode for state delete\n");
         goto OUT;
     }
 
@@ -281,10 +281,10 @@ SYSCALL_DEFINE2(state_check, char*, name, unsigned long, name_size)
 
     // Consulting mm for state mnode
     p2mm_ret = lookup_mnode_for_state_name(name, name_size, &mnode);
-    pr_debug("lookup_mnode says: use node %d ", p2mm_ret);
+    state_debug("lookup_mnode says: use node %d ", p2mm_ret);
     if (p2mm_ret < 0 || mnode < 0) {
         retval = -1; // no valid mnode for state
-        pr_err("Invalid mnode for state check\n");
+        state_err("Invalid mnode for state check\n");
         goto OUT;
     }
 

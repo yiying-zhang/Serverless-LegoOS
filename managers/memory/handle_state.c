@@ -19,7 +19,7 @@
 
 #if CONFIG_DEBUG_STATE
 #define state_debug(fmt, ...) \
-	pr_debug("%s():%d " fmt, __func__, __LINE__, __VA_ARGS__)
+	state_debug("%s():%d " fmt, __func__, __LINE__, __VA_ARGS__)
 #else
 static inline void state_debug(const char *fmt, ...) { }
 #endif
@@ -81,26 +81,26 @@ void handle_p2m_state_save(struct p2m_state_save_payload * payload, struct commo
     struct rw_semaphore * sem;
 	int i, found;
 
-    pr_debug("[Function] state_save\n");
+    state_debug("[Function] state_save\n");
 
 	retval = 0;
 
     if (!state_md) { /* If state_md is initialized, then there is no need to acquire md_lock */
-        pr_debug("[Warning] state_md doesn't exist. Initializing candidate.\n");
+        state_debug("[Warning] state_md doesn't exist. Initializing candidate.\n");
         state_md_cand = kmalloc(STATE_MD_SIZE * sizeof(struct hlist_head), GFP_KERNEL);
         if (!state_md_cand) {
-			pr_err("[Error] Failed to create state metadata!\n");
+			state_err("[Error] Failed to create state metadata!\n");
             retval = -ENOMEM;
             goto out;
         }
         for (i = 0; i < STATE_MD_SIZE; i++) {
             INIT_HLIST_HEAD(&state_md_cand[i]);
         }
-        pr_debug("[Success] state_md_cand initialized.\n");
+        state_debug("[Success] state_md_cand initialized.\n");
 
 		md_sems_cand = kmalloc(STATE_MD_SIZE * sizeof(struct rw_semaphore), GFP_KERNEL);
 		if (!md_sems_cand) {
-			pr_err("[Error] Failed to create state metadata!\n");
+			state_err("[Error] Failed to create state metadata!\n");
 			kfree(state_md_cand);
 			retval = -ENOMEM;
 			goto out;
@@ -114,41 +114,41 @@ void handle_p2m_state_save(struct p2m_state_save_payload * payload, struct commo
             state_md = state_md_cand;
 			md_sems = md_sems_cand;
             spin_unlock_irqrestore(&md_lock, flags);
-            pr_debug("[Success] state_md and md_sems initialized.\n");
+            state_debug("[Success] state_md and md_sems initialized.\n");
         } else {
             spin_unlock_irqrestore(&md_lock, flags);
             kfree(state_md_cand);
             kfree(md_sems_cand);
-			pr_debug("[Warning] state_md already initialized by other thread. Aborting.\n");
+			state_debug("[Warning] state_md already initialized by other thread. Aborting.\n");
 
         }
     }
 
     entry = kmalloc(sizeof(struct md_entry), GFP_KERNEL);
     if (!entry) {
-		pr_err("[Error] Failed to create data entry!\n");
+		state_err("[Error] Failed to create data entry!\n");
         retval = -ENOMEM;
         goto out;
     }
-	pr_debug("[Success] entry initialized.\n");
+	state_debug("[Success] entry initialized.\n");
 
     state = kmalloc(payload->state_size, GFP_KERNEL);
     if (!state) {
-		pr_err("[Error] Failed to allocate memory for state data!\n");
+		state_err("[Error] Failed to allocate memory for state data!\n");
         retval = -ENOMEM;
         goto free_entry;
     }
     memcpy(state, payload->state, payload->state_size);
-	pr_debug("[Success] state initialized. {%s}\n", state);
+	state_debug("[Success] state initialized. {%s}\n", state);
 
     name = kmalloc(payload->name_size, GFP_KERNEL);
     if (!name) {
-		pr_err("[Error] Failed to allocate memory for state name!\n");
+		state_err("[Error] Failed to allocate memory for state name!\n");
         retval = -ENOMEM;
         goto free_state;
     }
     memcpy(name, payload->name, payload->name_size);
-	pr_debug("[Success] name initialized. {%s}\n", name);
+	state_debug("[Success] name initialized. {%s}\n", name);
 
     entry->name = name;
     entry->data.addr = state;
@@ -160,9 +160,9 @@ void handle_p2m_state_save(struct p2m_state_save_payload * payload, struct commo
     found = 0;
     down_write(sem); /* Acquire WRITE lock */
     hlist_for_each_entry(curr, &state_md[hashval], node) {
-		pr_debug("[Log] data=%s\n", curr->name);
+		state_debug("[Log] data=%s\n", curr->name);
         if (!strcmp(curr->name, payload->name)){
-			pr_debug("[Log] Found a matching state\n");
+			state_debug("[Log] Found a matching state\n");
             found = 1;
             break;
         }
@@ -209,7 +209,7 @@ void handle_p2m_state_load(struct p2m_state_load_payload * payload, struct commo
 	unsigned long hashval;
     struct rw_semaphore * sem;
 
-	pr_debug("[Function] state_load\n");
+	state_debug("[Function] state_load\n");
 
     retbuf = thpool_buffer_tx(tb);
     tb_set_tx_size(tb, sizeof(*retbuf));
@@ -219,7 +219,7 @@ void handle_p2m_state_load(struct p2m_state_load_payload * payload, struct commo
 
 
     if (!state_md) {
-		pr_err("[Error] state_md doesn't exist. Stop.\n");
+		state_err("[Error] state_md doesn't exist. Stop.\n");
         goto out;
     }
 
@@ -229,9 +229,9 @@ void handle_p2m_state_load(struct p2m_state_load_payload * payload, struct commo
     down_read(sem); /* Acquire READ lock */
 
 	hlist_for_each_entry(curr, &state_md[hashval], node) {
-		pr_debug("[Log] data=%s\n", curr->name);
+		state_debug("[Log] data=%s\n", curr->name);
         if (!strcmp(curr->name, payload->name)){
-			pr_debug("[Log] Found a matching state\n");
+			state_debug("[Log] Found a matching state\n");
             memcpy(retbuf->state, curr->data.addr, curr->data.size);
             retbuf->state_size = curr->data.size;
             retval = 0;
@@ -260,14 +260,14 @@ void handle_p2m_state_delete(struct p2m_state_delete_payload * payload, struct c
 	unsigned long hashval;
     struct rw_semaphore * sem;
 
-	pr_debug("[Function] state_delete\n");
+	state_debug("[Function] state_delete\n");
 
     retval = -EINVAL;
     retbuf = thpool_buffer_tx(tb);
     tb_set_tx_size(tb, sizeof(*retbuf));
 
     if (!state_md) {
-		pr_err("[Error] state_md doesn't exist. Stop.\n");
+		state_err("[Error] state_md doesn't exist. Stop.\n");
         retval = -EINVAL;
 		goto out;
     }
@@ -277,9 +277,9 @@ void handle_p2m_state_delete(struct p2m_state_delete_payload * payload, struct c
 
     down_write(sem); /* Acquire READ lock */
     hlist_for_each_entry(curr, &state_md[hashval], node) {
-		pr_debug("[Log] data=%s\n", curr->name);
+		state_debug("[Log] data=%s\n", curr->name);
         if (!strcmp(curr->name, payload->name)){
-			pr_debug("[Log] Found a matching state\n");
+			state_debug("[Log] Found a matching state\n");
             kfree(curr->data.addr);
             kfree(curr->name);
             hash_del(&(curr->node));
@@ -308,14 +308,14 @@ void handle_p2m_state_check(struct p2m_state_check_payload * payload, struct com
 	unsigned long hashval;
     struct rw_semaphore * sem;
 
-	pr_debug("[Function] state_check\n");
+	state_debug("[Function] state_check\n");
 
     retval = -EINVAL;
     retbuf = thpool_buffer_tx(tb);
     tb_set_tx_size(tb, sizeof(*retbuf));
 
     if (!state_md) {
-		pr_err("[Error] state_md doesn't exist. Stop.\n");
+		state_err("[Error] state_md doesn't exist. Stop.\n");
         retval = -EINVAL;
 		goto out;
     }
@@ -325,9 +325,9 @@ void handle_p2m_state_check(struct p2m_state_check_payload * payload, struct com
 
     down_read(sem); /* Acquire READ lock */
 	hlist_for_each_entry(curr, &state_md[hashval], node) {
-		pr_debug("[Log] data=%s\n", curr->name);
+		state_debug("[Log] data=%s\n", curr->name);
         if (!strcmp(curr->name, payload->name)){
-			pr_debug("[Log] Found a matching state\n");
+			state_debug("[Log] Found a matching state\n");
             retval = 0;
             break;
         }
