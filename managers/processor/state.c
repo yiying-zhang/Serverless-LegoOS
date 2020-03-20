@@ -14,7 +14,7 @@
 #include <monitor/common.h>
 #include <monitor/gmm_handler.h>
 
-#ifdef CONFIG_DEBUG_STATE
+#if CONFIG_DEBUG_STATE
 #define state_debug(fmt, ...) \
 	pr_debug("%s():%d " fmt, __func__, __LINE__, __VA_ARGS__)
 #else
