@@ -101,6 +101,7 @@ int spawn_thread_and_send(struct timeval * time_span, pthread_t * tid, struct th
     // }
 
     printf("Thread all joined\n");
+    sleep(1);
 
     for (;;) {
         pthread_spin_lock(&trial_result_lock);
