@@ -202,7 +202,7 @@ int handle_p2mm_state_lookup(struct p2mm_state_lookup *payload, u64 desc, struct
 //    }
 //    node = h;
     node = 3;
-    pr_info("lego memory monitor chose mnode %d\n", 1);
+    pr_info("lego memory monitor chose mnode %d\n", node);
     ret = ibapi_reply_message(&node, sizeof(node), desc);
     pr_info("lego memory monitor reply message have ret %d\n", ret);
     return ret;
