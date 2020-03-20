@@ -134,6 +134,9 @@ int main() {
     if (my_nid == TEST_SRC_NID) {
         printf("[SENDER]: HI I'm Sender NID: %d, PID: %d\n", my_nid, my_pid);
 
+        // Wait until the other side is fully up
+        sleep(5);
+
         struct thread_data td[NR_THREADS];
 
         /* Thread data initialization stage */
