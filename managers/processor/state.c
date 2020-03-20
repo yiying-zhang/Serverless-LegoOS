@@ -22,7 +22,7 @@ static inline void state_debug(const char *fmt, ...) { }
 #endif
 
 #define state_err(fmt, ...)						\
-	pr_debug("%s():%d " fmt, __func__, __LINE__, __VA_ARGS__)
+	pr_err(fmt, ...)
 
 static int lookup_mnode_for_state_name(char* name, int name_size, int* reply)
 {

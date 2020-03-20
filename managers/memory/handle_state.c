@@ -10,11 +10,9 @@
 #include <lego/kernel.h>
 #include <lego/comp_common.h>
 #include <lego/printk.h>
-
 #include <lego/spinlock.h>
 #include <lego/rwsem.h>
 #include <lego/hashtable.h>
-
 #include <memory/thread_pool.h>
 
 #ifdef CONFIG_DEBUG_STATE
@@ -24,8 +22,8 @@
 static inline void state_debug(const char *fmt, ...) { }
 #endif
 
-#define state_err(fmt, ...)						\
-	pr_debug("%s():%d " fmt, __func__, __LINE__, __VA_ARGS__)
+#define state_err(fmt, ...)	\
+	pr_err(fmt, ...)
 
 /**
  * hash_func - hash a string to unsigned long given table size
