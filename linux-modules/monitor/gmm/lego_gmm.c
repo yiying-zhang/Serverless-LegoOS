@@ -184,11 +184,11 @@ static void __exit lego_gmm_module_exit(void)
 /*
  * State management: state mnode lookup
  */
-int handle_p2mm_state_lookup(struct p2mm_state_lookup *payload) {
+int handle_p2mm_state_lookup(struct p2mm_state_lookup *payload, u64 desc, struct common_header *hdr) {
     pr_info("lego memory monitor module state lookup is called.\n");
     pr_info("lego memory monitor says we have %d memory nodes\n", MEMORY_NODE_COUNT);
-    pr_info("lego memory monitor before %d\n", 1);
     //TODO: add hash function, hashing payload->name
+    int ret;
     int node;
 
 //    unsigned int h = 0;
@@ -203,7 +203,9 @@ int handle_p2mm_state_lookup(struct p2mm_state_lookup *payload) {
 //    node = h;
     node = 1;
     pr_info("lego memory monitor chose mnode %d\n", 1);
-    return 1;
+    ret = ibapi_reply_message(&node, sizeof(node), desc);
+    pr_info("lego memory monitor reply message have ret %d\n", ret);
+    return ret;
 }
 EXPORT_SYMBOL(handle_p2mm_state_lookup);
 

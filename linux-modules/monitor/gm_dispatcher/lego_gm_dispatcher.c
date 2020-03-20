@@ -76,7 +76,7 @@ static int req_dispatcher(void)
 		break;
 
 	case P2MM_STATE_LOOKUP:
-        handle_p2mm_state_lookup(payload);
+        handle_p2mm_state_lookup(payload, desc, hdr);
         break;
 
 	default:
