@@ -61,20 +61,20 @@ static void gen_rand_alphanum(char *s, const int len) {
 
 }
 
-#define MAX_ITER_PER_TH 20000
-#define NAME_SIZE 5
-#define STATE_SIZE 2048
+#define MAX_ITER_PER_TH 500
+#define NAME_SIZE 25
+#define STATE_SIZE 8192
 
 static void *state_user_thread(size_t id)
 {
 
 	struct timeval ts, te, result;
 	char name[NAME_SIZE];
-	char state[STATE_SIZE];
+	char * state = malloc(STATE_SIZE);
 	long retval;
 
 	int func_id;
-	char buf[STATE_SIZE] = {0,};
+	char * buf = malloc(STATE_SIZE);
 	double timetaken = 0;
 
 	int i;
@@ -86,25 +86,26 @@ static void *state_user_thread(size_t id)
 		gettimeofday(&ts, NULL);
 
 		if (func_id == 0){
-			retval = syscall(667, name, strlen(name)+1, strlen(state)+1, state);
+			retval = syscall(667, name, NAME_SIZE, STATE_SIZE, state);
 		} else if (func_id == 1){
-			retval = syscall(668, name, strlen(name)+1, STATE_SIZE, buf);
+			retval = syscall(668, name, NAME_SIZE, STATE_SIZE, buf);
 		} else if (func_id == 2){
-			retval = syscall(669, name, strlen(name)+1);
+			retval = syscall(669, name, NAME_SIZE);
 		} else {
-			retval = syscall(670, name, strlen(name)+1);
+			retval = syscall(670, name, NAME_SIZE);
 		}
 
 		gettimeofday(&te, NULL);
 		timeval_sub(&result, &te, &ts);
 
 		/* Get elapsed time in ms */
-//		printf("Thread[%d] timetaken %lf\n", id, (double)result.tv_sec + (double)result.tv_usec/(double)1000000);
 		timetaken = timetaken + (double)result.tv_sec*(double)1000 + (double)result.tv_usec/(double)1000;
 	}
 
 	// End timing
-	printf("Thread[%d] Elapsed CPU time %lf\n", id, timetaken);
+	printf("Thread [%d] time elapsed: %lf ms\n", id, timetaken);
+	free(state);
+	free(buf);
 
 	//	char * name = "Bob";
 	//	char char_id[2] = ".";
@@ -118,7 +119,7 @@ static void *state_user_thread(size_t id)
 
 }
 
-#define TH_NUM 2
+#define TH_NUM 4
 int main(void)
 {
 	if (STATE_DEBUG_ON) printf("Test starts\n");

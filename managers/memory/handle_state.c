@@ -40,7 +40,7 @@ unsigned long hash_func(const char * key, const unsigned int table_size)
 struct hlist_head * state_md; /* Create state_metadata as a hash table */
 struct rw_semaphore * md_sems; /* Semaphore for each chain (hlist) in state_md */
 
-#define STATE_MD_BITS 8
+#define STATE_MD_BITS 10
 #define STATE_MD_SIZE (1 << STATE_MD_BITS)
 
 DEFINE_SPINLOCK(md_lock); /* Lock related to metadata store creation and deletion */
