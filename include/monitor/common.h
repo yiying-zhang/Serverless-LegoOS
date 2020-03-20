@@ -104,7 +104,8 @@ struct pm2p_broadcast_vnode_struct {
  * State management mnode lookup
  */
 struct p2mm_state_lookup {
-    char* name;
+    struct common_header hdr;
+    char name[MAX_FILENAME_LENGTH];
     int name_size;
 };
 
