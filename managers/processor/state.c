@@ -66,8 +66,8 @@ static int lookup_mnode_for_state_name(char* name, int name_size, int* reply)
         goto OUT;
     }
 
-    printk("p2mm messaging returned with ret code: %d\n": ret);
-    printk("p2mm messaging returned with reply mnode: %d\n": reply);
+    printk("p2mm messaging returned with ret code: %d\n", ret);
+    printk("p2mm messaging returned with reply mnode: %d\n", reply);
 
 #else
     // GMM not set, only one memory node available
@@ -76,7 +76,8 @@ static int lookup_mnode_for_state_name(char* name, int name_size, int* reply)
 
 #endif /* CONFIG_USE_GMM */
 
-    return ret;
+OUT:
+    return retval;
 }
 
 SYSCALL_DEFINE4(state_save, char*, name, unsigned long, name_size, unsigned long, state_size, const void*, state)
