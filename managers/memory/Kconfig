@@ -205,6 +205,13 @@ config DEBUG_VM_RB
 
 	  If unsure, say N.
 
+config DEBUG_STATE
+	bool "Debug state"
+	default n
+	help
+	  Enable this to debug state management subsystem. This option only enables
+	  debug information on memory side.
+
 endmenu # Memory DEBUG Options
 
 if MEM_PAGE_CACHE
