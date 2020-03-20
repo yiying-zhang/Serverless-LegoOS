@@ -115,7 +115,7 @@ int spawn_thread_and_send(struct timeval * time_span, pthread_t * tid, struct th
 
 
     timeval_sub(time_span, &te, &ts);
-
+    fprintf(stderr, "[%ld.%ld (s)]\n", time_span->tv_sec, (time_span->tv_usec)/1000);
     // printf("Time Span Sub Finished\n");
 
     return 1;
@@ -165,6 +165,8 @@ int main() {
         int success_deliver_count = 0;
         struct timeval final_result;
         timeval_sub(&final_result, &final_result, &final_result);
+        fprintf(stderr, "final res init [%ld.%ld (s)]\n", final_result.tv_sec, final_result.tv_usec/1000);
+
 
         pthread_t tid[NR_THREADS];
 
