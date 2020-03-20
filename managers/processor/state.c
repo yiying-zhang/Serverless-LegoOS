@@ -16,6 +16,7 @@
 #include <processor/processor.h>
 
 #include <monitor/common.h>
+#include <monitor/gmm_handler.h>
 
 static int lookup_mnode_for_state_name(char* name, int name_size, int* reply)
 {
