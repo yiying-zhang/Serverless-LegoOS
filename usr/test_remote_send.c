@@ -4,10 +4,10 @@
 #include <pthread.h>
 #include <string.h>
 
-#define NR_THREADS 1
-#define TOTAL_PAYLOAD_SIZE 512
+#define NR_THREADS 2
+#define TOTAL_PAYLOAD_SIZE 1024
 #define SINGLE_PAYLOAD_SIZE TOTAL_PAYLOAD_SIZE/NR_THREADS
-#define SUCCESS_MSG_TRY 5
+#define SUCCESS_MSG_TRY 3
 
 #define TEST_SRC_NID 0
 #define TEST_SRC_PID 24
@@ -56,7 +56,7 @@ static void *thread_func(void *arg)
     pthread_spin_unlock(&trial_result_lock);
 
     printf("Thread [%d] waiting before barrier\n", tid);
-    // pthread_barrier_wait(&send_finish_barrier);
+    pthread_barrier_wait(&send_finish_barrier);
     // printf("Thread [%d] pass the barrier\n", tid);
 
     if (is_leader) { gettimeofday(&ts, NULL); }
@@ -76,7 +76,7 @@ static void *thread_func(void *arg)
 
 int spawn_thread_and_send(struct timeval * time_span, pthread_t * tid, struct thread_data * td) {
 
-    // pthread_barrier_init(&send_finish_barrier, NULL, NR_THREADS);
+    pthread_barrier_init(&send_finish_barrier, NULL, NR_THREADS);
 
     printf("Finished barrier setup and spin init\n");
 
