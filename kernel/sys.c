@@ -919,7 +919,7 @@ SYSCALL_DEFINE6(remote_send_reply, const unsigned int, dst_nid, const pid_t, dst
 	PROFILE_LEAVE(remote_send_reply_hdr_fill);
 
 	// DEBUG use only
-	print_p2p_msg_header(hdr);
+	// print_p2p_msg_header(hdr);
 
 	// pr_info("~~~~~~~~Copying msg body~~~~~~~~\n");
 	PROFILE_START(remote_send_reply_copy_from_usr);

@@ -69,12 +69,12 @@ static void *thread_func(void *arg)
     nr_active_thread -= 1;
     if (nr_active_thread == 0) { gettimeofday(&te, NULL); }
     pthread_spin_unlock(&trial_result_lock);
-    // pthread_exit(NULL);
+    pthread_exit(NULL);
 }
 
 int spawn_thread_and_send(struct timeval * time_span, pthread_t * tid, struct thread_data * td) {
 
-    pthread_barrier_init(&send_finish_barrier, NULL, NR_THREADS);
+    // pthread_barrier_init(&send_finish_barrier, NULL, NR_THREADS);
 
     printf("Finished barrier setup and spin init\n");
 
@@ -90,25 +90,25 @@ int spawn_thread_and_send(struct timeval * time_span, pthread_t * tid, struct th
     }
     if (thread_init_failed) { return 0; }
 
-    // printf("Thread creation all done\n");
-    // for (int i = 0; i < NR_THREADS; i++) {
-    //     printf("THREAD BEFORE JOIN: %d\n", i);
-    //     // pthread_join(tid[i], NULL);
-    //     printf("THREAD AFTER JOIN: %d\n", i);
-    // }
+    printf("Thread creation all done\n");
+    for (int i = 0; i < NR_THREADS; i++) {
+        printf("THREAD BEFORE JOIN: %d\n", i);
+        pthread_join(tid[i], NULL);
+        printf("THREAD AFTER JOIN: %d\n", i);
+    }
 
     printf("Thread all joined\n");
 
-    for (;;) {
-        pthread_spin_lock(&trial_result_lock);
-        if (nr_active_thread != 0) {
-            continue;
-        } else {
-            pthread_spin_unlock(&trial_result_lock);
-            break;
-        }
-        pthread_spin_unlock(&trial_result_lock);
-    }
+    // for (;;) {
+    //     pthread_spin_lock(&trial_result_lock);
+    //     if (nr_active_thread != 0) {
+    //         continue;
+    //     } else {
+    //         pthread_spin_unlock(&trial_result_lock);
+    //         break;
+    //     }
+    //     pthread_spin_unlock(&trial_result_lock);
+    // }
 
 
     timeval_sub(time_span, &te, &ts);
