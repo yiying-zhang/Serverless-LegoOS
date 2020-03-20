@@ -46,7 +46,7 @@ static void *thread_func(void *arg)
 
     struct thread_data *my_data = (struct thread_data *) arg;
     int tid = my_data->thread_id;
-    printf("Thread [%d] running\n", tid);
+    // printf("Thread [%d] running\n", tid);
 
 
     int is_leader = 0;
@@ -55,7 +55,7 @@ static void *thread_func(void *arg)
     if (nr_active_thread == 1) { is_leader = 1; }
     pthread_spin_unlock(&trial_result_lock);
 
-    printf("Thread [%d] waiting before barrier\n", tid);
+    // printf("Thread [%d] waiting before barrier\n", tid);
     pthread_barrier_wait(&send_finish_barrier);
     // printf("Thread [%d] pass the barrier\n", tid);
 
@@ -70,7 +70,7 @@ static void *thread_func(void *arg)
     if (nr_active_thread == 0) { gettimeofday(&te, NULL); }
     pthread_spin_unlock(&trial_result_lock);
 
-    printf("Thread [%d] back te setting\n", tid);
+    // printf("Thread [%d] back te setting\n", tid);
     pthread_exit(NULL);
 }
 
@@ -78,7 +78,7 @@ int spawn_thread_and_send(struct timeval * time_span, pthread_t * tid, struct th
 
     pthread_barrier_init(&send_finish_barrier, NULL, NR_THREADS);
 
-    printf("Finished barrier setup and spin init\n");
+    // printf("Finished barrier setup and spin init\n");
 
     int thread_init_failed = 0;
     for (int i = 0; i < NR_THREADS; i++) {
@@ -93,12 +93,12 @@ int spawn_thread_and_send(struct timeval * time_span, pthread_t * tid, struct th
     if (thread_init_failed) { return 0; }
 
     sleep(3);
-    printf("Thread creation all done\n");
-    for (int i = 0; i < NR_THREADS; i++) {
-        printf("THREAD BEFORE JOIN: %d\n", i);
-        // pthread_join(tid[i], NULL);
-        printf("THREAD AFTER JOIN: %d\n", i);
-    }
+    // printf("Thread creation all done\n");
+    // for (int i = 0; i < NR_THREADS; i++) {
+    //     printf("THREAD BEFORE JOIN: %d\n", i);
+    //     // pthread_join(tid[i], NULL);
+    //     printf("THREAD AFTER JOIN: %d\n", i);
+    // }
 
     printf("Thread all joined\n");
 
@@ -116,7 +116,7 @@ int spawn_thread_and_send(struct timeval * time_span, pthread_t * tid, struct th
 
     timeval_sub(time_span, &te, &ts);
 
-    printf("Time Span Sub Finished\n");
+    // printf("Time Span Sub Finished\n");
 
     return 1;
 }
@@ -186,17 +186,17 @@ int main() {
 
             struct timeval single_exp_time;
 
-            printf("[SENDER BEFORE SEND:%d]: %s\n", success_deliver_count, td[0].msg);
+            // printf("[SENDER BEFORE SEND:%d]: %s\n", success_deliver_count, td[0].msg);
             int exp_ret = spawn_thread_and_send(&single_exp_time, tid, td);
             if (exp_ret == 0) {
                 printf("Experiment Failed: Trail [%d]\n", success_deliver_count);
                 continue;
             }
-            printf("[SENDER DONE SEND ITE:%d]: %s\n", success_deliver_count);
+            // printf("[SENDER DONE SEND ITE:%d]: %s\n", success_deliver_count);
 
 
             timeval_add_res(&final_result, &final_result, &single_exp_time);
-            printf("[SENDER ITE: %d] time computation finished\n", success_deliver_count);
+            // printf("[SENDER ITE: %d] time computation finished\n", success_deliver_count);
             success_deliver_count += 1;
 
             fprintf(stderr, "(nr=%d)(tot_payload=%d)\tTotal Time [%ld.%ld (s)]\tAverage Time [%ld (ns)]\n",
