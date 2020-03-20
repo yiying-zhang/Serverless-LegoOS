@@ -23,7 +23,7 @@ static inline void state_debug(const char *fmt, ...) { }
 #endif
 
 #define state_err(fmt, ...)	\
-	pr_err(fmt, ...)
+	pr_err(fmt, __func__, __LINE__, __VA_ARGS__)
 
 /**
  * hash_func - hash a string to unsigned long given table size
