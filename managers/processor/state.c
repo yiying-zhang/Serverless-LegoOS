@@ -131,6 +131,9 @@ SYSCALL_DEFINE4(state_load, char*, name, unsigned long, name_size, unsigned long
     struct common_header* hdr;
     struct p2m_state_load_payload* payload;
 
+    int mnode = -1;
+    int p2mm_ret = 0;
+
     len_msg = sizeof(*hdr) + sizeof(*payload);
     msg = kmalloc(len_msg, GFP_KERNEL);
     if(!msg)
@@ -147,7 +150,16 @@ SYSCALL_DEFINE4(state_load, char*, name, unsigned long, name_size, unsigned long
     }
     payload->name_size = name_size;
 
-    retlen = ibapi_send_reply_imm(current_memory_home_node(), msg, len_msg, &reply, sizeof(reply),false);
+    // Consulting mm for state mnode
+    p2mm_ret = lookup_mnode_for_state_name(name, name_size, &mnode);
+    printk("lookup_mnode says: use node %d ", mnode);
+    if (p2mm_ret < 0 || mnode < 0) {
+        retval = -1; // no valid mnode for state
+        printk("Invalid mnode for state save\n");
+        goto OUT;
+    }
+
+    retlen = ibapi_send_reply_imm(mnode, msg, len_msg, &reply, sizeof(reply),false);
 
     /* check return value */
     if(retlen == -ETIMEDOUT){
@@ -186,6 +198,9 @@ SYSCALL_DEFINE2(state_delete, char*, name, unsigned long, name_size)
     struct common_header* hdr;
     struct p2m_state_delete_payload* payload;
 
+    int mnode = -1;
+    int p2mm_ret = 0;
+
     len_msg = sizeof(*hdr) + sizeof(*payload);
     msg = kmalloc(len_msg, GFP_KERNEL);
     if(!msg)
@@ -202,7 +217,16 @@ SYSCALL_DEFINE2(state_delete, char*, name, unsigned long, name_size)
     }
     payload->name_size = name_size;
 
-    retlen = ibapi_send_reply_imm(current_memory_home_node(), msg, len_msg, &reply, sizeof(reply),false);
+    // Consulting mm for state mnode
+    p2mm_ret = lookup_mnode_for_state_name(name, name_size, &mnode);
+    printk("lookup_mnode says: use node %d ", p2mm_ret);
+    if (p2mm_ret < 0 || mnode < 0) {
+        retval = -1; // no valid mnode for state
+        printk("Invalid mnode for state save\n");
+        goto OUT;
+    }
+
+    retlen = ibapi_send_reply_imm(mnode, msg, len_msg, &reply, sizeof(reply),false);
 
     /* check return value */
     if(retlen == -ETIMEDOUT){
@@ -229,6 +253,9 @@ SYSCALL_DEFINE2(state_check, char*, name, unsigned long, name_size)
     struct common_header* hdr;
     struct p2m_state_check_payload* payload;
 
+    int mnode = -1;
+    int p2mm_ret = 0;
+
     len_msg = sizeof(*hdr) + sizeof(*payload);
     msg = kmalloc(len_msg, GFP_KERNEL);
     if(!msg)
@@ -245,7 +272,16 @@ SYSCALL_DEFINE2(state_check, char*, name, unsigned long, name_size)
     }
     payload->name_size = name_size;
 
-    retlen = ibapi_send_reply_imm(current_memory_home_node(), msg, len_msg, &reply, sizeof(reply),false);
+    // Consulting mm for state mnode
+    p2mm_ret = lookup_mnode_for_state_name(name, name_size, &mnode);
+    printk("lookup_mnode says: use node %d ", p2mm_ret);
+    if (p2mm_ret < 0 || mnode < 0) {
+        retval = -1; // no valid mnode for state
+        printk("Invalid mnode for state save\n");
+        goto OUT;
+    }
+
+    retlen = ibapi_send_reply_imm(mnode, msg, len_msg, &reply, sizeof(reply),false);
 
     /* check return value */
     if(retlen == -ETIMEDOUT){
