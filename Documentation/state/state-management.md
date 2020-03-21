@@ -8,6 +8,12 @@ Use `CONFIG_DEBUG_STATE=y` in configs to enable debugging information on process
 ## Testing Environment
 State management has been testing on two set of infrastructures: 1P-1M and 1P-1M-GMM.
 
+For best performance, use multiple vCPU for VM and multiple workers on mComp
+For example in memory node config, use
+```
+CONFIG_THPOOL_NR_WORKERS=8
+```
+
 ### 1P-1M setup
 1P-1M is the simplest setting to test state management system. Use sample config file provided to boot up 1P-1M.
 
