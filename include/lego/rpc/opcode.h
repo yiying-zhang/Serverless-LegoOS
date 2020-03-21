@@ -96,6 +96,7 @@
 #define M2MM_STATUS_REPORT		(MONITOR_BASE + 4)
 #define P2PM_REQUEST_VNODE		(MONITOR_BASE + 5)
 #define PM2P_BROADCAST_VNODE		(MONITOR_BASE + 6)
+#define P2MM_STATE_LOOKUP		(MONITOR_BASE + 7) /* State Management mnode lookup*/
 
 /* Memory to Storage */
 #define M2S_READ		P2M_READ		/* Reuse the same nr */
@@ -127,6 +128,12 @@
 #define RET_SIGNAL_BASE		((__u32)0x01000000)
 
 #define RET_ESIGSEGV		((__u32)(RET_SIGNAL_BASE+SIGSEGV)) /* Segmentation fault*/
+
+/* State Management */
+#define P2M_STATE_SAVE		((__u32)__NR_state_save)
+#define P2M_STATE_LOAD		((__u32)__NR_state_load)
+#define P2M_STATE_DELETE	    ((__u32)__NR_state_delete)
+#define P2M_STATE_CHECK	    ((__u32)__NR_state_check)
 
 static inline unsigned int ERR_TO_LEGO_RET(long err)
 {

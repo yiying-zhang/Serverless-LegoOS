@@ -159,6 +159,23 @@ config VNODE_MAP_ORDER
 
 	  If unsure, use default.
 endif #if GPM
+
+config USE_GMM
+	bool "Global memory monitor"
+	default n
+	help
+	  Enable this to use Global memory monitor
+
+if USE_GMM
+config GMM_NODEID
+	int "GMM IB node ID"
+	default 3
+	help
+	  if running a multiple monitor on same machine, IB node
+	  ID can be same as Storage node, GPM and GSM's
+
+endif #if GMM
+
 endmenu
 
 menu "Processor Side DEBUG Options"
@@ -347,6 +364,13 @@ config DEBUG_PIPE
 	  Say Y if you want to get some hint on what happens internally of a pipe
 
 	  If unsure, say N.
+
+config DEBUG_STATE
+	bool "Debug state"
+	default n
+	help
+	  Enable this to debug state management subsystem. This option only enables
+	  debug information on processor side.
 
 endmenu # "Debug Option"
 

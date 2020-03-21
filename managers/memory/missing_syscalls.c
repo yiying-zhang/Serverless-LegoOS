@@ -304,3 +304,22 @@ SYSCALL_DEFINE3(mq_open, char*, name, unsigned long, name_size, unsigned long, m
 	BUG();
 }
 
+SYSCALL_DEFINE4(state_save, char*, name, unsigned long, name_size, unsigned long, state_size, const void*, state)
+{
+    BUG();
+}
+
+SYSCALL_DEFINE4(state_load, char*, name, unsigned long, name_size, unsigned long, state_size, void*, state)
+{
+    BUG();
+}
+
+SYSCALL_DEFINE2(state_delete, char*, name, unsigned long, name_size)
+{
+    BUG();
+}
+
+SYSCALL_DEFINE2(state_check, char*, name, unsigned long, name_size)
+{
+    BUG();
+}

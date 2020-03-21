@@ -200,6 +200,20 @@ static void thpool_worker_handler(struct thpool_worker *worker,
 		handle_p2m_drop_page_cache(hdr, buffer);
 		break;
 
+/* State Management SYSCALL */
+    case P2M_STATE_SAVE:
+        handle_p2m_state_save(payload, hdr, buffer);
+        break;
+    case P2M_STATE_LOAD:
+        handle_p2m_state_load(payload, hdr, buffer);
+        break;
+	case P2M_STATE_DELETE:
+		handle_p2m_state_delete(payload, hdr, buffer);
+		break;
+	case P2M_STATE_CHECK:
+		handle_p2m_state_check(payload, hdr, buffer);
+		break;
+
 #ifdef CONFIG_MEM_PAGE_CACHE
 	case P2M_LSEEK:
 		handle_p2m_lseek(payload, hdr, buffer);
