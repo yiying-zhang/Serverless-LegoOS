@@ -132,12 +132,8 @@
 /* State Management */
 #define P2M_STATE_SAVE		((__u32)__NR_state_save)
 #define P2M_STATE_LOAD		((__u32)__NR_state_load)
-#define P2M_STATE_DELETE	((__u32)__NR_state_delete)
-#define P2M_STATE_CHECK	((__u32)__NR_state_check)
-
-
-
-
+#define P2M_STATE_DELETE	    ((__u32)__NR_state_delete)
+#define P2M_STATE_CHECK	    ((__u32)__NR_state_check)
 
 static inline unsigned int ERR_TO_LEGO_RET(long err)
 {

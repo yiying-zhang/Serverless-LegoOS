@@ -131,8 +131,10 @@
 614	common  mq_receive		sys_mq_receive
 615	common  mq_close		sys_mq_close
 
-# State Management
+#
+# State Management specific SYSCALL
+#
 667 common  state_save		sys_state_save
 668 common  state_load		sys_state_load
-669 common  state_delete	sys_state_delete
-670 common  state_check	sys_state_check
+669 common  state_delete		sys_state_delete
+670 common  state_check		sys_state_check

@@ -51,6 +51,7 @@ static int m2mm_status_report(void *_unused)
 void __init gmm_init(void)
 {
 	struct task_struct *ret;
+
 	ret = kthread_run(m2mm_status_report, NULL, "m2mm_hb");
 	if (IS_ERR(ret))
 		pr_info("ERROR: fail to create m2mm_hb thread");

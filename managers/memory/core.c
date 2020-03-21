@@ -214,7 +214,6 @@ static void thpool_worker_handler(struct thpool_worker *worker,
 		handle_p2m_state_check(payload, hdr, buffer);
 		break;
 
-
 #ifdef CONFIG_MEM_PAGE_CACHE
 	case P2M_LSEEK:
 		handle_p2m_lseek(payload, hdr, buffer);

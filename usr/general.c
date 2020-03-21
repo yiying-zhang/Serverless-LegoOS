@@ -11,12 +11,12 @@ static void lego_uname(void)
 
 	uname(&foo);
 	printf("uname(): \n"
-		   "\t sysname: %s\n"
-		   "\t nodename: %s\n"
-		   "\t release: %s\n"
-		   "\t version: %s\n"
-		   "\t machine: %s\n",
-		   foo.sysname, foo.nodename, foo.release, foo.version, foo.machine);
+	       "\t sysname: %s\n"
+	       "\t nodename: %s\n"
+	       "\t release: %s\n"
+	       "\t version: %s\n"
+	       "\t machine: %s\n",
+	       foo.sysname, foo.nodename, foo.release, foo.version, foo.machine);
 }
 
 static void lego_getrlimit(void)
@@ -25,7 +25,7 @@ static void lego_getrlimit(void)
 
 	getrlimit(RLIMIT_STACK, &l);
 	printf("getrlimit(): RLIMIT_STACK, cur: %lld, max: %lld\n",
-		   l.rlim_cur, l.rlim_max);
+		l.rlim_cur, l.rlim_max);
 }
 
 static void lego_time(void)
@@ -35,9 +35,9 @@ static void lego_time(void)
 
 	gettimeofday(&tv, NULL);
 	printf("gettimeofday(): tv_sec: %lld, tv_usec: %lld\n",
-		   tv.tv_sec, tv.tv_usec);
+		tv.tv_sec, tv.tv_usec);
 
-	t = time(NULL);
+	t = time(NULL);	
 	printf("time(NULL): %lld\n", t);
 }
 
